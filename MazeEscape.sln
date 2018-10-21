@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MazeEscape", "MazeEscape\MazeEscape.csproj", "{78ADFB3A-0CC0-4CFD-AE3C-CA51CF4129F6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{78ADFB3A-0CC0-4CFD-AE3C-CA51CF4129F6}.Debug|x86.ActiveCfg = Debug|x86
+		{78ADFB3A-0CC0-4CFD-AE3C-CA51CF4129F6}.Debug|x86.Build.0 = Debug|x86
+		{78ADFB3A-0CC0-4CFD-AE3C-CA51CF4129F6}.Release|x86.ActiveCfg = Release|x86
+		{78ADFB3A-0CC0-4CFD-AE3C-CA51CF4129F6}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CC0BDEEC-B97D-4233-899A-8981F8B0D92E}
+	EndGlobalSection
+EndGlobal
