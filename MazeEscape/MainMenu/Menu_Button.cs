@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Sounds;
@@ -15,56 +16,46 @@ namespace Menu_buttons
     {
         public SoundEffects buttonSound { get; set; }
 
-        Rectangle Position;
-        Texture2D Sprite;
-        Texture2D SpriteOnClick;
-        Color TintColor;
-        bool onClick;
+        private Rectangle Position;
+        private Texture2D Sprite;
+        private Texture2D SpriteOnClick;
+        private Color TintColor;
+        private bool onHover;
 
-        public Menu_Button(Texture2D sprite, Texture2D spriteOnClick, Rectangle position, SoundEffects buttonSound)
+        public Menu_Button(Texture2D sprite, Texture2D spriteOnClick, Rectangle position, SoundEffect buttonSound)
         {
             Sprite = sprite;
             Position = position;
             SpriteOnClick = spriteOnClick;
             TintColor = Color.White;
-            onClick = false;
-            this.buttonSound = buttonSound;
+            onHover = false;
+            this.buttonSound = new SoundEffects(buttonSound);
         }
 
         public bool IsOn(Point mousePosition)
         {
-            var position = Position;
+            var isOn = mousePosition.X >= Position.X && mousePosition.X <= (Position.X + Sprite.Width) &&
+                       mousePosition.Y >= Position.Y && mousePosition.Y <= (Position.Y + Sprite.Height);
 
-            if (mousePosition.X >= position.X && mousePosition.X <= (position.X + Sprite.Width) &&
-                mousePosition.Y >= position.Y && mousePosition.Y <= (position.Y + Sprite.Height))
+            if (isOn)
             {
-
                 buttonSound.Play();
-                buttonSound.Wait = true;
-                return true;
-            }
-            else
-            {
-                buttonSound.Wait = false;
             }
 
-            return false;
+            buttonSound.Wait = isOn;
+
+            return isOn;
         }
 
-        public void SetColor(Color color)
-        {
-            TintColor = color;
-        }
 
-        public void OnClick(bool click)
+        public void OnHover(bool hover)
         {
-            onClick = click;
+            onHover = hover;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            if (onClick) { spriteBatch.Draw(SpriteOnClick, Position, TintColor); }
-            else { spriteBatch.Draw(Sprite, Position, TintColor); }
+            spriteBatch.Draw(onHover ? SpriteOnClick : Sprite, Position, TintColor);
         }
 
     }

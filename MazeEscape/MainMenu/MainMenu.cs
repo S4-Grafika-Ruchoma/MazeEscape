@@ -50,7 +50,7 @@ namespace MainMenu
 
           // var button_click1 = Content.Load<SoundEffect>("Sounds/menu_click");
 
-            button_click = new SoundEffects("Sounds/menu_click", Content, "klikniecie");
+            var hoverSound = Content.Load<SoundEffect>("Sounds/menu_click") ;
 
             // Buttons Load
 
@@ -70,10 +70,10 @@ namespace MainMenu
             int yOffset = 400;
             int yPadding = 65;
 
-            knefel.Add(new Menu_Button(bG_A, bG_B, new Rectangle(xOffset, yOffset, bG_A.Width, bG_B.Height), button_click)); // i = 0  PLAY button
-            knefel.Add(new Menu_Button(bA_A, bA_B, new Rectangle(xOffset, yOffset + yPadding, bG_A.Width, bG_B.Height), button_click));
-            knefel.Add(new Menu_Button(bO_A, bO_B, new Rectangle(xOffset, yOffset + yPadding * 2, bG_A.Width, bG_B.Height), button_click));
-            knefel.Add(new Menu_Button(bW_A, bW_B, new Rectangle(xOffset, yOffset + yPadding * 3, bG_A.Width, bG_B.Height), button_click)); // i = 3  EXIT Button
+            knefel.Add(new Menu_Button(bG_A, bG_B, new Rectangle(xOffset, yOffset, bG_A.Width, bG_B.Height), hoverSound)); // i = 0  PLAY button
+            knefel.Add(new Menu_Button(bA_A, bA_B, new Rectangle(xOffset, yOffset + yPadding, bG_A.Width, bG_B.Height), hoverSound));
+            knefel.Add(new Menu_Button(bO_A, bO_B, new Rectangle(xOffset, yOffset + yPadding * 2, bG_A.Width, bG_B.Height), hoverSound));
+            knefel.Add(new Menu_Button(bW_A, bW_B, new Rectangle(xOffset, yOffset + yPadding * 3, bG_A.Width, bG_B.Height), hoverSound)); // i = 3  EXIT Button
         }
 
         protected override void UnloadContent()
@@ -108,11 +108,11 @@ namespace MainMenu
                 if (knefel[i].IsOn(mousePos) == true )
                 {
                     
-                    knefel[i].OnClick(true);
+                    knefel[i].OnHover(true);
                 }
                 else
                 {
-                    knefel[i].OnClick(false);
+                    knefel[i].OnHover(false);
                 }
             }
             base.Update(gameTime);
