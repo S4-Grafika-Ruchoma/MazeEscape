@@ -12,6 +12,8 @@ namespace MazeEscape
         private Floor floor;
         private BasicEffect basicEffect;
 
+        TestObject testObj;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -42,7 +44,17 @@ namespace MazeEscape
 
         protected override void LoadContent()
         {
-
+            testObj = new TestObject
+            {
+                triangleVertices = new[]
+                {
+                    new VertexPositionColor(new Vector3(0, 20, 0), Color.Red),
+                    new VertexPositionColor(new Vector3(-20, -20, 0), Color.Green),
+                    new VertexPositionColor(new Vector3(20, -20, 0), Color.Blue),
+                },
+                vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 3, BufferUsage.WriteOnly),
+            };
+            testObj.vertexBuffer.SetData<VertexPositionColor>(testObj.triangleVertices);
         }
 
         protected override void UnloadContent()
@@ -76,6 +88,17 @@ namespace MazeEscape
 
             floor.Draw(camera, basicEffect);
 
+            GraphicsDevice.SetVertexBuffer(testObj.vertexBuffer);
+            RasterizerState rasterizerState = new RasterizerState()
+            {
+                CullMode = CullMode.None
+            };
+            GraphicsDevice.RasterizerState = rasterizerState;
+            foreach (var item in basicEffect.CurrentTechnique.Passes)
+            {
+                item.Apply();
+                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 3);
+            }
 
             base.Draw(gameTime);
         }
