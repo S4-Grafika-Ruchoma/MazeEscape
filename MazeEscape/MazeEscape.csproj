@@ -50,6 +50,8 @@
     <Compile Include="MainMenu\Menu_Button.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sounds\BackgroundSongs.cs" />
+    <Compile Include="Sounds\SoundEffects.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

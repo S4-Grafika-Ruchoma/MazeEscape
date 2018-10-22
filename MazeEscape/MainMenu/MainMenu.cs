@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MazeEscape;
 using Menu_buttons;
+using Sounds;
+using Microsoft.Xna.Framework.Audio;
 
 namespace MainMenu
 {
@@ -18,9 +20,9 @@ namespace MainMenu
         public bool runGame { get; set; }
         Texture2D menuBackground, bG_A, bG_B, bA_A, bA_B, bO_A, bO_B, bW_A, bW_B;
         bool mouseLock = false;
+        SoundEffects button_click;
 
         List<Menu_Button> knefel;
-
 
         public MainMenu()
         {
@@ -36,6 +38,7 @@ namespace MainMenu
         {
             runGame = false;
             knefel = new List<Menu_Button>();
+           
 
             base.Initialize();
         }
@@ -44,6 +47,10 @@ namespace MainMenu
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             menuBackground = Content.Load<Texture2D>("Main_Menu/Menu_background");
+
+          // var button_click1 = Content.Load<SoundEffect>("Sounds/menu_click");
+
+            button_click = new SoundEffects("Sounds/menu_click", Content, "klikniecie");
 
             // Buttons Load
 
@@ -63,11 +70,10 @@ namespace MainMenu
             int yOffset = 400;
             int yPadding = 65;
 
-            knefel.Add(new Menu_Button(bG_A, bG_B, new Rectangle(xOffset, yOffset, bG_A.Width, bG_B.Height))); // i = 0  PLAY button
-            knefel.Add(new Menu_Button(bA_A, bA_B, new Rectangle(xOffset, yOffset + yPadding, bG_A.Width, bG_B.Height)));
-            knefel.Add(new Menu_Button(bO_A, bO_B, new Rectangle(xOffset, yOffset + yPadding * 2, bG_A.Width, bG_B.Height)));
-            knefel.Add(new Menu_Button(bW_A, bW_B, new Rectangle(xOffset, yOffset + yPadding * 3, bG_A.Width, bG_B.Height))); // i = 3  EXIT Button
-
+            knefel.Add(new Menu_Button(bG_A, bG_B, new Rectangle(xOffset, yOffset, bG_A.Width, bG_B.Height), button_click)); // i = 0  PLAY button
+            knefel.Add(new Menu_Button(bA_A, bA_B, new Rectangle(xOffset, yOffset + yPadding, bG_A.Width, bG_B.Height), button_click));
+            knefel.Add(new Menu_Button(bO_A, bO_B, new Rectangle(xOffset, yOffset + yPadding * 2, bG_A.Width, bG_B.Height), button_click));
+            knefel.Add(new Menu_Button(bW_A, bW_B, new Rectangle(xOffset, yOffset + yPadding * 3, bG_A.Width, bG_B.Height), button_click)); // i = 3  EXIT Button
         }
 
         protected override void UnloadContent()
@@ -99,8 +105,9 @@ namespace MainMenu
                     Exit();
                 }
 
-                if (knefel[i].IsOn(mousePos) == true)
+                if (knefel[i].IsOn(mousePos) == true )
                 {
+                    
                     knefel[i].OnClick(true);
                 }
                 else
