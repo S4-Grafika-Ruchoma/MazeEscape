@@ -30,16 +30,13 @@ namespace Menu_buttons
         {
             var position = Position;
 
-            if(mousePosition.X >= position.X && mousePosition.X <= (position.X + Sprite.Width) &&
+            if (mousePosition.X >= position.X && mousePosition.X <= (position.X + Sprite.Width) &&
                 mousePosition.Y >= position.Y && mousePosition.Y <= (position.Y + Sprite.Height))
             {
-                return true ;
+                return true;
             }
 
             return false;
-
-
-            
         }
 
         public void SetColor(Color color)
@@ -56,7 +53,6 @@ namespace Menu_buttons
         {
             if (onClick) { spriteBatch.Draw(SpriteOnClick, Position, TintColor); }
             else { spriteBatch.Draw(Sprite, Position, TintColor); }
-
         }
 
     }

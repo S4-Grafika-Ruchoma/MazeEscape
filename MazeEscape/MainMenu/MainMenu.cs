@@ -26,8 +26,8 @@ namespace MainMenu
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferHeight = 1080;
-            graphics.PreferredBackBufferWidth = 1920;
+            graphics.PreferredBackBufferHeight = 1920;
+            graphics.PreferredBackBufferWidth = 1080;
             graphics.IsFullScreen = true;
             IsMouseVisible = true;
         }
@@ -107,12 +107,7 @@ namespace MainMenu
                 {
                     knefel[i].OnClick(false);
                 }
-
-
-
             }
-
-
             base.Update(gameTime);
         }
 
@@ -129,8 +124,6 @@ namespace MainMenu
             }
 
             spriteBatch.End();
-
-
             base.Draw(gameTime);
         }
     }
