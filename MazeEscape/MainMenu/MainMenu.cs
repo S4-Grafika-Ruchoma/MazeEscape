@@ -26,9 +26,9 @@ namespace MainMenu
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferHeight = 1920;
-            graphics.PreferredBackBufferWidth = 1080;
-            graphics.IsFullScreen = true;
+            graphics.PreferredBackBufferHeight = 720;
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.IsFullScreen = false;
             IsMouseVisible = true;
         }
 
