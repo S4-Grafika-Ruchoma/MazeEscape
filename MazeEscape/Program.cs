@@ -1,21 +1,26 @@
 ﻿using System;
+using MainMenu;
 
 namespace MazeEscape
 {
-#if WINDOWS || LINUX
-    /// <summary>
-    /// The main class.
-    /// </summary>
+#if WINDOWS 
     public static class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
-            using (var game = new Game1())
-                game.Run();
+            using (var Menu = new MainMenu.MainMenu())
+            {
+                Menu.Run();
+                if (Menu.runGame)
+                {
+                    using (var game = new Game1())
+                    {
+                        game.Run();
+                    }
+                } 
+
+            }
         }
     }
 #endif
