@@ -10,6 +10,7 @@ using MazeEscape;
 using Menu_buttons;
 using Sounds;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace MainMenu
 {
@@ -21,6 +22,8 @@ namespace MainMenu
         Texture2D menuBackground, bG_A, bG_B, bA_A, bA_B, bO_A, bO_B, bW_A, bW_B;
         bool mouseLock = false;
         SoundEffects button_click;
+
+        private BackgroundSongs bgSong;
 
         List<Menu_Button> knefel;
 
@@ -38,7 +41,7 @@ namespace MainMenu
         {
             runGame = false;
             knefel = new List<Menu_Button>();
-           
+
 
             base.Initialize();
         }
@@ -48,9 +51,12 @@ namespace MainMenu
             spriteBatch = new SpriteBatch(GraphicsDevice);
             menuBackground = Content.Load<Texture2D>("Main_Menu/Menu_background");
 
-          // var button_click1 = Content.Load<SoundEffect>("Sounds/menu_click");
+            // var button_click1 = Content.Load<SoundEffect>("Sounds/menu_click");
 
-            var hoverSound = Content.Load<SoundEffect>("Sounds/menu_click") ;
+            bgSong = new BackgroundSongs(Content.Load<Song>("Music/menu"),true,50f);
+            bgSong.Play();
+
+            var hoverSound = Content.Load<SoundEffect>("Sounds/menu_click");
 
             // Buttons Load
 
@@ -76,9 +82,7 @@ namespace MainMenu
             knefel.Add(new Menu_Button(bW_A, bW_B, new Rectangle(xOffset, yOffset + yPadding * 3, bG_A.Width, bG_B.Height), hoverSound)); // i = 3  EXIT Button
         }
 
-        protected override void UnloadContent()
-        {
-        }
+        protected override void UnloadContent() { }
 
         protected override void Update(GameTime gameTime)
         {
@@ -92,22 +96,23 @@ namespace MainMenu
                 Exit();
             }
 
+            if (knefel[0].IsOn(mousePos) && mouseState.LeftButton == ButtonState.Pressed && !mouseLock)
+            {
+                runGame = true;
+                Exit();
+            }
+
+            if (knefel[3].IsOn(mousePos) && mouseState.LeftButton == ButtonState.Pressed && !mouseLock)
+            {
+                Exit();
+            }
+
+
             for (int i = 0; i < knefel.Count; i++)
             {
-                if (knefel[0].IsOn(mousePos) && mouseState.LeftButton == ButtonState.Pressed && !mouseLock)
+                if (knefel[i].IsOn(mousePos))
                 {
-                    runGame = true;
-                    Exit();
-                }
 
-                if (knefel[3].IsOn(mousePos) && mouseState.LeftButton == ButtonState.Pressed && !mouseLock)
-                {
-                    Exit();
-                }
-
-                if (knefel[i].IsOn(mousePos) == true )
-                {
-                    
                     knefel[i].OnHover(true);
                 }
                 else
@@ -115,6 +120,7 @@ namespace MainMenu
                     knefel[i].OnHover(false);
                 }
             }
+
             base.Update(gameTime);
         }
 

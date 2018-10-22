@@ -5,31 +5,18 @@ namespace Sounds {
     // Klasa obsługująca muzyke tła
     class BackgroundSongs {
         Song song; // Muzyka
-        public string Name { get; } // Nazwa piosenki
-        ContentManager Content;
 
         // Dodanie nowej piosenki
-        public BackgroundSongs(Song song, ContentManager Content, bool IsRepeating, float Volume, string Name) {
-            this.song = song;
+        public BackgroundSongs(Song song,  bool IsRepeating, float Volume)
+        {
+            this.song = song;//song;
             Repeating(IsRepeating);
             ChangeVolume(Volume);
-            this.Name = Name;
-        }
-
-        // Wczyanie nowej piosenki z pliku
-        public BackgroundSongs(string SongPath, ContentManager Content, bool IsRepeating, float Volume, string Name) {
-            this.Content = Content;
-            this.song = Content.Load<Song>(SongPath);
-
-            Repeating(IsRepeating);
-            ChangeVolume(Volume);
-            this.Name = Name;
         }
 
         // Zmiana piosenki
         public void ChangeSong(string SongPath) {
             Stop();
-            this.song = Content.Load<Song>(SongPath);
             Play();
         }
 

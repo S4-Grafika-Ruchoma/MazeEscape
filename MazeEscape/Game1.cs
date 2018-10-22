@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using ProjektTestowy.CustomClasses;
 using Sounds;
 
@@ -43,8 +44,12 @@ namespace MazeEscape
             base.Initialize();
         }
 
+        private Model cone;
+
         protected override void LoadContent()
         {
+            cone = Content.Load<Model>("stozek");
+            
             testObj = new TestObject
             {
                 triangleVertices = new[]
@@ -62,12 +67,14 @@ namespace MazeEscape
         {
         }
 
+
         protected override void Update(GameTime gameTime)
         {
-             var keyboardState = Keyboard.GetState();
+            var keyboardState = Keyboard.GetState();
             var mouseState = Mouse.GetState();
             var gamepadState = GamePad.GetState(PlayerIndex.One);
             var mousePostion = new Point(mouseState.X, mouseState.Y);
+
 
             if (gamepadState.Buttons.Back == ButtonState.Pressed || keyboardState.IsKeyDown(Keys.Escape))
             {
@@ -82,7 +89,7 @@ namespace MazeEscape
 
             base.Update(gameTime);
         }
-       
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -101,7 +108,45 @@ namespace MazeEscape
                 GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 3);
             }
 
+            //DrawModel(cone);
+            //DrawModel(juan);
+
             base.Draw(gameTime);
+        }
+
+
+        private void DrawModel(Model model)
+        {
+            //https://docs.microsoft.com/pl-pl/xamarin/graphics-games/monogame/3d/part1
+            foreach (var mesh in model.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.PreferPerPixelLighting = true;
+                    
+                    effect.World = Matrix.Identity;
+                    
+                    var cameraPosition = new Vector3(0, 8, 0);
+                    var cameraLookAtVector = Vector3.Zero;
+                    var cameraUpVector = Vector3.UnitZ;
+
+                    effect.View = Matrix.CreateLookAt(
+                        cameraPosition, cameraLookAtVector, cameraUpVector);
+                    
+                    float aspectRatio =
+                        graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
+                    float fieldOfView = MathHelper.PiOver4;
+                    float nearClipPlane = 1;
+                    float farClipPlane = 200;
+
+                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(
+                        fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
+
+                }
+                
+                mesh.Draw();
+            }
         }
     }
 }

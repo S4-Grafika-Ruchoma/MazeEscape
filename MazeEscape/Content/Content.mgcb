@@ -121,6 +121,12 @@
 /processorParam:TextureFormat=Color
 /build:Main_Menu/Wyjscie_buttnon_B.png
 
+#begin Music/menu.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/menu.mp3
+
 #begin Sounds/angry.mp3
 /importer:Mp3Importer
 /processor:SoundEffectProcessor
