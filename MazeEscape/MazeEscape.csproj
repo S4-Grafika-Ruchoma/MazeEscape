@@ -41,6 +41,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CustomClasses\Camera.cs" />
+    <Compile Include="CustomClasses\Floor.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="MainMenu\MainMenu.cs" />
     <Compile Include="MainMenu\Menu_Button.cs" />
@@ -55,6 +57,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Main_Menu\Autorzy_buttnon_A.png" />
+    <Content Include="Content\Main_Menu\Autorzy_buttnon_B.png" />
+    <Content Include="Content\Main_Menu\Graj_buttnon_A.png" />
+    <Content Include="Content\Main_Menu\Graj_buttnon_B.png" />
+    <Content Include="Content\Main_Menu\Menu_background.png" />
+    <Content Include="Content\Main_Menu\Opcje_buttnon_A.png" />
+    <Content Include="Content\Main_Menu\Opcje_buttnon_B.png" />
+    <Content Include="Content\Main_Menu\Wyjscie_buttnon_A.png" />
+    <Content Include="Content\Main_Menu\Wyjscie_buttnon_B.png" />
+    <Content Include="Content\Menu_background.png" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
