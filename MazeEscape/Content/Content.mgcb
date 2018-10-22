@@ -121,3 +121,39 @@
 /processorParam:TextureFormat=Color
 /build:Main_Menu/Wyjscie_buttnon_B.png
 
+#begin Sounds/angry.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/angry.mp3
+
+#begin Sounds/dont_leave.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/dont_leave.mp3
+
+#begin Sounds/event.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/event.mp3
+
+#begin Sounds/horror_ambient.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/horror_ambient.mp3
+
+#begin Sounds/menu_click.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/menu_click.mp3
+
+#begin Sounds/start_game.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/start_game.mp3
+
