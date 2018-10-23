@@ -121,49 +121,7 @@
 /processorParam:TextureFormat=Color
 /build:Main_Menu/Wyjscie_buttnon_B.png
 
-#begin Music/menu.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:Music/menu.mp3
-
-#begin Sounds/angry.mp3
-/importer:Mp3Importer
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Sounds/angry.mp3
-
-#begin Sounds/dont_leave.mp3
-/importer:Mp3Importer
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Sounds/dont_leave.mp3
-
-#begin Sounds/event.mp3
-/importer:Mp3Importer
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Sounds/event.mp3
-
-#begin Sounds/horror_ambient.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:Sounds/horror_ambient.mp3
-
-#begin Sounds/menu_click.mp3
-/importer:Mp3Importer
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Sounds/menu_click.mp3
-
-#begin Sounds/start_game.mp3
-/importer:Mp3Importer
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Sounds/start_game.mp3
-
-#begin stozek.fbx
+#begin Models/Test/cross.fbx
 /importer:FbxImporter
 /processor:ModelProcessor
 /processorParam:ColorKeyColor=0,0,0,0
@@ -180,5 +138,131 @@
 /processorParam:Scale=1
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
-/build:stozek.fbx
+/build:Models/Test/cross.fbx
+
+#begin Music/menu.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/menu.mp3
+
+#begin Sounds/angry.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/angry.mp3
+
+#begin Sounds/dont_leave.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/dont_leave.mp3
+
+#begin Sounds/event.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/event.mp3
+
+#begin Sounds/horror ambient.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/horror ambient.mp3
+
+#begin Sounds/horror_ambient.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/horror_ambient.mp3
+
+#begin Sounds/lose sound 1_0.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/lose sound 1_0.wav
+
+#begin Sounds/menu_click.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/menu_click.mp3
+
+#begin Sounds/ScarySFX/boat.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ScarySFX/boat.wav
+
+#begin Sounds/ScarySFX/electric.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ScarySFX/electric.wav
+
+#begin Sounds/ScarySFX/explode.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ScarySFX/explode.wav
+
+#begin Sounds/ScarySFX/feedback.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ScarySFX/feedback.wav
+
+#begin Sounds/ScarySFX/feedbackOSC.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ScarySFX/feedbackOSC.wav
+
+#begin Sounds/ScarySFX/heartbeat.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ScarySFX/heartbeat.wav
+
+#begin Sounds/ScarySFX/morse.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ScarySFX/morse.wav
+
+#begin Sounds/ScarySFX/orchestra.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ScarySFX/orchestra.wav
+
+#begin Sounds/ScarySFX/pianohit.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ScarySFX/pianohit.wav
+
+#begin Sounds/ScarySFX/randomLFO.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ScarySFX/randomLFO.wav
+
+#begin Sounds/ScarySFX/warpedradio.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ScarySFX/warpedradio.wav
+
+#begin Sounds/ScarySFX/zoomc.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/ScarySFX/zoomc.wav
+
+#begin Sounds/start_game.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/start_game.mp3
 

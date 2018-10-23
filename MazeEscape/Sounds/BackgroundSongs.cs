@@ -1,46 +1,49 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using MazeEscape.Sounds;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
 
-namespace Sounds {
+namespace Sounds
+{
     // Klasa obsługująca muzyke tła
-    class BackgroundSongs {
-        Song song; // Muzyka
+    public class BackgroundSongs : ISound
+    {
+        public Song song { get; private set; } // Muzyka
 
         // Dodanie nowej piosenki
-        public BackgroundSongs(Song song,  bool IsRepeating, float Volume)
+        public BackgroundSongs(Song song, bool IsRepeating, float Volume)
         {
-            this.song = song;//song;
+            this.song = song;
             Repeating(IsRepeating);
             ChangeVolume(Volume);
         }
 
-        // Zmiana piosenki
-        public void ChangeSong(string SongPath) {
-            Stop();
-            Play();
-        }
-
         // Czy piosenka ma być powatarzana
-        public void Repeating(bool Repeating) {
+        public void Repeating(bool Repeating)
+        {
             MediaPlayer.IsRepeating = Repeating;
         }
 
         // Głośność piosenki
-        public void ChangeVolume(float Volume) {
+        public void ChangeVolume(float Volume)
+        {
             MediaPlayer.Volume = Volume;
         }
 
-        public void Play() {
+        public void Play()
+        {
             MediaPlayer.Play(song);
         }
-        public void Stop() {
+        public void Stop()
+        {
             MediaPlayer.Stop();
         }
 
-        public void Resume() {
+        public void Resume()
+        {
             MediaPlayer.Resume();
         }
-        public void Pause() {
+        public void Pause()
+        {
             MediaPlayer.Pause();
         }
     }

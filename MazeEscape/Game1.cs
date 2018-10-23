@@ -20,11 +20,11 @@ namespace MazeEscape
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
-            Window.AllowUserResizing = true;
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.PreferredBackBufferHeight = 720;
-            //graphics.IsFullScreen = true;
+            Window.AllowUserResizing = AppConfig.ALLOW_RESIZING;
+            graphics.PreferredBackBufferHeight = AppConfig.HEIGHT;
+            graphics.PreferredBackBufferWidth = AppConfig.WIDTH;
+            graphics.IsFullScreen = AppConfig.FULL_SCREEN;
+            IsMouseVisible = AppConfig.IS_MOUSE_VISIBLE;
         }
 
         protected override void Initialize()
@@ -32,7 +32,7 @@ namespace MazeEscape
             camera = new Camera(this, new Vector3(10, 1, 5), Vector3.Zero, 5);
             Components.Add(camera);
 
-            floor = new Floor(GraphicsDevice, 20, 20);
+            floor = new Floor(GraphicsDevice, 50, 50);
 
             basicEffect = new BasicEffect(GraphicsDevice)
             {
@@ -48,8 +48,6 @@ namespace MazeEscape
 
         protected override void LoadContent()
         {
-            cone = Content.Load<Model>("stozek");
-            
             testObj = new TestObject
             {
                 triangleVertices = new[]
@@ -75,6 +73,14 @@ namespace MazeEscape
             var gamepadState = GamePad.GetState(PlayerIndex.One);
             var mousePostion = new Point(mouseState.X, mouseState.Y);
 
+            if (keyboardState.IsKeyDown(Keys.LeftShift))
+            {
+                camera.cameraSpeed = 20;
+            }
+            else if (keyboardState.IsKeyUp(Keys.LeftShift))
+            {
+                camera.cameraSpeed = 5;
+            }
 
             if (gamepadState.Buttons.Back == ButtonState.Pressed || keyboardState.IsKeyDown(Keys.Escape))
             {
@@ -114,7 +120,7 @@ namespace MazeEscape
             base.Draw(gameTime);
         }
 
-
+        // TODO poprawić
         private void DrawModel(Model model)
         {
             //https://docs.microsoft.com/pl-pl/xamarin/graphics-games/monogame/3d/part1
@@ -124,16 +130,16 @@ namespace MazeEscape
                 {
                     effect.EnableDefaultLighting();
                     effect.PreferPerPixelLighting = true;
-                    
+
                     effect.World = Matrix.Identity;
-                    
+
                     var cameraPosition = new Vector3(0, 8, 0);
                     var cameraLookAtVector = Vector3.Zero;
                     var cameraUpVector = Vector3.UnitZ;
 
                     effect.View = Matrix.CreateLookAt(
                         cameraPosition, cameraLookAtVector, cameraUpVector);
-                    
+
                     float aspectRatio =
                         graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
                     float fieldOfView = MathHelper.PiOver4;
@@ -144,7 +150,7 @@ namespace MazeEscape
                         fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
 
                 }
-                
+
                 mesh.Draw();
             }
         }

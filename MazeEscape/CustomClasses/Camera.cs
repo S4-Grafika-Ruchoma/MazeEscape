@@ -13,7 +13,7 @@ namespace ProjektTestowy.CustomClasses
     {
         private Vector3 cameraPosition;
         private Vector3 cameraRotation;
-        private float cameraSpeed;
+        public float cameraSpeed { get; set; }
         private Vector3 cameraLookAt;
 
         private Vector3 mouseRotationBuffer;
@@ -90,7 +90,7 @@ namespace ProjektTestowy.CustomClasses
             {
                 currentMouseState = Mouse.GetState();
                 var keyboardState = Keyboard.GetState();
-                var dt = (float) gameTime.ElapsedGameTime.TotalSeconds;
+                var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
                 var moveVector = Vector3.Zero;
 
@@ -119,7 +119,7 @@ namespace ProjektTestowy.CustomClasses
 
                     Move(moveVector);
                 }
-                
+
                 if (currentMouseState != prevMouseState)
                 {
                     var deltaX = currentMouseState.X - (Game.GraphicsDevice.Viewport.Width / 2);

@@ -7,7 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MazeEscape;
-using Menu_buttons;
+using MazeEscape.Sounds;
+using MenuButtons;
 using Sounds;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
@@ -16,32 +17,34 @@ namespace MainMenu
 {
     public class MainMenu : Game
     {
+        public bool runGame { get; set; }
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        public bool runGame { get; set; }
-        Texture2D menuBackground, bG_A, bG_B, bA_A, bA_B, bO_A, bO_B, bW_A, bW_B;
-        bool mouseLock = false;
+        Texture2D menuBackground;
         SoundEffects button_click;
 
-        private BackgroundSongs bgSong;
+        bool mouseLock = false;
 
-        List<Menu_Button> knefel;
+        private SoundManager soundMgr;
+
+        List<MenuButton> Buttons;
 
         public MainMenu()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferHeight = 720;
-            graphics.PreferredBackBufferWidth = 1280;
-            graphics.IsFullScreen = false;
-            IsMouseVisible = true;
+            graphics.PreferredBackBufferHeight = AppConfig.HEIGHT;
+            graphics.PreferredBackBufferWidth = AppConfig.WIDTH;
+            graphics.IsFullScreen = AppConfig.FULL_SCREEN;
+            IsMouseVisible = AppConfig.IS_MOUSE_VISIBLE;
         }
 
         protected override void Initialize()
         {
             runGame = false;
-            knefel = new List<Menu_Button>();
-
+            Buttons = new List<MenuButton>();
+            soundMgr = new SoundManager(Content);
 
             base.Initialize();
         }
@@ -51,35 +54,26 @@ namespace MainMenu
             spriteBatch = new SpriteBatch(GraphicsDevice);
             menuBackground = Content.Load<Texture2D>("Main_Menu/Menu_background");
 
-            // var button_click1 = Content.Load<SoundEffect>("Sounds/menu_click");
+            soundMgr.Add(
+                new Dictionary<string, string>()
+                {
+                    {"menu-ambient","Music/menu" }
+                },
+                new Dictionary<string, string>()
+                {
+                    {"menu-btn-hover","Sounds/menu_click"},
+                    {"menu-btn-click","Sounds/lose sound 1_0"},
+                }
+                );
 
-            bgSong = new BackgroundSongs(Content.Load<Song>("Music/menu"),true,50f);
-            bgSong.Play();
+            soundMgr.Play("menu-ambient");
 
-            var hoverSound = Content.Load<SoundEffect>("Sounds/menu_click");
+            int xOffset = 130, yOffset = 400, yPadding = 65;
 
-            // Buttons Load
-
-            bG_A = Content.Load<Texture2D>("Main_Menu/Graj_buttnon_A");
-            bG_B = Content.Load<Texture2D>("Main_Menu/Graj_buttnon_B");
-
-            bA_A = Content.Load<Texture2D>("Main_Menu/Autorzy_buttnon_A");
-            bA_B = Content.Load<Texture2D>("Main_Menu/Autorzy_buttnon_B");
-
-            bO_A = Content.Load<Texture2D>("Main_Menu/Opcje_buttnon_A");
-            bO_B = Content.Load<Texture2D>("Main_Menu/Opcje_buttnon_B");
-
-            bW_A = Content.Load<Texture2D>("Main_Menu/Wyjscie_buttnon_A");
-            bW_B = Content.Load<Texture2D>("Main_Menu/Wyjscie_buttnon_B");
-
-            int xOffset = 130;
-            int yOffset = 400;
-            int yPadding = 65;
-
-            knefel.Add(new Menu_Button(bG_A, bG_B, new Rectangle(xOffset, yOffset, bG_A.Width, bG_B.Height), hoverSound)); // i = 0  PLAY button
-            knefel.Add(new Menu_Button(bA_A, bA_B, new Rectangle(xOffset, yOffset + yPadding, bG_A.Width, bG_B.Height), hoverSound));
-            knefel.Add(new Menu_Button(bO_A, bO_B, new Rectangle(xOffset, yOffset + yPadding * 2, bG_A.Width, bG_B.Height), hoverSound));
-            knefel.Add(new Menu_Button(bW_A, bW_B, new Rectangle(xOffset, yOffset + yPadding * 3, bG_A.Width, bG_B.Height), hoverSound)); // i = 3  EXIT Button
+            Buttons.Add(new MenuButton(Content, "Main_Menu/Graj_buttnon_A", "Main_Menu/Graj_buttnon_B", new Point(xOffset, yOffset), soundMgr, "menu-btn-hover", "menu-btn-click")); // i = 0  PLAY button
+            Buttons.Add(new MenuButton(Content, "Main_Menu/Autorzy_buttnon_A", "Main_Menu/Autorzy_buttnon_B", new Point(xOffset, yOffset + yPadding), soundMgr, "menu-btn-hover", "menu-btn-click"));
+            Buttons.Add(new MenuButton(Content, "Main_Menu/Opcje_buttnon_A", "Main_Menu/Opcje_buttnon_B", new Point(xOffset, yOffset + yPadding * 2), soundMgr, "menu-btn-hover", "menu-btn-click"));
+            Buttons.Add(new MenuButton(Content, "Main_Menu/Wyjscie_buttnon_A", "Main_Menu/Wyjscie_buttnon_B", new Point(xOffset, yOffset + yPadding * 3), soundMgr, "menu-btn-hover", "menu-btn-click")); // i = 3  EXIT Button
         }
 
         protected override void UnloadContent() { }
@@ -96,28 +90,41 @@ namespace MainMenu
                 Exit();
             }
 
-            if (knefel[0].IsOn(mousePos) && mouseState.LeftButton == ButtonState.Pressed && !mouseLock)
+            // Rozpocznij gre
+            if (Buttons[0].IsOn(mousePos) && Buttons[0].LeftClick(mouseState) && !mouseLock)
             {
                 runGame = true;
+                soundMgr.Stop("menu-ambient");
                 Exit();
             }
 
-            if (knefel[3].IsOn(mousePos) && mouseState.LeftButton == ButtonState.Pressed && !mouseLock)
+            // Autorzy 
+            if (Buttons[1].IsOn(mousePos) && Buttons[1].LeftClick(mouseState) && !mouseLock)
             {
+            }
+
+            // Opcje
+            if (Buttons[2].IsOn(mousePos) && Buttons[2].LeftClick(mouseState) && !mouseLock)
+            {
+            }
+
+            // Wyjdź
+            if (Buttons[3].IsOn(mousePos) && Buttons[3].LeftClick(mouseState) && !mouseLock)
+            {
+                soundMgr.Stop("menu-ambient");
                 Exit();
             }
 
 
-            for (int i = 0; i < knefel.Count; i++)
+            foreach (var button in Buttons)
             {
-                if (knefel[i].IsOn(mousePos))
+                if (button.IsOn(mousePos))
                 {
-
-                    knefel[i].OnHover(true);
+                    button.OnHover(button.IsOn(mousePos));
                 }
                 else
                 {
-                    knefel[i].OnHover(false);
+                    button.OnHover(false);
                 }
             }
 
@@ -133,7 +140,7 @@ namespace MainMenu
 
             for (int i = 0; i < 4; i++)
             {
-                knefel[i].Draw(spriteBatch);
+                Buttons[i].Draw(spriteBatch);
             }
 
             spriteBatch.End();
