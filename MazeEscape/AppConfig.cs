@@ -14,7 +14,7 @@ namespace MazeEscape
         public static bool IS_MOUSE_VISIBLE = true;
         public static bool ALLOW_RESIZING = false;
 
-        public static bool PLAY_SOUNDS = true;
+        public static bool PLAY_SOUNDS = false;
 
         public static bool _DEBUG_SKIP_MAIN_MENU_ = true;
 

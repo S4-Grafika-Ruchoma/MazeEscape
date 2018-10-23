@@ -66,6 +66,7 @@ namespace MazeEscape.Interfaces
 
             var worldMatrix = Matrix.CreateScale(Scale) * Matrix.CreateRotationX(Rotation.X) * Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) * Matrix.CreateTranslation(position);
 
+
             Model.Draw(worldMatrix, Camera.View, Camera.Projection);
         }
     }
