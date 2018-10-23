@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MazeEscape.Interfaces;
+using MazeEscape.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -12,18 +13,20 @@ namespace MazeEscape
 {
     public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
+        private GraphicsDeviceManager graphics;
         private Camera camera;
         private Floor floor;
         private BasicEffect basicEffect;
+        private SpriteBatch spriteBatch;
 
         private List<Object3D> obj;
+        private List<Line> lines;
 
         SpriteFont _spr_font;
-        int _total_frames = 0;
+        private int _total_frames = 0, _fps = 0;
         float _elapsed_time = 0.0f;
-        int _fps = 0;
-        SpriteBatch spriteBatch;
+        private Line playerLine;
+        private SoundManager soundMgr;
 
         public Game1()
         {
@@ -48,6 +51,13 @@ namespace MazeEscape
                 Alpha = 1,
                 VertexColorEnabled = true,
                 LightingEnabled = false,
+            };
+
+            playerLine = new Line(new Vector3(0, 1, -50), new Vector3(0, 1, 0));
+            lines = new List<Line>()
+            {
+                new Line(new Vector3(0,0,0), new Vector3(30,10,30)),
+                //new Line(new Vector3(0,1,-50), new Vector3(0,1,0))
             };
 
             obj = new List<Object3D>()
@@ -97,6 +107,24 @@ namespace MazeEscape
                 },
             };
 
+            soundMgr = new SoundManager(Content);
+            soundMgr.Add(
+                new Dictionary<string, string>()
+                {
+                    {"menu-ambient","Music/menu" }
+                },
+                new Dictionary<string, string>()
+                {
+                    {" ","Sounds/menu_click"},
+                    {"menu-btn-click","Sounds/lose sound 1_0"},
+                    {"talk-1","Sounds/angry"},
+                    {"talk-2","Sounds/dont_leave"},
+                }
+            );
+
+            soundMgr.Play("talk-1");
+            //soundMgr.Play("talk-2");
+
             base.Initialize();
         }
 
@@ -124,6 +152,15 @@ namespace MazeEscape
                 camera.cameraSpeed = 5;
             }
 
+            //if (keyboardState.IsKeyDown(Keys.LeftControl))
+            //{
+            //    camera.Position = new Vector3(camera.Position.X, 0.5f, camera.Position.Z);
+            //}
+            //else if (keyboardState.IsKeyUp(Keys.LeftControl))
+            //{
+            //    camera.Position = new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z);
+            //}
+
             if (gamepadState.Buttons.Back == ButtonState.Pressed || keyboardState.IsKeyDown(Keys.Escape))
             {
                 Exit();
@@ -133,7 +170,6 @@ namespace MazeEscape
             {
                 camera.AllowClimb = !camera.AllowClimb;
             }
-
 
             // Update
             _elapsed_time += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -173,6 +209,11 @@ namespace MazeEscape
                 object3D.Draw();
             }
 
+            foreach (var line in lines)
+            {
+                line.DrawLine(basicEffect, GraphicsDevice);
+            }
+            playerLine.DrawLine(basicEffect, GraphicsDevice, Vector3.Zero, new Vector3(camera.Position.X, camera.Position.Y - 0.02f, camera.Position.Z));
 
             spriteBatch.Begin();
             {
@@ -197,8 +238,38 @@ namespace MazeEscape
             }
             spriteBatch.End();
 
+
             base.Draw(gameTime);
         }
+    }
 
+
+    class Line
+    {
+        public Vector3 startPoint;
+        public Vector3 endPoint;
+        private VertexPositionColor[] vertices;
+
+        public Line(Vector3 startPoint, Vector3 endPoint)
+        {
+            this.startPoint = startPoint;
+            this.endPoint = endPoint;
+        }
+
+        public Line() { }
+
+        public void DrawLine(BasicEffect basicEffect, GraphicsDevice graphicsDevice)
+        {
+            basicEffect.CurrentTechnique.Passes[0].Apply();
+            vertices = new[] { new VertexPositionColor(startPoint, Color.White), new VertexPositionColor(endPoint, Color.White) };
+            graphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
+        }
+
+        public void DrawLine(BasicEffect basicEffect, GraphicsDevice graphicsDevice, Vector3 start, Vector3 end)
+        {
+            basicEffect.CurrentTechnique.Passes[0].Apply();
+            vertices = new[] { new VertexPositionColor(start, Color.White), new VertexPositionColor(end, Color.White) };
+            graphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
+        }
     }
 }

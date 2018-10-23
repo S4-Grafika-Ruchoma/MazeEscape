@@ -39,7 +39,7 @@ namespace MazeEscape.Sounds
             if (IsUniqueName(song))
             {
                 var songFile = Content.Load<Song>(song.Value);
-                Songs.Add(song.Key.ToLower(), new BackgroundSongs(songFile, false, 50f));
+                Songs.Add(song.Key.ToLower(), new BackgroundSongs(songFile, false, 30f));
                 return true;
             }
             return false;
@@ -121,12 +121,17 @@ namespace MazeEscape.Sounds
             return list.FirstOrDefault();
         }
 
-        public void Play(string name)
+        public void Play(string name,bool replay = false)
         {
             var sound = FindSound(name);
 
             if (sound != null)
             {
+                if (sound is BackgroundSongs song && replay)
+                {
+                    song.Repeating(true);
+                }
+
                 sound.Play();
                 if (!Active.ContainsKey(name))
                 {

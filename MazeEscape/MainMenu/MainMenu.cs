@@ -72,7 +72,7 @@ namespace MainMenu
                 }
                 );
 
-            soundMgr.Play("menu-ambient");
+            soundMgr.Play("menu-ambient",true);
 
             int xOffset = 130, yOffset = 400, yPadding = 65;
 
