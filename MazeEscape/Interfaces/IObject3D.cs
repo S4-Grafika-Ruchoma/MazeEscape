@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace ProjektTestowy.Interfaces
@@ -19,6 +20,11 @@ namespace ProjektTestowy.Interfaces
         Model Model { get; set; }
 
         void Draw();
+        void DrawAt(Vector3 position);
+
+        ContentManager Content { get; set; }
+
+        void Load(string path);
 
     }
 }

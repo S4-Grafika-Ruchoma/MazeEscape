@@ -44,9 +44,9 @@
     <Compile Include="AppConfig.cs" />
     <Compile Include="CustomClasses\Camera.cs" />
     <Compile Include="CustomClasses\Floor.cs" />
-    <Compile Include="CustomClasses\TestObject.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Interfaces\IObject3D.cs" />
+    <Compile Include="GameObjects\Object3D.cs" />
     <Compile Include="MainMenu\MainMenu.cs" />
     <Compile Include="MainMenu\MenuButton.cs" />
     <Compile Include="Program.cs" />

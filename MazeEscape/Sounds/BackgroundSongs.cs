@@ -1,4 +1,5 @@
-﻿using MazeEscape.Sounds;
+﻿using MazeEscape;
+using MazeEscape.Sounds;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
 
@@ -31,7 +32,10 @@ namespace Sounds
 
         public void Play()
         {
-            MediaPlayer.Play(song);
+            if (AppConfig.PLAY_SOUNDS)
+            {
+                MediaPlayer.Play(song);
+            }
         }
         public void Stop()
         {

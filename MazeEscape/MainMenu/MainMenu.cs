@@ -47,6 +47,12 @@ namespace MainMenu
             soundMgr = new SoundManager(Content);
 
             base.Initialize();
+
+            if (AppConfig._DEBUG_SKIP_MAIN_MENU_)
+            {
+                runGame = true;
+                Exit();
+            }
         }
 
         protected override void LoadContent()

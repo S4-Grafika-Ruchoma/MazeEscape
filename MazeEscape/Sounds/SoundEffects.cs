@@ -1,4 +1,5 @@
-﻿using MazeEscape.Sounds;
+﻿using MazeEscape;
+using MazeEscape.Sounds;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Media;
@@ -28,7 +29,7 @@ namespace Sounds
         // Odtwarzanie dzwięku
         public void Play()
         {
-            if (!Wait)
+            if (!Wait &&  AppConfig.PLAY_SOUNDS)
             {
                 sound.Play();
             }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MazeEscape.Interfaces;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
@@ -14,7 +15,7 @@ namespace MazeEscape
         private Floor floor;
         private BasicEffect basicEffect;
 
-        TestObject testObj;
+        private Object3D axies, cross;
 
         public Game1()
         {
@@ -44,28 +45,18 @@ namespace MazeEscape
             base.Initialize();
         }
 
-        private Model cone;
-
         protected override void LoadContent()
         {
-            testObj = new TestObject
-            {
-                triangleVertices = new[]
-                {
-                    new VertexPositionColor(new Vector3(0, 20, 0), Color.Red),
-                    new VertexPositionColor(new Vector3(-20, -20, 0), Color.Green),
-                    new VertexPositionColor(new Vector3(20, -20, 0), Color.Blue),
-                },
-                vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 3, BufferUsage.WriteOnly),
-            };
-            testObj.vertexBuffer.SetData<VertexPositionColor>(testObj.triangleVertices);
+            cross = new Object3D(Content, camera, "Models/Test/cross");
+            cross.Position = new Vector3(10,2,0);
+            axies = new Object3D(Content, camera, "Models/axies");
+            cross.Position = new Vector3(0, 2, 0);
         }
 
         protected override void UnloadContent()
         {
         }
-
-
+        
         protected override void Update(GameTime gameTime)
         {
             var keyboardState = Keyboard.GetState();
@@ -102,57 +93,19 @@ namespace MazeEscape
 
             floor.Draw(camera, basicEffect);
 
-            GraphicsDevice.SetVertexBuffer(testObj.vertexBuffer);
             RasterizerState rasterizerState = new RasterizerState()
             {
                 CullMode = CullMode.None
             };
             GraphicsDevice.RasterizerState = rasterizerState;
-            foreach (var item in basicEffect.CurrentTechnique.Passes)
-            {
-                item.Apply();
-                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 3);
-            }
 
-            //DrawModel(cone);
-            //DrawModel(juan);
+
+            axies.Draw();
+            //cross.Draw();
+
 
             base.Draw(gameTime);
         }
 
-        // TODO poprawić
-        private void DrawModel(Model model)
-        {
-            //https://docs.microsoft.com/pl-pl/xamarin/graphics-games/monogame/3d/part1
-            foreach (var mesh in model.Meshes)
-            {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.EnableDefaultLighting();
-                    effect.PreferPerPixelLighting = true;
-
-                    effect.World = Matrix.Identity;
-
-                    var cameraPosition = new Vector3(0, 8, 0);
-                    var cameraLookAtVector = Vector3.Zero;
-                    var cameraUpVector = Vector3.UnitZ;
-
-                    effect.View = Matrix.CreateLookAt(
-                        cameraPosition, cameraLookAtVector, cameraUpVector);
-
-                    float aspectRatio =
-                        graphics.PreferredBackBufferWidth / (float)graphics.PreferredBackBufferHeight;
-                    float fieldOfView = MathHelper.PiOver4;
-                    float nearClipPlane = 1;
-                    float farClipPlane = 200;
-
-                    effect.Projection = Matrix.CreatePerspectiveFieldOfView(
-                        fieldOfView, aspectRatio, nearClipPlane, farClipPlane);
-
-                }
-
-                mesh.Draw();
-            }
-        }
     }
 }
