@@ -1,4 +1,6 @@
-﻿using MazeEscape.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using MazeEscape.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -15,7 +17,7 @@ namespace MazeEscape
         private Floor floor;
         private BasicEffect basicEffect;
 
-        private Object3D axies, cross;
+        private List<Object3D> obj;
 
         public Game1()
         {
@@ -42,20 +44,28 @@ namespace MazeEscape
                 LightingEnabled = false,
             };
 
+            obj=new List<Object3D>()
+            {
+                //new Object3D(Content, camera, "Models/cross"){Position = new Vector3(0, 1, 0)},
+                new Object3D(Content, camera, "Models/axies")
+                {
+                    Position = new Vector3(0, 0, 0),
+                    Scale = new Vector3(1.5f),
+                    Rotation = new Vector3(MathHelper.ToRadians(-90),MathHelper.ToRadians(180),0)
+                },
+                new Object3D(Content, camera, "Models/stozek")
+                {
+                    Position = new Vector3(30, 5, 30),
+                    Scale = new Vector3(0.05f)
+                },
+            };
+            
             base.Initialize();
         }
 
-        protected override void LoadContent()
-        {
-            cross = new Object3D(Content, camera, "Models/Test/cross");
-            cross.Position = new Vector3(10,2,0);
-            axies = new Object3D(Content, camera, "Models/axies");
-            cross.Position = new Vector3(0, 2, 0);
-        }
+        protected override void LoadContent(){}
 
-        protected override void UnloadContent()
-        {
-        }
+        protected override void UnloadContent(){}
         
         protected override void Update(GameTime gameTime)
         {
@@ -93,16 +103,10 @@ namespace MazeEscape
 
             floor.Draw(camera, basicEffect);
 
-            RasterizerState rasterizerState = new RasterizerState()
+            foreach (var object3D in obj)
             {
-                CullMode = CullMode.None
-            };
-            GraphicsDevice.RasterizerState = rasterizerState;
-
-
-            axies.Draw();
-            //cross.Draw();
-
+                object3D.Draw();
+            }
 
             base.Draw(gameTime);
         }
