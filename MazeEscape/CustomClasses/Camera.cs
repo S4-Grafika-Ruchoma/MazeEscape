@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MazeEscape;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -12,13 +13,16 @@ namespace ProjektTestowy.CustomClasses
     public class Camera : GameComponent
     {
         private Vector3 cameraPosition;
-        private Vector3 cameraRotation;
+        public Vector3 cameraRotation;
+
         public float cameraSpeed { get; set; }
-        private Vector3 cameraLookAt;
+        public Vector3 cameraLookAt;
 
         private Vector3 mouseRotationBuffer;
         private MouseState currentMouseState;
         private MouseState prevMouseState;
+
+        public bool ShowCenterLine { get; set; }
 
         public bool AllowClimb { get; set; }
 
@@ -48,9 +52,12 @@ namespace ProjektTestowy.CustomClasses
 
         public Camera(Game game, Vector3 position, Vector3 rotation, float speed) : base(game)
         {
+            AllowClimb = AppConfig._DEBUG_AUTO_NO_CLIP_;
             cameraSpeed = speed;
             Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Game.GraphicsDevice.Viewport.AspectRatio, 0.05f, 1000);
             MoveTo(position, rotation);
+
+            ShowCenterLine = AppConfig._DEBUG_SHOW_DIRECTION_TO_CENTER_;
 
             prevMouseState = Mouse.GetState();
         }
@@ -77,6 +84,18 @@ namespace ProjektTestowy.CustomClasses
             movment = Vector3.Transform(movment, rotate);
 
             return cameraPosition + movment;
+        }
+
+        public Vector3 cameraAxiesPosition
+        {
+            get
+            {
+                var rotate = Matrix.CreateRotationX(cameraRotation.X) * Matrix.CreateRotationY(cameraRotation.Y) * Matrix.CreateRotationZ(cameraRotation.Z);
+                var movment = new Vector3(-0.3f, -0.15f, 0.5f);
+                movment = Vector3.Transform(movment, rotate);
+
+                return cameraPosition + movment;
+            }
         }
 
         private void Move(Vector3 scale)
@@ -111,6 +130,9 @@ namespace ProjektTestowy.CustomClasses
                     if (keyboardState.IsKeyDown(Keys.C))
                         moveVector.Y = -1;
                 }
+
+                if (keyboardState.IsKeyDown(Keys.P))
+                    ShowCenterLine = !ShowCenterLine;
 
                 if (moveVector != Vector3.Zero)
                 {

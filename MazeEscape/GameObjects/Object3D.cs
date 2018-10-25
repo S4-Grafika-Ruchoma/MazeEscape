@@ -34,6 +34,13 @@ namespace MazeEscape.Interfaces
                 Load(path);
             }
         }
+        public Object3D(ContentManager content, Camera camera, Model model)
+        {
+            Scale = new Vector3(1, 1, 1);
+            Content = content;
+            this.Camera = camera;
+            Model = model;
+        }
 
 
         public void Draw()
@@ -69,8 +76,8 @@ namespace MazeEscape.Interfaces
 
             var worldMatrix = Matrix.CreateScale(Scale) * Matrix.CreateRotationX(Rotation.X) * Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) * Matrix.CreateTranslation(position);
 
-            
-            
+
+
             Model.Draw(worldMatrix, Camera.View, Camera.Projection);
         }
     }

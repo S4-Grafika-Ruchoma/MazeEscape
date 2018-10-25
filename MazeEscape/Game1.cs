@@ -18,9 +18,13 @@ namespace MazeEscape
         private Floor floor;
         private BasicEffect basicEffect;
         private SpriteBatch spriteBatch;
+        Object3D cameraAxies;
 
         private List<Object3D> obj;
         private List<Line> lines;
+
+        List<List<List<int>>> map;
+        List<List<int>> floorList;
 
         SpriteFont _spr_font;
         private int _total_frames = 0, _fps = 0;
@@ -41,7 +45,7 @@ namespace MazeEscape
 
         protected override void Initialize()
         {
-            camera = new Camera(this, new Vector3(10, 1, 5), Vector3.Zero, 5);
+            camera = new Camera(this, new Vector3(0, 15, 0), Vector3.Zero, 5);
             Components.Add(camera);
 
             floor = new Floor(GraphicsDevice, 50, 50);
@@ -56,56 +60,63 @@ namespace MazeEscape
             playerLine = new Line(new Vector3(0, 1, -50), new Vector3(0, 1, 0));
             lines = new List<Line>()
             {
-                new Line(new Vector3(0,0,0), new Vector3(30,10,30)),
+                //new Line(new Vector3(0,0,0), new Vector3(30,10,30)),
                 //new Line(new Vector3(0,1,-50), new Vector3(0,1,0))
             };
+            _INIT_TEST_MAP_();
 
-            obj = new List<Object3D>()
+            var wallBlock = Content.Load<Model>("Models/wallBlock");
+            var ladder = Content.Load<Model>("Models/ladder");
+
+            obj = new List<Object3D>();
+
+            var floorLevel = 0;
+            foreach (var level in map)
             {
-                new Object3D(Content, camera, "Models/cross")
+                var row = 0;
+                foreach (var mapRow in level)
                 {
-                    Position = new Vector3(15, 1, 18),
-                    Scale = new Vector3(0.01f),
-                },
-                new Object3D(Content, camera, "Models/cross")
-                {
-                    Position = new Vector3(18, 1, 10),
-                    Scale = new Vector3(0.01f),
-                },
-                new Object3D(Content, camera, "Models/cross")
-                {
-                    Position = new Vector3(6, 1, 15),
-                    Scale = new Vector3(0.01f),
-                },
-                new Object3D(Content, camera, "Models/axies")
-                {
-                    Position = new Vector3(0, 0, 0),
-                    Scale = new Vector3(1.5f),
-                    Rotation = new Vector3(MathHelper.ToRadians(-90),MathHelper.ToRadians(180),0)
-                },
-                new Object3D(Content, camera, "Models/stozek")
-                {
-                    Position = new Vector3(30, 5, 30),
-                    Scale = new Vector3(0.05f)
-                },
-                new Object3D(Content, camera, "Models/WALL")
-                {
-                    Position = new Vector3(5, 0, 30),
-                    Scale = new Vector3(0.01f)
-                },
-                new Object3D(Content, camera, "Models/WALL")
-                {
-                    Position = new Vector3(6, 0, 28),
-                    Scale = new Vector3(0.002f),
-                    Rotation = new Vector3(0,MathHelper.ToRadians(90),0)
-                },
-                new Object3D(Content, camera, "Models/WALL")
-                {
-                    Position = new Vector3(3, 0, 28),
-                    Scale = new Vector3(0.002f),
-                    Rotation = new Vector3(0,MathHelper.ToRadians(90),0)
-                },
+                    var col = 0;
+                    foreach (var mapCell in mapRow)
+                    {
+                        if (mapCell == 1)
+                        {
+                            obj.Add(new Object3D(Content, camera, wallBlock)
+                            {
+                                Position = new Vector3(row * 2, floorLevel, col * 2),
+                                Scale = new Vector3(0.01f),
+                            });
+                        }
+                        else if (mapCell == 2)
+                        {
+                            obj.Add(new Object3D(Content, camera, ladder)
+                            {
+                                Position = new Vector3(row * 2, floorLevel, col * 2),
+                                Scale = new Vector3(0.01f),
+                            });
+                        }
+
+                        col++;
+                    }
+
+                    row++;
+                }
+
+                floorLevel += 2;
+            }
+
+            cameraAxies = new Object3D(Content, camera, "Models/axies")
+            {
+                Scale = new Vector3(0.01f),
+                Rotation = new Vector3(MathHelper.ToRadians(-90), MathHelper.ToRadians(180), 0)
             };
+
+            //obj.Add(new Object3D(Content, camera, "Models/axies")
+            //{
+            //    Position = new Vector3(1, 0, 1),
+            //    Scale = new Vector3(1.5f),
+            //    Rotation = new Vector3(MathHelper.ToRadians(-90), MathHelper.ToRadians(180), 0)
+            //});
 
             soundMgr = new SoundManager(Content);
             soundMgr.Add(
@@ -128,6 +139,100 @@ namespace MazeEscape
             base.Initialize();
         }
 
+        private void _INIT_TEST_MAP_()
+        {
+            floorList = new List<List<int>>(){
+                new List<int>() {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 1, 1 },
+        };
+
+            map = new List<List<List<int>>>() // 0 korytarz // 1 - ściana // 2 - drabina // 
+        {
+            new List<List<int>>(){
+                new List<int>() {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1},
+                new List<int>() {1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1 ,1, 0, 0, 1, 1, 0, 1},
+                new List<int>() {1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0 ,1, 1, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0 ,0, 1, 0, 1 },
+                new List<int>() {1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1},
+                new List<int>() {1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 2, 1},
+                new List<int>() {1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1},
+                new List<int>() {1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1},
+                new List<int>() {1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1},
+                new List<int>() {1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1 ,0, 1, 0, 1},
+                new List<int>() {1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1 ,0, 1, 0, 1 },
+                new List<int>() {1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1 ,0, 1, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0 ,0, 1, 0, 1 },
+                new List<int>() {1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1 ,1, 1, 0, 1 },
+                new List<int>() {1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0 ,0, 1, 0, 1 },
+                new List<int>() {1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1 ,0, 1, 0, 1 },
+                new List<int>() {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1 ,0, 1, 0, 1 },
+                new List<int>() {1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 ,1, 1, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1 ,1, 1, 0, 1 },
+                new List<int>() {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 1, 1 },
+            },
+            floorList,
+            new List<List<int>>(){
+                new List<int>() {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1},
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
+                new List<int>() {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 1, 1 },
+            },
+            floorList,
+        };
+        }
+
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -142,6 +247,7 @@ namespace MazeEscape
             var mouseState = Mouse.GetState();
             var gamepadState = GamePad.GetState(PlayerIndex.One);
             var mousePostion = new Point(mouseState.X, mouseState.Y);
+
 
             if (keyboardState.IsKeyDown(Keys.LeftShift))
             {
@@ -209,11 +315,15 @@ namespace MazeEscape
                 object3D.Draw();
             }
 
+            cameraAxies.Position = camera.cameraAxiesPosition;
+            cameraAxies.Draw();
+
             foreach (var line in lines)
             {
                 line.DrawLine(basicEffect, GraphicsDevice);
             }
-            playerLine.DrawLine(basicEffect, GraphicsDevice, Vector3.Zero, new Vector3(camera.Position.X, camera.Position.Y - 0.02f, camera.Position.Z));
+            if (camera.ShowCenterLine)
+                playerLine.DrawLine(basicEffect, GraphicsDevice, Vector3.Zero, new Vector3(camera.Position.X, camera.Position.Y - 0.02f, camera.Position.Z));
 
             spriteBatch.Begin();
             {
@@ -233,6 +343,9 @@ namespace MazeEscape
                 xPos += inc;
 
                 spriteBatch.DrawString(_spr_font, $"NoClip: {camera.AllowClimb}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                xPos += inc;
+
+                spriteBatch.DrawString(_spr_font, $"Center line: {camera.ShowCenterLine}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 xPos += inc;
 
             }
