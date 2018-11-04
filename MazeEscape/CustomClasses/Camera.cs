@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using MazeEscape.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -19,6 +20,7 @@ namespace MazeEscape.CustomClasses
         private MouseState prevMouseState;
 
         public BoundingBox ColliderBox => new BoundingBox(cameraPosition - new Vector3(0.3f), cameraPosition + new Vector3(0.3f));
+        public ColliderType ColliderType => ColliderType.Camera;
 
         public bool ShowCenterLine { get; set; }
 

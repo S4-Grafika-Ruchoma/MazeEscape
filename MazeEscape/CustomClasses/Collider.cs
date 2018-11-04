@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MazeEscape.Enums;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MazeEscape.CustomClasses
@@ -6,6 +7,8 @@ namespace MazeEscape.CustomClasses
     public abstract class Collider
     {
         public abstract BoundingBox ColliderBox { get; }
+
+        public ColliderType Type { get; set; }
 
         public void DrawCollider(BasicEffect basicEffect, GraphicsDevice GraphicsDevice)
         {

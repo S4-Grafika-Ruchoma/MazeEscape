@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using MazeEscape.CustomClasses;
+using MazeEscape.Enums;
 using MazeEscape.GameObjects;
 using MazeEscape.Sounds;
 using Microsoft.Xna.Framework;
@@ -150,6 +151,7 @@ namespace MazeEscape
                         {
                             Position = new Vector3(row * 2, 0, col * 2),
                             Scale = new Vector3(0.01f),
+                            Type = ColliderType.Wall
                         });
                     }
                     else if (mapCell == (int)MazeGen.Maze.Matrix.EndCell)
@@ -158,6 +160,7 @@ namespace MazeEscape
                         {
                             Position = new Vector3(row * 2, 0, col * 2),
                             Scale = new Vector3(0.03f),
+                            Type = ColliderType.LadderExit
                         });
                     }
                     else if (mapCell == (int)MazeGen.Maze.Matrix.StartCell)
@@ -166,6 +169,7 @@ namespace MazeEscape
                         {
                             Position = new Vector3(row * 2, 0, col * 2),
                             Scale = new Vector3(0.04f),
+                            Type = ColliderType.LadderEnter
                         });
                     }
 
@@ -197,7 +201,6 @@ namespace MazeEscape
             var gamepadState = GamePad.GetState(PlayerIndex.One);
             var mousePostion = new Point(mouseState.X, mouseState.Y);
 
-
             if (keyboardState.IsKeyDown(Keys.LeftShift))
             {
                 camera.cameraSpeed = 20;
@@ -206,15 +209,6 @@ namespace MazeEscape
             {
                 camera.cameraSpeed = 5;
             }
-
-            //if (keyboardState.IsKeyDown(Keys.LeftControl))
-            //{
-            //    camera.Position = new Vector3(camera.Position.X, 0.5f, camera.Position.Z);
-            //}
-            //else if (keyboardState.IsKeyUp(Keys.LeftControl))
-            //{
-            //    camera.Position = new Vector3(camera.Position.X, camera.Position.Y, camera.Position.Z);
-            //}
 
             if (gamepadState.Buttons.Back == ButtonState.Pressed || keyboardState.IsKeyDown(Keys.Escape))
             {
@@ -282,7 +276,9 @@ namespace MazeEscape
             {
                 object3D.Draw();
                 if (camera.ShowColliders && object3D is Collider objectCollider)
+                {
                     objectCollider.DrawCollider(basicEffect, GraphicsDevice);
+                }
             }
 
             cameraAxies.Position = camera.cameraAxiesPosition;
