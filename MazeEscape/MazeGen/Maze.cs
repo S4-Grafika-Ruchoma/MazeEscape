@@ -244,16 +244,7 @@ namespace MazeEscape.MazeGen
 
 
             foreach (var item in maze.Board)
-            {
-                if (item.NorthWall)
-                    InsertInRow((short)Matrix.Wall, 3, matrix, new Point(item.Point.X * 3, item.Point.Y * 3));
-                if (item.SouthWall)
-                    InsertInRow((short)Matrix.Wall, 3, matrix, new Point(item.Point.X * 3, (item.Point.Y * 3) + 2));
-                if (item.WestWall)
-                    InsertInCol((short)Matrix.Wall, 3, matrix, new Point(item.Point.X * 3, item.Point.Y * 3));
-                if (item.EastWall)
-                    InsertInCol((short)Matrix.Wall, 3, matrix, new Point((item.Point.X * 3) + 2, item.Point.Y * 3));
-
+            {  
                 if (item.IsDeadEnd)
                     matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.DeadEnd;
                 else if (item.HasLadderUp)
@@ -262,6 +253,15 @@ namespace MazeEscape.MazeGen
                     matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.LadderDown;
                 else
                     matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.Empty;
+
+                if (item.NorthWall)
+                    InsertInRow((short)Matrix.Wall, 3, matrix, new Point(item.Point.X * 3, item.Point.Y * 3));
+                if (item.SouthWall)
+                    InsertInRow((short)Matrix.Wall, 3, matrix, new Point(item.Point.X * 3, (item.Point.Y * 3) + 2));
+                if (item.WestWall)
+                    InsertInCol((short)Matrix.Wall, 3, matrix, new Point(item.Point.X * 3, item.Point.Y * 3));
+                if (item.EastWall)
+                    InsertInCol((short)Matrix.Wall, 3, matrix, new Point((item.Point.X * 3) + 2, item.Point.Y * 3));
 
             }
 

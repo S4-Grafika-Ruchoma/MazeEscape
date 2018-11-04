@@ -53,7 +53,7 @@ namespace MazeEscape
             //Maze generator
             //Jest od chuja różnych konstruktorów
             //najprosszy robi wszystko randomowo
-            Maze = new MazeGen.Maze(10, 10);
+            Maze = new MazeGen.Maze(4, 4);
             //Init musi być najpierw
             Maze.Initialize();
             Maze.Generate();
