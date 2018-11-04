@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using MazeEscape.Interfaces;
 using MazeEscape.Sounds;
 using Microsoft.Xna.Framework;
@@ -104,6 +105,7 @@ namespace MazeEscape
 
                 floorLevel += 2;
             }
+            camera.Map = obj;
 
             cameraAxies = new Object3D(Content, camera, "Models/axies")
             {
@@ -277,6 +279,16 @@ namespace MazeEscape
                 camera.AllowClimb = !camera.AllowClimb;
             }
 
+            if (keyboardState.IsKeyDown(Keys.U))
+            {
+                camera.ShowColliders = !camera.ShowColliders;
+            }
+
+            if (keyboardState.IsKeyDown(Keys.J))
+            {
+                camera.ShowCenterLine = !camera.ShowCenterLine;
+            }
+
             // Update
             _elapsed_time += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
 
@@ -313,6 +325,8 @@ namespace MazeEscape
             foreach (var object3D in obj)
             {
                 object3D.Draw();
+                if (camera.ShowColliders)
+                    DrawBoundingBoxesLines(object3D.Collider);
             }
 
             cameraAxies.Position = camera.cameraAxiesPosition;
@@ -342,22 +356,61 @@ namespace MazeEscape
                 spriteBatch.DrawString(_spr_font, $"Pozycja Z: {camera.Position.Z:F2}", new Vector2(5f, xPos), Color.DarkBlue, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 xPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"NoClip: {camera.AllowClimb}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(_spr_font, $"[M] NoClip: {camera.AllowClimb}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 xPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"Center line: {camera.ShowCenterLine}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(_spr_font, $"[J] Center line: {camera.ShowCenterLine}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                xPos += inc;
+
+                spriteBatch.DrawString(_spr_font, $"[U] Show colliders: {camera.ShowColliders}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 xPos += inc;
 
             }
+
+            if(camera.ShowColliders)
+            DrawBoundingBoxesLines( camera.Collider);
+
             spriteBatch.End();
 
 
             base.Draw(gameTime);
         }
+
+        private void DrawBoundingBoxesLines(BoundingBox box)
+        {
+            using (var line = new Line())
+            {
+
+                var n = box.Min;
+                var x = box.Max;
+
+                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(n.X, n.Y, x.Z), Color.Red); // N -> N+X.z 1-2
+                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(n.X, x.Y, n.Z), Color.Red); // N -> N+X.y 1-3
+                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(x.X, n.Y, n.Z), Color.Red); // N -> N+X.z 1-4
+
+                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(n.X, x.Y, x.Z), Color.Blue); // X -> X+N.x 5-6
+                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(x.X, n.Y, x.Z), Color.Blue); // X -> X+N.y 5-7
+                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(x.X, x.Y, n.Z), Color.Blue); // X -> X+N.z 5-8
+
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, n.Y, n.Z), new Vector3(x.X, n.Y, x.Z),
+                    Color.Salmon); // 4-7
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, n.Y, x.Z), new Vector3(n.X, n.Y, x.Z),
+                    Color.Salmon); // 7-2
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, n.Y, x.Z), new Vector3(n.X, x.Y, x.Z),
+                    Color.Salmon); // 2-6
+
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, x.Y, x.Z), new Vector3(n.X, x.Y, n.Z),
+                    Color.Cyan); // 6-3
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, x.Y, n.Z), new Vector3(x.X, x.Y, n.Z),
+                    Color.Cyan); // 3-8
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, x.Y, n.Z), new Vector3(x.X, n.Y, n.Z),
+                    Color.Cyan); // 8-4
+            }
+        }
     }
 
 
-    class Line
+    class Line : IDisposable
     {
         public Vector3 startPoint;
         public Vector3 endPoint;
@@ -383,6 +436,17 @@ namespace MazeEscape
             basicEffect.CurrentTechnique.Passes[0].Apply();
             vertices = new[] { new VertexPositionColor(start, Color.White), new VertexPositionColor(end, Color.White) };
             graphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
+        }
+
+        public void DrawLine(BasicEffect basicEffect, GraphicsDevice graphicsDevice, Vector3 start, Vector3 end, Color color)
+        {
+            basicEffect.CurrentTechnique.Passes[0].Apply();
+            vertices = new[] { new VertexPositionColor(start, color), new VertexPositionColor(end, color) };
+            graphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

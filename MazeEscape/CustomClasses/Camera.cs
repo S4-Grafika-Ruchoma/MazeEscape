@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MazeEscape;
+using MazeEscape.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -21,6 +22,8 @@ namespace ProjektTestowy.CustomClasses
         private Vector3 mouseRotationBuffer;
         private MouseState currentMouseState;
         private MouseState prevMouseState;
+
+        public BoundingBox Collider => new BoundingBox(cameraPosition - new Vector3(0.3f), cameraPosition + new Vector3(0.3f));
 
         public bool ShowCenterLine { get; set; }
 
@@ -53,6 +56,8 @@ namespace ProjektTestowy.CustomClasses
         public Camera(Game game, Vector3 position, Vector3 rotation, float speed) : base(game)
         {
             AllowClimb = AppConfig._DEBUG_AUTO_NO_CLIP_;
+            ShowColliders = false;
+
             cameraSpeed = speed;
             Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Game.GraphicsDevice.Viewport.AspectRatio, 0.05f, 1000);
             MoveTo(position, rotation);
@@ -98,6 +103,9 @@ namespace ProjektTestowy.CustomClasses
             }
         }
 
+        public bool ShowColliders { get; internal set; }
+        public List<Object3D> Map { get; set; }
+
         private void Move(Vector3 scale)
         {
             MoveTo(PreviewMove(scale), Rotation);
@@ -142,6 +150,13 @@ namespace ProjektTestowy.CustomClasses
                     Move(moveVector);
                 }
 
+
+                if (Map.Any(a => a.Collider.Intersects(Collider)))
+                {
+                    Move(moveVector*-1);
+                }
+
+                #region Camera Mouse
                 if (currentMouseState != prevMouseState)
                 {
                     var deltaX = currentMouseState.X - (Game.GraphicsDevice.Viewport.Width / 2);
@@ -165,8 +180,10 @@ namespace ProjektTestowy.CustomClasses
                 Mouse.SetPosition(Game.GraphicsDevice.Viewport.Width / 2, Game.GraphicsDevice.Viewport.Height / 2);
 
                 prevMouseState = currentMouseState;
+                #endregion
 
                 base.Update(gameTime);
+
             }
         }
     }

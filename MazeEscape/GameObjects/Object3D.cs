@@ -23,6 +23,7 @@ namespace MazeEscape.Interfaces
 
         public ContentManager Content { get; set; }
         public Camera Camera { get; set; }
+        public BoundingBox Collider => new BoundingBox(Position - new Vector3(1,0,1), Position + new Vector3(1, 2, 1));
 
         public Object3D(ContentManager content, Camera camera, string path = null)
         {
