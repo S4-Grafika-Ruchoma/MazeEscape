@@ -249,5 +249,10 @@ namespace ProjektTestowy.CustomClasses
         {
             ColliderObjects.AddRange(cols);
         }
+
+        public void ResetColiders()
+        {
+            ColliderObjects = new List<BoundingBox>();
+        }
     }
 }

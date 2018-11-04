@@ -53,7 +53,7 @@ namespace MazeEscape
             camera = new Camera(this, new Vector3(0, 15, 0), Vector3.Zero, 5);
             Components.Add(camera);
 
-            floor = new Floor(GraphicsDevice, 50, 50);
+            floor = new Floor(GraphicsDevice, 120, 120);
             camera.AddColliderObject(floor.ColliderBox);
 
             basicEffect = new BasicEffect(GraphicsDevice)
@@ -71,7 +71,6 @@ namespace MazeEscape
             };
             _INIT_TEST_MAP_();
 
-            camera.AddColliderObjects(obj.Select(a => a.ColliderBox).ToList());
 
             cameraAxies = new Object3D(Content, camera, "Models/axies")
             {
@@ -112,7 +111,7 @@ namespace MazeEscape
             //Maze generator
             //Jest od chuja różnych konstruktorów
             //najprosszy robi wszystko randomowo
-            Maze = new MazeGen.Maze(10, 10);
+            Maze = new MazeGen.Maze(20, 20);
             //Init musi być najpierw
             Maze.Initialize();
             Maze.Generate();
@@ -160,7 +159,7 @@ namespace MazeEscape
                         obj.Add(new Object3D(Content, camera, ladder)
                         {
                             Position = new Vector3(row * 2, 0, col * 2),
-                            Scale = new Vector3(0.01f),
+                            Scale = new Vector3(0.03f),
                         });
                     }
                     else if (mapCell == (int)MazeGen.Maze.Matrix.StartCell)
@@ -168,7 +167,7 @@ namespace MazeEscape
                         obj.Add(new Object3D(Content, camera, ladder)
                         {
                             Position = new Vector3(row * 2, 0, col * 2),
-                            Scale = new Vector3(0.01f),
+                            Scale = new Vector3(0.04f),
                         });
                     }
 
@@ -177,6 +176,9 @@ namespace MazeEscape
 
                 row++;
             }
+
+            camera.ResetColiders();
+            camera.AddColliderObjects(obj.Select(a => a.ColliderBox).ToList());
 
         }
 
