@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MazeEscape.CustomClasses;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace ProjektTestowy.CustomClasses
 {
-    public class Floor
+    public class Floor : Collider
     {
         private int floorWidth;
         private int floorHeight;
@@ -76,6 +77,10 @@ namespace ProjektTestowy.CustomClasses
                 device.DrawPrimitives(PrimitiveType.TriangleList, 0, floorBuffer.VertexCount / 3);
             }
         }
+
+        public BoundingBox Collider { get; }
+
+        public override BoundingBox ColliderBox  => new BoundingBox(new Vector3(0,-1,0), new Vector3(floorWidth, 0, floorHeight));
 
     }
 }

@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MazeEscape.CustomClasses;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using ProjektTestowy.CustomClasses;
 using ProjektTestowy.Interfaces;
 
-namespace MazeEscape.Interfaces
+namespace MazeEscape.GameObjects
 {
-    public class Object3D : IObject3D
+    public class Object3D : Collider, IObject3D
     {
         public Vector3 Position { get; set; }
         public bool Visible { get; set; }
@@ -23,7 +18,8 @@ namespace MazeEscape.Interfaces
 
         public ContentManager Content { get; set; }
         public Camera Camera { get; set; }
-        public BoundingBox Collider => new BoundingBox(Position - new Vector3(1,0,1), Position + new Vector3(1, 2, 1));
+
+        public override BoundingBox ColliderBox => new BoundingBox(Position - new Vector3(1,0,1), Position + new Vector3(1, 2, 1));
 
         public Object3D(ContentManager content, Camera camera, string path = null)
         {

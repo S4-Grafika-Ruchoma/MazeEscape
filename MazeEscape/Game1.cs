@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
-using MazeEscape.Interfaces;
+using MazeEscape.CustomClasses;
+using MazeEscape.GameObjects;
 using MazeEscape.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -50,6 +52,7 @@ namespace MazeEscape
             Components.Add(camera);
 
             floor = new Floor(GraphicsDevice, 50, 50);
+            camera.AddColliderObject(floor.ColliderBox);
 
             basicEffect = new BasicEffect(GraphicsDevice)
             {
@@ -105,7 +108,7 @@ namespace MazeEscape
 
                 floorLevel += 2;
             }
-            camera.Map = obj;
+            camera.AddColliderObjects(obj.Select(a=>a.ColliderBox).ToList());
 
             cameraAxies = new Object3D(Content, camera, "Models/axies")
             {
@@ -325,8 +328,8 @@ namespace MazeEscape
             foreach (var object3D in obj)
             {
                 object3D.Draw();
-                if (camera.ShowColliders)
-                    DrawBoundingBoxesLines(object3D.Collider);
+                if (camera.ShowColliders && object3D is Collider objectCollider)
+                    objectCollider.DrawCollider(basicEffect, GraphicsDevice);
             }
 
             cameraAxies.Position = camera.cameraAxiesPosition;
@@ -367,86 +370,19 @@ namespace MazeEscape
 
             }
 
-            if(camera.ShowColliders)
-            DrawBoundingBoxesLines( camera.Collider);
+            if (camera.ShowColliders)
+            {
+                camera.DrawCollider(basicEffect, GraphicsDevice);
+                floor.DrawCollider(basicEffect, GraphicsDevice);
+            }
 
             spriteBatch.End();
 
 
             base.Draw(gameTime);
         }
-
-        private void DrawBoundingBoxesLines(BoundingBox box)
-        {
-            using (var line = new Line())
-            {
-
-                var n = box.Min;
-                var x = box.Max;
-
-                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(n.X, n.Y, x.Z), Color.Red); // N -> N+X.z 1-2
-                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(n.X, x.Y, n.Z), Color.Red); // N -> N+X.y 1-3
-                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(x.X, n.Y, n.Z), Color.Red); // N -> N+X.z 1-4
-
-                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(n.X, x.Y, x.Z), Color.Blue); // X -> X+N.x 5-6
-                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(x.X, n.Y, x.Z), Color.Blue); // X -> X+N.y 5-7
-                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(x.X, x.Y, n.Z), Color.Blue); // X -> X+N.z 5-8
-
-                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, n.Y, n.Z), new Vector3(x.X, n.Y, x.Z),
-                    Color.Salmon); // 4-7
-                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, n.Y, x.Z), new Vector3(n.X, n.Y, x.Z),
-                    Color.Salmon); // 7-2
-                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, n.Y, x.Z), new Vector3(n.X, x.Y, x.Z),
-                    Color.Salmon); // 2-6
-
-                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, x.Y, x.Z), new Vector3(n.X, x.Y, n.Z),
-                    Color.Cyan); // 6-3
-                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, x.Y, n.Z), new Vector3(x.X, x.Y, n.Z),
-                    Color.Cyan); // 3-8
-                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, x.Y, n.Z), new Vector3(x.X, n.Y, n.Z),
-                    Color.Cyan); // 8-4
-            }
-        }
     }
 
 
-    class Line : IDisposable
-    {
-        public Vector3 startPoint;
-        public Vector3 endPoint;
-        private VertexPositionColor[] vertices;
 
-        public Line(Vector3 startPoint, Vector3 endPoint)
-        {
-            this.startPoint = startPoint;
-            this.endPoint = endPoint;
-        }
-
-        public Line() { }
-
-        public void DrawLine(BasicEffect basicEffect, GraphicsDevice graphicsDevice)
-        {
-            basicEffect.CurrentTechnique.Passes[0].Apply();
-            vertices = new[] { new VertexPositionColor(startPoint, Color.White), new VertexPositionColor(endPoint, Color.White) };
-            graphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
-        }
-
-        public void DrawLine(BasicEffect basicEffect, GraphicsDevice graphicsDevice, Vector3 start, Vector3 end)
-        {
-            basicEffect.CurrentTechnique.Passes[0].Apply();
-            vertices = new[] { new VertexPositionColor(start, Color.White), new VertexPositionColor(end, Color.White) };
-            graphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
-        }
-
-        public void DrawLine(BasicEffect basicEffect, GraphicsDevice graphicsDevice, Vector3 start, Vector3 end, Color color)
-        {
-            basicEffect.CurrentTechnique.Passes[0].Apply();
-            vertices = new[] { new VertexPositionColor(start, color), new VertexPositionColor(end, color) };
-            graphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices, 0, 1);
-        }
-
-        public void Dispose()
-        {
-        }
-    }
 }

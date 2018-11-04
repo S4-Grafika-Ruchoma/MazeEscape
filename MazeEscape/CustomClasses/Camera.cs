@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using MazeEscape;
-using MazeEscape.Interfaces;
+using MazeEscape.CustomClasses;
+using MazeEscape.GameObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -23,7 +25,7 @@ namespace ProjektTestowy.CustomClasses
         private MouseState currentMouseState;
         private MouseState prevMouseState;
 
-        public BoundingBox Collider => new BoundingBox(cameraPosition - new Vector3(0.3f), cameraPosition + new Vector3(0.3f));
+        public BoundingBox ColliderBox => new BoundingBox(cameraPosition - new Vector3(0.3f), cameraPosition + new Vector3(0.3f));
 
         public bool ShowCenterLine { get; set; }
 
@@ -55,6 +57,7 @@ namespace ProjektTestowy.CustomClasses
 
         public Camera(Game game, Vector3 position, Vector3 rotation, float speed) : base(game)
         {
+            ColliderObjects = new List<BoundingBox>();
             AllowClimb = AppConfig._DEBUG_AUTO_NO_CLIP_;
             ShowColliders = false;
 
@@ -104,7 +107,7 @@ namespace ProjektTestowy.CustomClasses
         }
 
         public bool ShowColliders { get; internal set; }
-        public List<Object3D> Map { get; set; }
+        public List<BoundingBox> ColliderObjects { get; set; }
 
         private void Move(Vector3 scale)
         {
@@ -138,10 +141,15 @@ namespace ProjektTestowy.CustomClasses
                     if (keyboardState.IsKeyDown(Keys.C))
                         moveVector.Y = -1;
                 }
+                else
+                {
+                    // Grawitacja
+                    //moveVector.Y = -0.1f;
+                }
 
                 if (keyboardState.IsKeyDown(Keys.P))
                     ShowCenterLine = !ShowCenterLine;
-
+                
                 if (moveVector != Vector3.Zero)
                 {
                     moveVector.Normalize();
@@ -150,9 +158,16 @@ namespace ProjektTestowy.CustomClasses
                     Move(moveVector);
                 }
 
-
-                if (Map.Any(a => a.Collider.Intersects(Collider)))
+                var list = ColliderObjects.Where(a => a.Intersects(ColliderBox)).ToList();
+                if (list.Any())
                 {
+                //    var camPos = cameraPosition;
+                //    var blocksCenter = list.Select(a => new Vector3(
+                //        a.Min.X + ((a.Max.X - a.Min.X) / 2),
+                //        a.Min.Y + ((a.Max.Y - a.Min.Y) / 2),
+                //        a.Min.Z + ((a.Max.Z - a.Min.Z) / 2)
+                //    ));
+
                     Move(moveVector*-1);
                 }
 
@@ -185,6 +200,46 @@ namespace ProjektTestowy.CustomClasses
                 base.Update(gameTime);
 
             }
+        }
+
+        public void DrawCollider(BasicEffect basicEffect, GraphicsDevice GraphicsDevice)
+        {
+            using (var line = new Line())
+            {
+                var n = ColliderBox.Min;
+                var x = ColliderBox.Max;
+
+                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(n.X, n.Y, x.Z), Color.Red); // N -> N+X.z 1-2
+                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(n.X, x.Y, n.Z), Color.Red); // N -> N+X.y 1-3
+                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(x.X, n.Y, n.Z), Color.Red); // N -> N+X.z 1-4
+
+                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(n.X, x.Y, x.Z), Color.Blue); // X -> X+N.x 5-6
+                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(x.X, n.Y, x.Z), Color.Blue); // X -> X+N.y 5-7
+                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(x.X, x.Y, n.Z), Color.Blue); // X -> X+N.z 5-8
+
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, n.Y, n.Z), new Vector3(x.X, n.Y, x.Z),
+                    Color.Salmon); // 4-7
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, n.Y, x.Z), new Vector3(n.X, n.Y, x.Z),
+                    Color.Salmon); // 7-2
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, n.Y, x.Z), new Vector3(n.X, x.Y, x.Z),
+                    Color.Salmon); // 2-6
+
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, x.Y, x.Z), new Vector3(n.X, x.Y, n.Z),
+                    Color.Cyan); // 6-3
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, x.Y, n.Z), new Vector3(x.X, x.Y, n.Z),
+                    Color.Cyan); // 3-8
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, x.Y, n.Z), new Vector3(x.X, n.Y, n.Z),
+                    Color.Cyan); // 8-4
+            }
+        }
+
+        public void AddColliderObject(BoundingBox col)
+        {
+            ColliderObjects.Add(col);
+        }
+        public void AddColliderObjects(List<BoundingBox> cols)
+        {
+            ColliderObjects.AddRange(cols);
         }
     }
 }
