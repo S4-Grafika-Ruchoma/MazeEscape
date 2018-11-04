@@ -1,9 +1,8 @@
 ﻿using MazeEscape.CustomClasses;
+using MazeEscape.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using ProjektTestowy.CustomClasses;
-using ProjektTestowy.Interfaces;
 
 namespace MazeEscape.GameObjects
 {

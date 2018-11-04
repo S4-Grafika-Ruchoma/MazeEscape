@@ -1,10 +1,7 @@
-﻿using MazeEscape;
-using MazeEscape.Sounds;
-using Microsoft.Xna.Framework.Audio;
+﻿using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Media;
 
-namespace Sounds
+namespace MazeEscape.Sounds
 {
     // Klasa obsługująca efekty dzwiękowe
     public class SoundEffects : ISound

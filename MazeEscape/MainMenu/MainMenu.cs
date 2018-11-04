@@ -1,19 +1,10 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using MazeEscape.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MazeEscape;
-using MazeEscape.Sounds;
-using MenuButtons;
-using Sounds;
-using Microsoft.Xna.Framework.Audio;
-using Microsoft.Xna.Framework.Media;
 
-namespace MainMenu
+namespace MazeEscape.MainMenu
 {
     public class MainMenu : Game
     {

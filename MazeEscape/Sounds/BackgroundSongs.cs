@@ -1,9 +1,6 @@
-﻿using MazeEscape;
-using MazeEscape.Sounds;
-using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Media;
+﻿using Microsoft.Xna.Framework.Media;
 
-namespace Sounds
+namespace MazeEscape.Sounds
 {
     // Klasa obsługująca muzyke tła
     public class BackgroundSongs : ISound

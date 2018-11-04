@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
-using MazeEscape;
-using MazeEscape.CustomClasses;
-using MazeEscape.GameObjects;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace ProjektTestowy.CustomClasses
+namespace MazeEscape.CustomClasses
 {
     public class Camera : GameComponent
     {
