@@ -245,14 +245,14 @@ namespace MazeEscape.MazeGen
 
             foreach (var item in maze.Board)
             {  
-                if (item.IsDeadEnd)
-                    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.DeadEnd;
-                else if (item.HasLadderUp)
-                    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.LadderUp;
-                else if (item.HasLadderDown)
-                    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.LadderDown;
-                else
-                    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.Empty;
+                //if (item.IsDeadEnd)
+                //    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.DeadEnd;
+                //else if (item.HasLadderUp)
+                //    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.LadderUp;
+                //else if (item.HasLadderDown)
+                //    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.LadderDown;
+                ////else
+                ////    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.Empty;
 
                 if (item.NorthWall)
                     InsertInRow((short)Matrix.Wall, 3, matrix, new Point(item.Point.X * 3, item.Point.Y * 3));

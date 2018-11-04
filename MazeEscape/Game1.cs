@@ -71,49 +71,6 @@ namespace MazeEscape
             };
             _INIT_TEST_MAP_();
 
-            var wallBlock = Content.Load<Model>("Models/wallBlock");
-            var ladder = Content.Load<Model>("Models/ladder");
-
-            obj = new List<Object3D>();
-
-
-            var row = 0;
-            foreach (var mapRow in map)
-            {
-                var col = 0;
-                foreach (var mapCell in mapRow)
-                {
-                    if (mapCell == (int)MazeGen.Maze.Matrix.Wall)
-                    {
-                        obj.Add(new Object3D(Content, camera, wallBlock)
-                        {
-                            Position = new Vector3(row * 2, 0, col * 2),
-                            Scale = new Vector3(0.01f),
-                        });
-                    }
-                    else if (mapCell == (int)MazeGen.Maze.Matrix.EndCell)
-                    {
-                        obj.Add(new Object3D(Content, camera, ladder)
-                        {
-                            Position = new Vector3(row * 2, 0, col * 2),
-                            Scale = new Vector3(0.01f),
-                        });
-                    }
-                    else if (mapCell == (int)MazeGen.Maze.Matrix.StartCell)
-                    {
-                        obj.Add(new Object3D(Content, camera, ladder)
-                        {
-                            Position = new Vector3(row * 2, 0, col * 2),
-                            Scale = new Vector3(0.01f),
-                        });
-                    }
-
-                    col++;
-                }
-
-                row++;
-            }
-
             camera.AddColliderObjects(obj.Select(a => a.ColliderBox).ToList());
 
             cameraAxies = new Object3D(Content, camera, "Models/axies")
@@ -178,6 +135,49 @@ namespace MazeEscape
             }
 
 
+            var wallBlock = Content.Load<Model>("Models/wallBlock");
+            var ladder = Content.Load<Model>("Models/ladder");
+
+            obj = new List<Object3D>();
+
+
+            var row = 0;
+            foreach (var mapRow in map)
+            {
+                var col = 0;
+                foreach (var mapCell in mapRow)
+                {
+                    if (mapCell == (int)MazeGen.Maze.Matrix.Wall)
+                    {
+                        obj.Add(new Object3D(Content, camera, wallBlock)
+                        {
+                            Position = new Vector3(row * 2, 0, col * 2),
+                            Scale = new Vector3(0.01f),
+                        });
+                    }
+                    else if (mapCell == (int)MazeGen.Maze.Matrix.EndCell)
+                    {
+                        obj.Add(new Object3D(Content, camera, ladder)
+                        {
+                            Position = new Vector3(row * 2, 0, col * 2),
+                            Scale = new Vector3(0.01f),
+                        });
+                    }
+                    else if (mapCell == (int)MazeGen.Maze.Matrix.StartCell)
+                    {
+                        obj.Add(new Object3D(Content, camera, ladder)
+                        {
+                            Position = new Vector3(row * 2, 0, col * 2),
+                            Scale = new Vector3(0.01f),
+                        });
+                    }
+
+                    col++;
+                }
+
+                row++;
+            }
+
         }
 
         protected override void LoadContent()
@@ -187,6 +187,8 @@ namespace MazeEscape
         }
 
         protected override void UnloadContent() { }
+
+        private KeyboardState prevState;
 
         protected override void Update(GameTime gameTime)
         {
@@ -219,20 +221,27 @@ namespace MazeEscape
                 Exit();
             }
 
-            if (keyboardState.IsKeyDown(Keys.M))
+            #region Przyciski
+            if (keyboardState.IsKeyDown(Keys.M) && prevState.IsKeyUp(Keys.M))
             {
                 camera.AllowClimb = !camera.AllowClimb;
             }
 
-            if (keyboardState.IsKeyDown(Keys.U))
+            if (keyboardState.IsKeyDown(Keys.U) && prevState.IsKeyUp(Keys.U))
             {
                 camera.ShowColliders = !camera.ShowColliders;
             }
 
-            if (keyboardState.IsKeyDown(Keys.J))
+            if (keyboardState.IsKeyDown(Keys.J) && prevState.IsKeyUp(Keys.J))
             {
                 camera.ShowCenterLine = !camera.ShowCenterLine;
             }
+
+            if (keyboardState.IsKeyDown(Keys.L) && prevState.IsKeyUp(Keys.L))
+            {
+                _INIT_TEST_MAP_();
+            }
+            #endregion
 
             // Update
             _elapsed_time += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
@@ -245,9 +254,11 @@ namespace MazeEscape
                 _elapsed_time = 0;
             }
 
+            prevState = keyboardState;
+
             base.Update(gameTime);
         }
-
+        
         protected override void Draw(GameTime gameTime)
         {
             var depthStencilState = new DepthStencilState
@@ -324,7 +335,6 @@ namespace MazeEscape
             base.Draw(gameTime);
         }
     }
-
 
 
 }

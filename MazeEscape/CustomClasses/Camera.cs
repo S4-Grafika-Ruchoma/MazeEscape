@@ -114,6 +114,8 @@ namespace ProjektTestowy.CustomClasses
             MoveTo(PreviewMove(scale), Rotation);
         }
 
+        private KeyboardState prevState;
+
         public override void Update(GameTime gameTime)
         {
             if (Game.IsActive)
@@ -144,12 +146,12 @@ namespace ProjektTestowy.CustomClasses
                 else
                 {
                     // Grawitacja
-                    //moveVector.Y = -0.1f;
+                    //moveVector.Y = -1.0f;
                 }
 
-                if (keyboardState.IsKeyDown(Keys.P))
+                if (keyboardState.IsKeyDown(Keys.P) && prevState.IsKeyUp(Keys.P))
                     ShowCenterLine = !ShowCenterLine;
-                
+
                 if (moveVector != Vector3.Zero)
                 {
                     moveVector.Normalize();
@@ -158,17 +160,21 @@ namespace ProjektTestowy.CustomClasses
                     Move(moveVector);
                 }
 
-                var list = ColliderObjects.Where(a => a.Intersects(ColliderBox)).ToList();
-                if (list.Any())
-                {
-                //    var camPos = cameraPosition;
-                //    var blocksCenter = list.Select(a => new Vector3(
-                //        a.Min.X + ((a.Max.X - a.Min.X) / 2),
-                //        a.Min.Y + ((a.Max.Y - a.Min.Y) / 2),
-                //        a.Min.Z + ((a.Max.Z - a.Min.Z) / 2)
-                //    ));
 
-                    Move(moveVector*-1);
+                if (!AllowClimb)
+                {
+                    var list = ColliderObjects.Where(a => a.Intersects(ColliderBox)).ToList();
+                    if (list.Any())
+                    {
+                        //    var camPos = cameraPosition;
+                        //    var blocksCenter = list.Select(a => new Vector3(
+                        //        a.Min.X + ((a.Max.X - a.Min.X) / 2),
+                        //        a.Min.Y + ((a.Max.Y - a.Min.Y) / 2),
+                        //        a.Min.Z + ((a.Max.Z - a.Min.Z) / 2)
+                        //    ));
+
+                        Move(moveVector * -1);
+                    }
                 }
 
                 #region Camera Mouse
@@ -196,6 +202,8 @@ namespace ProjektTestowy.CustomClasses
 
                 prevMouseState = currentMouseState;
                 #endregion
+
+                prevState = keyboardState;
 
                 base.Update(gameTime);
 
