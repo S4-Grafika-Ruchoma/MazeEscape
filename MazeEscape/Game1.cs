@@ -28,7 +28,7 @@ namespace MazeEscape
         private List<Object3D> obj;
         private List<Line> lines;
 
-        List<List<List<int>>> map;
+        List<List<int>> map;
         List<List<int>> floorList;
 
         SpriteFont _spr_font;
@@ -50,21 +50,6 @@ namespace MazeEscape
 
         protected override void Initialize()
         {
-            //Maze generator
-            //Jest od chuja różnych konstruktorów
-            //najprosszy robi wszystko randomowo
-            Maze = new MazeGen.Maze(10, 10);
-            //Init musi być najpierw
-            Maze.Initialize();
-            Maze.Generate();
-            // Matrix opisujący co gdzie jest w Mazie
-            short[,] Matrix = MazeGen.Maze.GenerateMatrix(Maze);
-            //to co oznacza poszczególna liczba jest w enumie
-            var x = MazeGen.Maze.Matrix.DeadEnd;
-            // ten matrix jest jeszcze lekko zdupiony bo wewnętrzne ściany są podwójne
-
-
-
             camera = new Camera(this, new Vector3(0, 15, 0), Vector3.Zero, 5);
             Components.Add(camera);
 
@@ -91,41 +76,45 @@ namespace MazeEscape
 
             obj = new List<Object3D>();
 
-            var floorLevel = 0;
-            foreach (var level in map)
-            {
-                var row = 0;
-                foreach (var mapRow in level)
-                {
-                    var col = 0;
-                    foreach (var mapCell in mapRow)
-                    {
-                        if (mapCell == 1)
-                        {
-                            obj.Add(new Object3D(Content, camera, wallBlock)
-                            {
-                                Position = new Vector3(row * 2, floorLevel, col * 2),
-                                Scale = new Vector3(0.01f),
-                            });
-                        }
-                        else if (mapCell == 2)
-                        {
-                            obj.Add(new Object3D(Content, camera, ladder)
-                            {
-                                Position = new Vector3(row * 2, floorLevel, col * 2),
-                                Scale = new Vector3(0.01f),
-                            });
-                        }
 
-                        col++;
+            var row = 0;
+            foreach (var mapRow in map)
+            {
+                var col = 0;
+                foreach (var mapCell in mapRow)
+                {
+                    if (mapCell == (int)MazeGen.Maze.Matrix.Wall)
+                    {
+                        obj.Add(new Object3D(Content, camera, wallBlock)
+                        {
+                            Position = new Vector3(row * 2, 0, col * 2),
+                            Scale = new Vector3(0.01f),
+                        });
+                    }
+                    else if (mapCell == (int)MazeGen.Maze.Matrix.EndCell)
+                    {
+                        obj.Add(new Object3D(Content, camera, ladder)
+                        {
+                            Position = new Vector3(row * 2, 0, col * 2),
+                            Scale = new Vector3(0.01f),
+                        });
+                    }
+                    else if (mapCell == (int)MazeGen.Maze.Matrix.StartCell)
+                    {
+                        obj.Add(new Object3D(Content, camera, ladder)
+                        {
+                            Position = new Vector3(row * 2, 0, col * 2),
+                            Scale = new Vector3(0.01f),
+                        });
                     }
 
-                    row++;
+                    col++;
                 }
 
-                floorLevel += 2;
+                row++;
             }
-            camera.AddColliderObjects(obj.Select(a=>a.ColliderBox).ToList());
+
+            camera.AddColliderObjects(obj.Select(a => a.ColliderBox).ToList());
 
             cameraAxies = new Object3D(Content, camera, "Models/axies")
             {
@@ -163,96 +152,32 @@ namespace MazeEscape
 
         private void _INIT_TEST_MAP_()
         {
-            floorList = new List<List<int>>(){
-                new List<int>() {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 1, 1 },
-        };
+            //Maze generator
+            //Jest od chuja różnych konstruktorów
+            //najprosszy robi wszystko randomowo
+            Maze = new MazeGen.Maze(10, 10);
+            //Init musi być najpierw
+            Maze.Initialize();
+            Maze.Generate();
+            // Matrix opisujący co gdzie jest w Mazie
+            short[,] Matrix = MazeGen.Maze.GenerateMatrix(Maze);
+            //to co oznacza poszczególna liczba jest w enumie
+            var x1 = MazeGen.Maze.Matrix.DeadEnd;
+            // ten matrix jest jeszcze lekko zdupiony bo wewnętrzne ściany są podwójne
 
-            map = new List<List<List<int>>>() // 0 korytarz // 1 - ściana // 2 - drabina // 
-        {
-            new List<List<int>>(){
-                new List<int>() {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1},
-                new List<int>() {1, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 1, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1 ,1, 0, 0, 1, 1, 0, 1},
-                new List<int>() {1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 1, 0 ,1, 1, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0 ,0, 1, 0, 1 },
-                new List<int>() {1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1},
-                new List<int>() {1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 2, 1},
-                new List<int>() {1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 1},
-                new List<int>() {1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1},
-                new List<int>() {1, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1},
-                new List<int>() {1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1 ,0, 1, 0, 1},
-                new List<int>() {1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1 ,0, 1, 0, 1 },
-                new List<int>() {1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1 ,0, 1, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0 ,0, 1, 0, 1 },
-                new List<int>() {1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1 ,1, 1, 0, 1 },
-                new List<int>() {1, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0 ,0, 1, 0, 1 },
-                new List<int>() {1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1 ,0, 1, 0, 1 },
-                new List<int>() {1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1 ,0, 1, 0, 1 },
-                new List<int>() {1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 ,1, 1, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1 ,1, 1, 0, 1 },
-                new List<int>() {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 1, 1 },
-            },
-            floorList,
-            new List<List<int>>(){
-                new List<int>() {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1},
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0, 1 },
-                new List<int>() {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1, 1, 1, 1 },
-            },
-            floorList,
-        };
+
+            map = new List<List<int>>();
+
+            for (int i = 0; i < Matrix.GetLength(0); i++)
+            {
+                map.Add(new List<int>());
+                for (int j = 0; j < Matrix.GetLength(1); j++)
+                {
+                    map[i].Add(Matrix[i, j]);
+                }
+            }
+
+
         }
 
         protected override void LoadContent()
