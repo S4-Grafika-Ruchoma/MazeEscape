@@ -37,7 +37,7 @@ namespace MazeEscape.MazeGen
             this._Height = height;
             this._Width = width;
             _rng = new Random();
-            _startPoint = new Point(_rng.Next(0, _Width - 1), _rng.Next(0, _Height - 1));
+            _startPoint = new Point(_rng.Next() % _Width, _rng.Next() % _Height);
             this._Board = new RectCell[_Width, _Height];
             this.path = new List<Point>();
         }
@@ -50,7 +50,7 @@ namespace MazeEscape.MazeGen
             this._Height = height;
             this._Width = width;
             this._rng = rnd;
-            _startPoint = new Point(_rng.Next(0, _Width - 1), _rng.Next(0, _Height - 1));
+            _startPoint = new Point(_rng.Next() % _Width, _rng.Next() % _Height);
             this._Board = new RectCell[_Width, _Height];
             this.path = new List<Point>();
         }
@@ -63,7 +63,7 @@ namespace MazeEscape.MazeGen
             this._Height = height;
             this._Width = width;
             this._rng = new Random(seed);
-            _startPoint = new Point(_rng.Next(0, _Width - 1), _rng.Next(0, _Height - 1));
+            _startPoint = new Point(_rng.Next()%_Width, _rng.Next()%_Height);
             this._Board = new RectCell[_Width, _Height];
             this.path = new List<Point>();
         }
@@ -117,6 +117,7 @@ namespace MazeEscape.MazeGen
             _Board[_currentPoint.X, _currentPoint.Y].Visit();
             _iterations++;
 
+            bool f = false;
 
             while (!allVisited())
             {
@@ -127,7 +128,15 @@ namespace MazeEscape.MazeGen
                 // dead end
                 if (validDirections.Count == 0)
                 {
+                   
                     _Board[_currentPoint.X, _currentPoint.Y].setDeadEnd();
+
+                    if (!f)
+                    {
+                        f = !f;
+                        _endPoint = _currentPoint;
+                    }
+
                     // go back 1 cell
                     path.RemoveAt(path.Count - 1);
                     _currentPoint = path[path.Count - 1];
@@ -165,8 +174,6 @@ namespace MazeEscape.MazeGen
                 }
                 _iterations++;
             }
-
-            _endPoint = path[path.Count - 1];
 
         }
 
@@ -244,16 +251,7 @@ namespace MazeEscape.MazeGen
 
 
             foreach (var item in maze.Board)
-            {  
-                if (item.IsDeadEnd)
-                    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.DeadEnd;
-                else if (item.HasLadderUp)
-                    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.LadderUp;
-                else if (item.HasLadderDown)
-                    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.LadderDown;
-                else
-                    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.Empty;
-
+            {               
                 if (item.NorthWall)
                     InsertInRow((short)Matrix.Wall, 3, matrix, new Point(item.Point.X * 3, item.Point.Y * 3));
                 if (item.SouthWall)
@@ -265,8 +263,8 @@ namespace MazeEscape.MazeGen
 
             }
 
-            matrix[maze._startPoint.X + 1, maze._startPoint.Y + 1] = (short)Matrix.StartCell;
-            matrix[maze._endPoint.X + 1, maze._endPoint.Y + 1] = (short)Matrix.EndCell;
+            matrix[maze._startPoint.X * 3 + 1, maze._startPoint.Y * 3 + 1] = (short)Matrix.StartCell;
+            matrix[maze._endPoint.X * 3 + 1, maze._endPoint.Y * 3 + 1] = (short)Matrix.EndCell;
 
 
 
