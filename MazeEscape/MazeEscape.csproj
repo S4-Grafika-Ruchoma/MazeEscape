@@ -51,6 +51,8 @@
     <Compile Include="GameObjects\Object3D.cs" />
     <Compile Include="MainMenu\MainMenu.cs" />
     <Compile Include="MainMenu\MenuButton.cs" />
+    <Compile Include="MazeGen\Maze.cs" />
+    <Compile Include="MazeGen\RectCell.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sounds\BackgroundSongs.cs" />

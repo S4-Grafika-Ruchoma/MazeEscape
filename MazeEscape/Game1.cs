@@ -23,6 +23,8 @@ namespace MazeEscape
         private SpriteBatch spriteBatch;
         Object3D cameraAxies;
 
+        MazeGen.Maze Maze;
+
         private List<Object3D> obj;
         private List<Line> lines;
 
@@ -48,6 +50,21 @@ namespace MazeEscape
 
         protected override void Initialize()
         {
+            //Maze generator
+            //Jest od chuja różnych konstruktorów
+            //najprosszy robi wszystko randomowo
+            Maze = new MazeGen.Maze(10, 10);
+            //Init musi być najpierw
+            Maze.Initialize();
+            Maze.Generate();
+            // Matrix opisujący co gdzie jest w Mazie
+            short[,] Matrix = MazeGen.Maze.GenerateMatrix(Maze);
+            //to co oznacza poszczególna liczba jest w enumie
+            var x = MazeGen.Maze.Matrix.DeadEnd;
+            // ten matrix jest jeszcze lekko zdupiony bo wewnętrzne ściany są podwójne
+
+
+
             camera = new Camera(this, new Vector3(0, 15, 0), Vector3.Zero, 5);
             Components.Add(camera);
 
