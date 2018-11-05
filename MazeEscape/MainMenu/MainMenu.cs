@@ -16,6 +16,8 @@ namespace MazeEscape.MainMenu
         SoundEffects button_click;
 
         bool mouseLock = false;
+        bool opcjePressed = false;
+        bool autorzyPressed = false;
 
         private SoundManager soundMgr;
 
@@ -88,7 +90,7 @@ namespace MazeEscape.MainMenu
             }
 
             // Rozpocznij gre
-            if (Buttons[0].IsOn(mousePos) && Buttons[0].LeftClick(mouseState) && !mouseLock)
+            if (Buttons[0].IsOn(mousePos) && Buttons[0].LeftClick(mouseState) && !mouseLock &&!opcjePressed && !autorzyPressed)
             {
                 runGame = true;
                 soundMgr.Stop("menu-ambient");
@@ -96,17 +98,19 @@ namespace MazeEscape.MainMenu
             }
 
             // Autorzy 
-            if (Buttons[1].IsOn(mousePos) && Buttons[1].LeftClick(mouseState) && !mouseLock)
+            if (Buttons[1].IsOn(mousePos) && Buttons[1].LeftClick(mouseState) && !mouseLock && !opcjePressed && !autorzyPressed)
             {
+                autorzyPressed = true;
             }
 
             // Opcje
-            if (Buttons[2].IsOn(mousePos) && Buttons[2].LeftClick(mouseState) && !mouseLock)
+            if (Buttons[2].IsOn(mousePos) && Buttons[2].LeftClick(mouseState) && !mouseLock && !opcjePressed && !autorzyPressed)
             {
+                opcjePressed = true;
             }
 
             // Wyjdź
-            if (Buttons[3].IsOn(mousePos) && Buttons[3].LeftClick(mouseState) && !mouseLock)
+            if (Buttons[3].IsOn(mousePos) && Buttons[3].LeftClick(mouseState) && !mouseLock && !opcjePressed && !autorzyPressed)
             {
                 soundMgr.Stop("menu-ambient");
                 Exit();
@@ -135,10 +139,29 @@ namespace MazeEscape.MainMenu
             spriteBatch.Begin();
             spriteBatch.Draw(menuBackground, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
 
-            for (int i = 0; i < 4; i++)
+
+            if(opcjePressed)
             {
-                Buttons[i].Draw(spriteBatch);
+
             }
+
+            else if(autorzyPressed)
+            {
+
+            }
+
+            else
+            {
+                // Rysowanie MainMenu
+                for (int i = 0; i < 4; i++)
+                {
+                    Buttons[i].Draw(spriteBatch);
+                }
+            }
+           
+            
+
+
 
             spriteBatch.End();
             base.Draw(gameTime);
