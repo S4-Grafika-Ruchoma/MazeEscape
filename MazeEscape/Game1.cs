@@ -156,7 +156,7 @@ namespace MazeEscape
                     {
                         obj.Add(new Object3D(Content, camera, wallBlock)
                         {
-                            Position = new Vector3(row * 2, 0, col * 2),
+                            Position = new Vector3(row * 2, 1, col * 2),
                             Scale = new Vector3(0.01f),
                             Type = ColliderType.Wall
                         });
@@ -165,7 +165,7 @@ namespace MazeEscape
                     {
                         obj.Add(new Object3D(Content, camera, ladder)
                         {
-                            Position = new Vector3(row * 2, 0, col * 2),
+                            Position = new Vector3(row * 2, 1, col * 2),
                             Scale = new Vector3(0.03f),
                             Type = ColliderType.LadderExit
                         });
@@ -174,7 +174,7 @@ namespace MazeEscape
                     {
                         obj.Add(new Object3D(Content, camera, ladder)
                         {
-                            Position = new Vector3(row * 2, 0, col * 2),
+                            Position = new Vector3(row * 2, 1, col * 2),
                             Scale = new Vector3(0.04f),
                             Type = ColliderType.LadderEnter
                         });
@@ -199,7 +199,7 @@ namespace MazeEscape
             }
             while (map[Pos1][Pos2] == (int)MazeGen.Maze.Matrix.Wall);
             enemy.Position = new Vector3(Pos1 * 2, 1, Pos2 * 2);
-            //	camera.AddColliderObject(enemy.ColliderBox);
+            //camera.AddColliderObject(enemy.ColliderBox);
         }
 
         protected override void LoadContent()
@@ -314,7 +314,15 @@ namespace MazeEscape
             {
                 playerLine.DrawLine(basicEffect, GraphicsDevice, Vector3.Zero,
                     new Vector3(camera.Position.X, camera.Position.Y - 0.02f, camera.Position.Z));
-                enemy.EnemyPlayerLine.DrawLine(basicEffect, GraphicsDevice, enemy.Position, camera.Position);
+                
+                enemy.EnemyPlayerLine.DrawLine(basicEffect, GraphicsDevice, enemy.Position, new Vector3(camera.Position.X, camera.Position.Y - 0.02f, camera.Position.Z));
+            }
+
+            if (camera.ShowColliders)
+            {
+                camera.DrawCollider(basicEffect, GraphicsDevice);
+                floor.DrawCollider(basicEffect, GraphicsDevice);
+                enemy.DrawCollider(basicEffect, GraphicsDevice);
             }
 
             spriteBatch.Begin();
@@ -343,13 +351,6 @@ namespace MazeEscape
                 spriteBatch.DrawString(_spr_font, $"[U] Show colliders: {camera.ShowColliders}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 xPos += inc;
 
-            }
-
-            if (camera.ShowColliders)
-            {
-                camera.DrawCollider(basicEffect, GraphicsDevice);
-                floor.DrawCollider(basicEffect, GraphicsDevice);
-                enemy.DrawCollider(basicEffect, GraphicsDevice);
             }
             spriteBatch.End();
 
