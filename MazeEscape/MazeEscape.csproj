@@ -41,6 +41,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AI\Enemy.cs" />
     <Compile Include="AppConfig.cs" />
     <Compile Include="CustomClasses\Camera.cs" />
     <Compile Include="CustomClasses\Floor.cs" />

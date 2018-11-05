@@ -14,7 +14,9 @@ namespace MazeEscape.Interfaces
 
         Model Model { get; set; }
 
-        void Draw();
+		Vector3 Scale { get; set; }
+
+		void Draw();
         void DrawAt(Vector3 position);
 
         ContentManager Content { get; set; }

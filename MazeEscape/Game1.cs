@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using MazeEscape.AI;
 using MazeEscape.CustomClasses;
 using MazeEscape.Enums;
 using MazeEscape.GameObjects;
@@ -21,6 +22,7 @@ namespace MazeEscape
         private BasicEffect basicEffect;
         private SpriteBatch spriteBatch;
         Object3D cameraAxies;
+		Enemy enemy;
 
         MazeGen.Maze Maze;
 
@@ -49,10 +51,16 @@ namespace MazeEscape
 
         protected override void Initialize()
         {
+
             camera = new Camera(this, new Vector3(0, 15, 0), Vector3.Zero, 5);
             Components.Add(camera);
 
-            floor = new Floor(GraphicsDevice, 120, 120);
+			// Tworzenie przeciwnika
+			enemy = new Enemy(new Vector3(0, 10, 0), Content.Load<Model>("Models/stozek"), this.Content, this.camera)
+			{
+				Scale = new Vector3(0.01f, 0.1f, 0.01f)
+			};
+			floor = new Floor(GraphicsDevice, 120, 120);
             camera.AddColliderObject(floor.ColliderBox);
 
             basicEffect = new BasicEffect(GraphicsDevice)
@@ -76,7 +84,6 @@ namespace MazeEscape
                 Scale = new Vector3(0.01f),
                 Rotation = new Vector3(MathHelper.ToRadians(-90), MathHelper.ToRadians(180), 0)
             };
-
             //obj.Add(new Object3D(Content, camera, "Models/axies")
             //{
             //    Position = new Vector3(1, 0, 1),
@@ -182,7 +189,18 @@ namespace MazeEscape
             camera.ResetColiders();
             camera.AddColliderObjects(obj.Select(a => a.ColliderBox).ToList());
 
-        }
+			Random rnd = new Random();
+			int Pos1 = 0;
+			int Pos2 = 0;
+			do
+			{
+				Pos1 = rnd.Next(0, map.Count - 1);
+				Pos2 = rnd.Next(0, map.Count - 1);
+			}
+			while (map[Pos1][Pos2] == (int)MazeGen.Maze.Matrix.Wall);
+			enemy.Position = new Vector3(Pos1 * 2, 0, Pos2 * 2);
+			camera.AddColliderObject(enemy.ColliderBox);
+		}
 
         protected override void LoadContent()
         {
@@ -323,8 +341,10 @@ namespace MazeEscape
             {
                 camera.DrawCollider(basicEffect, GraphicsDevice);
                 floor.DrawCollider(basicEffect, GraphicsDevice);
+				enemy.DrawCollider(basicEffect, GraphicsDevice);
             }
 
+			enemy.Draw();
             spriteBatch.End();
 
 
