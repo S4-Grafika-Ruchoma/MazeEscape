@@ -133,7 +133,7 @@ namespace MazeEscape
             }
 
 
-            var wallBlock = Content.Load<Model>("Models/wallBlock");
+            var wallBlock = Content.Load<Model>("Models/Wall_Block_v2a");
             var ladder = Content.Load<Model>("Models/ladder");
 
             obj = new List<Object3D>();
@@ -261,7 +261,7 @@ namespace MazeEscape
             };
             GraphicsDevice.DepthStencilState = depthStencilState;
 
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             floor.Draw(camera, basicEffect);
 
