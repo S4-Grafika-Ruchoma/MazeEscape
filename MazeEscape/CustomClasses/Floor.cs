@@ -10,7 +10,7 @@ namespace MazeEscape.CustomClasses
         private int floorHeight;
         private VertexBuffer floorBuffer;
         private GraphicsDevice device;
-        Color[] floorColors = new Color[2] { Color.White, Color.Black };
+        Color[] floorColors = new Color[2] { new Color(53,23,23), new Color(23, 23, 23) };
 
         public Floor(GraphicsDevice device, int width, int height)
         {
