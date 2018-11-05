@@ -198,8 +198,8 @@ namespace MazeEscape
 				Pos2 = rnd.Next(0, map.Count - 1);
 			}
 			while (map[Pos1][Pos2] == (int)MazeGen.Maze.Matrix.Wall);
-			enemy.Position = new Vector3(Pos1 * 2, 0, Pos2 * 2);
-			camera.AddColliderObject(enemy.ColliderBox);
+			enemy.Position = new Vector3(Pos1 * 2, 1, Pos2 * 2);
+		//	camera.AddColliderObject(enemy.ColliderBox);
 		}
 
         protected override void LoadContent()
@@ -268,6 +268,7 @@ namespace MazeEscape
 
             prevState = keyboardState;
 
+			enemy.Step();
             base.Update(gameTime);
         }
         
@@ -309,7 +310,8 @@ namespace MazeEscape
             if (camera.ShowCenterLine)
                 playerLine.DrawLine(basicEffect, GraphicsDevice, Vector3.Zero, new Vector3(camera.Position.X, camera.Position.Y - 0.02f, camera.Position.Z));
 
-            spriteBatch.Begin();
+			enemy.EnemyPlayerLine.DrawLine(basicEffect, GraphicsDevice, enemy.Position, camera.Position);
+			spriteBatch.Begin();
             {
                 float xPos = 5f, inc = 25f;
                 _total_frames++;
@@ -344,8 +346,11 @@ namespace MazeEscape
 				enemy.DrawCollider(basicEffect, GraphicsDevice);
             }
 
+
 			enemy.Draw();
-            spriteBatch.End();
+			
+
+				spriteBatch.End();
 
 
             base.Draw(gameTime);

@@ -16,7 +16,7 @@ namespace MazeEscape
 
         public static bool PLAY_SOUNDS = false;
 
-        public static bool _DEBUG_SKIP_MAIN_MENU_ = false;//=false;
+        public static bool _DEBUG_SKIP_MAIN_MENU_ = true;//=false;
         public static bool _DEBUG_AUTO_NO_CLIP_ = true;//=false;
         public static bool _DEBUG_SHOW_DIRECTION_TO_CENTER_ = false;
 

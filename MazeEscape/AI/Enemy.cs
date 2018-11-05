@@ -22,7 +22,9 @@ namespace MazeEscape.AI
 		public Vector3 Scale { get; set; }
 		public Camera Camera { get; set; }
 		public ColliderType Type => ColliderType.Enemy;
-
+		public Line EnemyPlayerLine;
+		public override BoundingBox ColliderBox => new BoundingBox(Position - new Vector3(0.5f), Position + new Vector3(0.5f));
+		public Vector3 MoveVector { get; set; }
 		public Enemy(Vector3 Position, Model Model, ContentManager Content, Camera Camera)
 		{
 			this.Position = Position;
@@ -30,16 +32,33 @@ namespace MazeEscape.AI
 			this.Content = Content;
 			this.Visible = true;
 			this.Camera = Camera;
+			EnemyPlayerLine = new Line(this.Position, Camera.Position);
+			MoveVector = new Vector3(0.1f, 0, 0);
 		}
 		public void Move()
 		{
 
 		}
+
+		List<Vector3> Directions = new List<Vector3>()
+		{
+			new Vector3(0.1f, 0, 0),
+			new Vector3(-0.1f, 0, 0),
+			new Vector3(0, 0, 0.1f),
+			new Vector3(0, 0, -0.1f),
+		};
 		public void Step()
 		{
+			this.Position += MoveVector;
+			var list = Camera.ColliderObjects.Where(a => a.Intersects(ColliderBox)).ToList();
+			if (list.Any())
+			{
+				Random rnd = new Random();
+				this.Position -= MoveVector;
 
+				MoveVector = Directions[rnd.Next(0, 4)];
+			}
 		}
-		public override BoundingBox ColliderBox => new BoundingBox(Position - new Vector3(0.3f), Position + new Vector3(0.3f));
 
 	
 
