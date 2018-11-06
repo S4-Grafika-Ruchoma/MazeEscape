@@ -62,10 +62,11 @@ namespace MazeEscape.AI
                 this.Position -= MoveVector;
 
                 MoveVector = Directions[rnd.Next(0, 4)];
-				SoundManager.Play("Footstep - Hard Sole On Gravel 23");
-
 				}
-        }
+				else
+				SoundManager.Play("enemy_step");
+
+		}
 
 
 

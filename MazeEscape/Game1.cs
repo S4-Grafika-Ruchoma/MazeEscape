@@ -105,6 +105,7 @@ namespace MazeEscape
                     {"menu-btn-click","Sounds/lose sound 1_0"},
                     {"talk-1","Sounds/angry"},
                     {"talk-2","Sounds/dont_leave"},
+                    {"enemy_step","Sounds/enemy_step"}
                 }
             );
 
