@@ -1,6 +1,7 @@
 ﻿using MazeEscape.CustomClasses;
 using MazeEscape.Enums;
 using MazeEscape.Interfaces;
+using MazeEscape.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -25,7 +26,9 @@ namespace MazeEscape.AI
         public Line EnemyPlayerLine;
         public override BoundingBox ColliderBox => new BoundingBox(Position - new Vector3(0.9f), Position + new Vector3(0.9f));
         public Vector3 MoveVector { get; set; }
-        public Enemy(Vector3 Position, Model Model, ContentManager Content, Camera Camera)
+		  public SoundManager SoundManager { get; set; }
+
+		public Enemy(Vector3 Position, Model Model, ContentManager Content, Camera Camera, SoundManager SoundManager)
         {
             this.Position = Position;
             this.Model = Model;
@@ -34,7 +37,9 @@ namespace MazeEscape.AI
             this.Camera = Camera;
             EnemyPlayerLine = new Line(this.Position, Camera.Position);
             MoveVector = new Vector3(0.1f, 0, 0);
-        }
+			this.SoundManager = SoundManager;
+
+		  }
         public void Move()
         {
 
@@ -57,7 +62,9 @@ namespace MazeEscape.AI
                 this.Position -= MoveVector;
 
                 MoveVector = Directions[rnd.Next(0, 4)];
-            }
+				SoundManager.Play("Footstep - Hard Sole On Gravel 23");
+
+				}
         }
 
 

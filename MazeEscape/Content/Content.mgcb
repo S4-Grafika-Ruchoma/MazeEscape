@@ -323,6 +323,12 @@
 /processorParam:Quality=Best
 /build:Sounds/event.mp3
 
+#begin Sounds/Footstep - Hard Sole On Gravel 23.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Sounds/Footstep - Hard Sole On Gravel 23.mp3
+
 #begin Sounds/horror ambient.mp3
 /importer:Mp3Importer
 /processor:SongProcessor

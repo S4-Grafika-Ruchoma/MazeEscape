@@ -55,8 +55,9 @@ namespace MazeEscape
             camera = new Camera(this, new Vector3(0, 15, 0), Vector3.Zero, 5);
             Components.Add(camera);
 
-            // Tworzenie przeciwnika
-            enemy = new Enemy(new Vector3(0, 10, 0), Content.Load<Model>("Models/stozek"), this.Content, this.camera)
+			soundMgr = new SoundManager(Content);
+			// Tworzenie przeciwnika
+			enemy = new Enemy(new Vector3(0, 10, 0), Content.Load<Model>("Models/stozek"), this.Content, this.camera, soundMgr)
             {
                 Scale = new Vector3(0.01f, 0.1f, 0.01f)
             };
@@ -91,7 +92,7 @@ namespace MazeEscape
             //    Rotation = new Vector3(MathHelper.ToRadians(-90), MathHelper.ToRadians(180), 0)
             //});
 
-            soundMgr = new SoundManager(Content);
+           
             soundMgr.Add(
                 new Dictionary<string, string>()
                 {
@@ -354,8 +355,7 @@ namespace MazeEscape
             }
             spriteBatch.End();
 
-
-            base.Draw(gameTime);
+			base.Draw(gameTime);
         }
     }
 
