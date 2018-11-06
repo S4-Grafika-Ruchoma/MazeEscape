@@ -95,7 +95,8 @@ namespace MazeEscape
             soundMgr.Add(
                 new Dictionary<string, string>()
                 {
-                    {"menu-ambient","Music/menu" }
+                    {"menu-ambient","Music/menu" },
+                    {"game-ambient","Sounds/horror_ambient" }
                 },
                 new Dictionary<string, string>()
                 {
@@ -107,7 +108,7 @@ namespace MazeEscape
             );
 
             soundMgr.Play("talk-1");
-            //soundMgr.Play("talk-2");
+            soundMgr.Play("game-ambient");
 
             base.Initialize();
         }
