@@ -55,9 +55,9 @@ namespace MazeEscape
             camera = new Camera(this, new Vector3(0, 15, 0), Vector3.Zero, 5);
             Components.Add(camera);
 
-			soundMgr = new SoundManager(Content);
-			// Tworzenie przeciwnika
-			enemy = new Enemy(new Vector3(0, 10, 0), Content.Load<Model>("Models/stozek"), this.Content, this.camera, soundMgr)
+            soundMgr = new SoundManager(Content);
+            // Tworzenie przeciwnika
+            enemy = new Enemy(new Vector3(0, 10, 0), Content.Load<Model>("Models/stozek"), this.Content, this.camera, soundMgr)
             {
                 Scale = new Vector3(0.01f, 0.1f, 0.01f)
             };
@@ -92,7 +92,7 @@ namespace MazeEscape
             //    Rotation = new Vector3(MathHelper.ToRadians(-90), MathHelper.ToRadians(180), 0)
             //});
 
-           
+
             soundMgr.Add(
                 new Dictionary<string, string>()
                 {
@@ -317,7 +317,7 @@ namespace MazeEscape
             {
                 playerLine.DrawLine(basicEffect, GraphicsDevice, Vector3.Zero,
                     new Vector3(camera.Position.X, camera.Position.Y - 0.02f, camera.Position.Z));
-                
+
                 enemy.EnemyPlayerLine.DrawLine(basicEffect, GraphicsDevice, enemy.Position, new Vector3(camera.Position.X, camera.Position.Y - 0.02f, camera.Position.Z));
             }
 
@@ -330,37 +330,57 @@ namespace MazeEscape
 
             spriteBatch.Begin();
             {
-                float xPos = 5f, inc = 25f;
+                float xPos = 5f, yPos = 5f, inc = 25f;
                 _total_frames++;
 
-                spriteBatch.DrawString(_spr_font, $"FPS:{_fps}", new Vector2(5f, xPos), Color.Indigo, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                xPos += inc;
+                #region  lewy panel
+                spriteBatch.DrawString(_spr_font, $"GRACZ FPS:{_fps}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"Pozycja X: {camera.Position.X:F2}", new Vector2(5f, xPos), Color.DarkRed, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                xPos += inc;
+                spriteBatch.DrawString(_spr_font, $"Pozycja X: {camera.Position.X:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"Pozycja Y: {camera.Position.Y:F2}", new Vector2(5f, xPos), Color.DarkGreen, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                xPos += inc;
+                spriteBatch.DrawString(_spr_font, $"Pozycja Y: {camera.Position.Y:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"Pozycja Z: {camera.Position.Z:F2}", new Vector2(5f, xPos), Color.DarkBlue, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                xPos += inc;
+                spriteBatch.DrawString(_spr_font, $"Pozycja Z: {camera.Position.Z:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"[M] NoClip: {camera.AllowClimb}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                xPos += inc;
+                spriteBatch.DrawString(_spr_font, $"[M] NoClip: {camera.AllowClimb}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"[J] Center line: {camera.ShowCenterLine}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                xPos += inc;
+                spriteBatch.DrawString(_spr_font, $"[J] Linie: {camera.ShowCenterLine}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"[U] Show colliders: {camera.ShowColliders}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                xPos += inc;
+                spriteBatch.DrawString(_spr_font, $"[U] Colliders: {camera.ShowColliders}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
+                #endregion
 
-                spriteBatch.DrawString(_spr_font, $"TIMER: {enemy.timer} / {soundMgr.GetDuration("enemy_step")}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                xPos += inc;
+                xPos = GraphicsDevice.Viewport.Width - 250;
+                yPos = 5f;
+                inc = 25f;
 
+                #region prawy panel
+                spriteBatch.DrawString(_spr_font, $"PRZECIWNIK", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
+
+                spriteBatch.DrawString(_spr_font, $"Pozycja X: {enemy.Position.X:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
+
+                spriteBatch.DrawString(_spr_font, $"Pozycja Y: {enemy.Position.Y:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
+
+                spriteBatch.DrawString(_spr_font, $"Pozycja Z: {enemy.Position.Z:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
+
+                spriteBatch.DrawString(_spr_font, $"Timer dzwięku: {enemy.timer} / {soundMgr.GetDuration("enemy_step")}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
+
+                #endregion
             }
             spriteBatch.End();
 
-			base.Draw(gameTime);
+            base.Draw(gameTime);
         }
     }
 
