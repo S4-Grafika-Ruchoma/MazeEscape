@@ -148,6 +148,7 @@ namespace MazeEscape
 
             obj = new List<Object3D>();
 
+            camera.ResetColiders();
 
             var row = 0;
             foreach (var mapRow in map)
@@ -168,19 +169,23 @@ namespace MazeEscape
                     {
                         obj.Add(new Object3D(Content, camera, ladder)
                         {
-                            Position = new Vector3(row * 2, 1, col * 2),
+                            Position = new Vector3(row * 2, 2, col * 2),
                             Scale = new Vector3(0.03f),
                             Type = ColliderType.LadderExit
                         });
+
+                        camera.EndCollider = obj.Last().ColliderBox;
+                        camera.NextLevelStartPosition = new Vector3(row * 2, 1, col * 2);
                     }
                     else if (mapCell == (int)MazeGen.Maze.Matrix.StartCell)
                     {
                         obj.Add(new Object3D(Content, camera, ladder)
                         {
-                            Position = new Vector3(row * 2, 1, col * 2),
+                            Position = new Vector3(row * 2, 2, col * 2),
                             Scale = new Vector3(0.04f),
                             Type = ColliderType.LadderEnter
                         });
+                        camera.Position = new Vector3(row * 2, 1, col * 2);
                     }
 
                     col++;
@@ -189,8 +194,7 @@ namespace MazeEscape
                 row++;
             }
 
-            camera.ResetColiders();
-            camera.AddColliderObjects(obj.Select(a => a.ColliderBox).ToList());
+            camera.AddColliderObjects(obj.Where(a => a.Type != ColliderType.LadderEnter).Select(a => a.ColliderBox).ToList());
 
             Random rnd = new Random();
             int Pos1 = 0;
@@ -257,6 +261,11 @@ namespace MazeEscape
                 _INIT_TEST_MAP_();
             }
             #endregion
+
+            if (camera.IsEndLevelCollision())
+            {
+                _INIT_TEST_MAP_();
+            }
 
             // Update
             _elapsed_time += (float)gameTime.ElapsedGameTime.TotalMilliseconds;

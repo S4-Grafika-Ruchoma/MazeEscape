@@ -103,6 +103,8 @@ namespace MazeEscape.CustomClasses
 
         public bool ShowColliders { get; internal set; }
         public List<BoundingBox> ColliderObjects { get; set; }
+        public BoundingBox EndCollider { get; set; }
+        public Vector3 NextLevelStartPosition { get; set; }
 
         private void Move(Vector3 scale)
         {
@@ -159,7 +161,7 @@ namespace MazeEscape.CustomClasses
                 if (!AllowClimb)
                 {
                     var list = ColliderObjects.Where(a => a.Intersects(ColliderBox)).ToList();
-                    if (list.Any())
+                    if (list.Any() && !IsEndLevelCollision())
                     {
                         //    var camPos = cameraPosition;
                         //    var blocksCenter = list.Select(a => new Vector3(
@@ -205,6 +207,11 @@ namespace MazeEscape.CustomClasses
             }
         }
 
+        public bool IsEndLevelCollision()
+        {
+            return EndCollider.Intersects(this.ColliderBox);
+        }
+
         public void DrawCollider(BasicEffect basicEffect, GraphicsDevice GraphicsDevice)
         {
             using (var line = new Line())
@@ -240,6 +247,7 @@ namespace MazeEscape.CustomClasses
         {
             ColliderObjects.Add(col);
         }
+
         public void AddColliderObjects(List<BoundingBox> cols)
         {
             ColliderObjects.AddRange(cols);
