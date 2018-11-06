@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Media;
+﻿using System;
+using Microsoft.Xna.Framework.Media;
 
 namespace MazeEscape.Sounds
 {
@@ -43,6 +44,9 @@ namespace MazeEscape.Sounds
         {
             MediaPlayer.Resume();
         }
+
+        public TimeSpan Duration => song.Duration;
+
         public void Pause()
         {
             MediaPlayer.Pause();

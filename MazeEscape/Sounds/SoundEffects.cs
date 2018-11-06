@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Audio;
+﻿using System;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 
 namespace MazeEscape.Sounds
@@ -39,12 +40,14 @@ namespace MazeEscape.Sounds
 
         public void Stop()
         {
-            throw new System.NotImplementedException();
+            
         }
 
         public void Resume()
         {
             throw new System.NotImplementedException();
         }
+
+        public TimeSpan Duration => sound.Duration;
     }
 }

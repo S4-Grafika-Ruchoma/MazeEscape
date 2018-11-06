@@ -157,5 +157,16 @@ namespace MazeEscape.Sounds
 
         // TODO Dodać Pause i Resume i Zmiane głośności
 
+        public int GetDuration(string name)
+        {
+            var sound = FindSound(name);
+
+            if (sound != null)
+            {
+                return (int)sound.Duration.TotalMilliseconds;
+            }
+
+            return 0;
+        }
     }
 }

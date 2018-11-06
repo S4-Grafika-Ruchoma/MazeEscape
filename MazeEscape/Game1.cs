@@ -271,7 +271,7 @@ namespace MazeEscape
 
             prevState = keyboardState;
 
-            enemy.Step();
+            enemy.Step(gameTime);
             base.Update(gameTime);
         }
 
@@ -352,6 +352,9 @@ namespace MazeEscape
                 xPos += inc;
 
                 spriteBatch.DrawString(_spr_font, $"[U] Show colliders: {camera.ShowColliders}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                xPos += inc;
+
+                spriteBatch.DrawString(_spr_font, $"TIMER: {enemy.timer} / {soundMgr.GetDuration("enemy_step")}", new Vector2(5f, xPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 xPos += inc;
 
             }

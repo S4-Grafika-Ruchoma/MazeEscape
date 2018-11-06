@@ -12,5 +12,7 @@ namespace MazeEscape.Sounds
         void Pause();
         void Stop();
         void Resume();
+
+        TimeSpan Duration { get; }
     }
 }
