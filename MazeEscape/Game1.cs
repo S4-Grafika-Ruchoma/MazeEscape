@@ -143,10 +143,17 @@ namespace MazeEscape
             }
 
 
-            var wallBlock = Content.Load<Model>("Models/Wall_Block_v1a");
+            var wallBlock = new List<Model>()
+            {
+                Content.Load<Model>("Models/Wall_Block_v1a"),
+                Content.Load<Model>("Models/Wall_Block_v2a")
+            };
+
             var ladder = Content.Load<Model>("Models/ladder");
 
             obj = new List<Object3D>();
+
+            Random rnd = new Random();
 
             camera.ResetColiders();
 
@@ -158,7 +165,7 @@ namespace MazeEscape
                 {
                     if (mapCell == (int)MazeGen.Maze.Matrix.Wall)
                     {
-                        obj.Add(new Object3D(Content, camera, wallBlock)
+                        obj.Add(new Object3D(Content, camera, wallBlock[rnd.Next(0,wallBlock.Count())])
                         {
                             Position = new Vector3(row * 2, 1, col * 2),
                             Scale = new Vector3(0.01f),
@@ -175,7 +182,7 @@ namespace MazeEscape
                         });
 
                         camera.EndCollider = obj.Last().ColliderBox;
-                        camera.NextLevelStartPosition = new Vector3(row * 2, 1, col * 2);
+                            camera.NextLevelStartPosition = new Vector3(row * 2, 1, col * 2);
                     }
                     else if (mapCell == (int)MazeGen.Maze.Matrix.StartCell)
                     {
@@ -185,7 +192,8 @@ namespace MazeEscape
                             Scale = new Vector3(0.04f),
                             Type = ColliderType.LadderEnter
                         });
-                        camera.Position = new Vector3(row * 2, 1, col * 2);
+                        if (!AppConfig._DEBUG_DISABLE_START_SPAWN_)
+                            camera.Position = new Vector3(row * 2, 1, col * 2);
                     }
 
                     col++;
@@ -195,8 +203,7 @@ namespace MazeEscape
             }
 
             camera.AddColliderObjects(obj.Where(a => a.Type != ColliderType.LadderEnter).Select(a => a.ColliderBox).ToList());
-
-            Random rnd = new Random();
+            
             int Pos1 = 0;
             int Pos2 = 0;
             do
