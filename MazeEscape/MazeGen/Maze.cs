@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MazeEscape.Enums;
 using Microsoft.Xna.Framework;
 
 namespace MazeEscape.MazeGen
@@ -206,14 +207,6 @@ namespace MazeEscape.MazeGen
                 validDirections.Remove(item);
         }
 
-        private enum Directions
-        {
-            Invalid,
-            North,
-            South,
-            East,
-            West,
-        }
 
         private List<Directions> GetAllDirections()
         {
@@ -253,27 +246,27 @@ namespace MazeEscape.MazeGen
             foreach (var item in maze.Board)
             {  
                 //if (item.IsDeadEnd)
-                //    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.DeadEnd;
+                //    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)MapTile.DeadEnd;
                 //else if (item.HasLadderUp)
-                //    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.LadderUp;
+                //    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)MapTile.LadderUp;
                 //else if (item.HasLadderDown)
-                //    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.LadderDown;
+                //    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)MapTile.LadderDown;
                 ////else
-                ////    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)Matrix.Empty;
+                ////    matrix[item.Point.X + 1, item.Point.Y + 1] = (short)MapTile.Empty;
 
                 if (item.NorthWall)
-                    InsertInRow((short)Matrix.Wall, 3, matrix, new Point(item.Point.X * 3, item.Point.Y * 3));
+                    InsertInRow((short)MapTile.Wall, 3, matrix, new Point(item.Point.X * 3, item.Point.Y * 3));
                 if (item.SouthWall)
-                    InsertInRow((short)Matrix.Wall, 3, matrix, new Point(item.Point.X * 3, (item.Point.Y * 3) + 2));
+                    InsertInRow((short)MapTile.Wall, 3, matrix, new Point(item.Point.X * 3, (item.Point.Y * 3) + 2));
                 if (item.WestWall)
-                    InsertInCol((short)Matrix.Wall, 3, matrix, new Point(item.Point.X * 3, item.Point.Y * 3));
+                    InsertInCol((short)MapTile.Wall, 3, matrix, new Point(item.Point.X * 3, item.Point.Y * 3));
                 if (item.EastWall)
-                    InsertInCol((short)Matrix.Wall, 3, matrix, new Point((item.Point.X * 3) + 2, item.Point.Y * 3));
+                    InsertInCol((short)MapTile.Wall, 3, matrix, new Point((item.Point.X * 3) + 2, item.Point.Y * 3));
 
             }
 
-            matrix[maze._startPoint.X * 3 + 1, maze._startPoint.Y * 3 + 1] = (short)Matrix.StartCell;
-            matrix[maze._endPoint.X * 3 + 1, maze._endPoint.Y * 3 + 1] = (short)Matrix.EndCell;
+            matrix[maze._startPoint.X * 3 + 1, maze._startPoint.Y * 3 + 1] = (short)MapTile.StartCell;
+            matrix[maze._endPoint.X * 3 + 1, maze._endPoint.Y * 3 + 1] = (short)MapTile.EndCell;
 
 
 
@@ -293,17 +286,6 @@ namespace MazeEscape.MazeGen
             {
                 matrix[pos.X, i] = value;
             }
-        }
-
-        public enum Matrix
-        {
-            Wall = -1,
-            Empty = 0,
-            DeadEnd = 1,
-            LadderUp = 2,
-            LadderDown = 3,
-            StartCell = 4,
-            EndCell = 5,
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using MazeEscape.CustomClasses;
-using MazeEscape.Enums;
 using MazeEscape.Interfaces;
 using MazeEscape.Sounds;
 using Microsoft.Xna.Framework;
@@ -8,8 +7,6 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MazeEscape.AI
 {
@@ -22,7 +19,6 @@ namespace MazeEscape.AI
         public ContentManager Content { get; set; }
         public Vector3 Scale { get; set; }
         public Camera Camera { get; set; }
-        public ColliderType Type => ColliderType.Enemy;
         public Line EnemyPlayerLine;
         public override BoundingBox ColliderBox => new BoundingBox(Position - new Vector3(0.9f), Position + new Vector3(0.9f));
         public Vector3 MoveVector { get; set; }
@@ -40,10 +36,6 @@ namespace MazeEscape.AI
             EnemyPlayerLine = new Line(this.Position, Camera.Position);
             MoveVector = new Vector3(0.1f, 0, 0);
             this.SoundManager = SoundManager;
-
-        }
-        public void Move()
-        {
 
         }
 
@@ -83,7 +75,7 @@ namespace MazeEscape.AI
 
         public void DrawAt(Vector3 position)
         {
-            //var transform = new Matrix[Model.Bones.Count];
+            //var transform = new MapTile[Model.Bones.Count];
             //Model.CopyAbsoluteBoneTransformsTo(transform);
             foreach (var mesh in Model.Meshes)
             {

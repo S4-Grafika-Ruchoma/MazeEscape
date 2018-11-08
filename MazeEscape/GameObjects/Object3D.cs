@@ -51,7 +51,7 @@ namespace MazeEscape.GameObjects
 
         public void DrawAt(Vector3 position)
         {
-            //var transform = new Matrix[Model.Bones.Count];
+            //var transform = new MapTile[Model.Bones.Count];
             //Model.CopyAbsoluteBoneTransformsTo(transform);
             foreach (var mesh in Model.Meshes)
             {
@@ -66,14 +66,9 @@ namespace MazeEscape.GameObjects
                     effect.EnableDefaultLighting();
                 }
                 //mesh.Draw();
-
-
             }
-
             var worldMatrix = Matrix.CreateScale(Scale) * Matrix.CreateRotationX(Rotation.X) * Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) * Matrix.CreateTranslation(position);
-
-
-
+            
             Model.Draw(worldMatrix, Camera.View, Camera.Projection);
         }
     }

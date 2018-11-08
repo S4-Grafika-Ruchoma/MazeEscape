@@ -10,16 +10,16 @@ namespace MazeEscape
     {
         public static int WIDTH = 1280;
         public static int HEIGHT = 720;
-        public static bool FULL_SCREEN = true;
+        public static bool FULL_SCREEN = false;
         public static bool IS_MOUSE_VISIBLE = true;
         public static bool ALLOW_RESIZING = false;
 
-        public static bool PLAY_SOUNDS = true;
+        public static bool PLAY_SOUNDS = false;
 
-        public static bool _DEBUG_SKIP_MAIN_MENU_ = false;//=false; // Pomijanie menu
-        public static bool _DEBUG_AUTO_NO_CLIP_ = false;//=false; // PRzechodzenie przez ściany
+        public static bool _DEBUG_SKIP_MAIN_MENU_ = true;//=false; // Pomijanie menu
+        public static bool _DEBUG_AUTO_NO_CLIP_ = true;//=false; // PRzechodzenie przez ściany
         public static bool _DEBUG_SHOW_DIRECTION_TO_CENTER_ = false;
-        public static bool _DEBUG_DISABLE_START_SPAWN_ = false; // POminięcie respawnu na początkowej drabince
+        public static bool _DEBUG_DISABLE_START_SPAWN_ = true; // POminięcie respawnu na początkowej drabince
 
         //public static ;
         //public static bool ;

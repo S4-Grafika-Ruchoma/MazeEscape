@@ -22,9 +22,9 @@ namespace MazeEscape.CustomClasses
         public BoundingBox ColliderBox => new BoundingBox(cameraPosition - new Vector3(0.3f), cameraPosition + new Vector3(0.3f));
         public ColliderType ColliderType => ColliderType.Camera;
 
-        public bool ShowCenterLine { get; set; }
+        public bool ShowLines { get; set; }
 
-        public bool AllowClimb { get; set; }
+        public bool NoClip { get; set; }
 
         public Vector3 Position
         {
@@ -53,14 +53,14 @@ namespace MazeEscape.CustomClasses
         public Camera(Game game, Vector3 position, Vector3 rotation, float speed) : base(game)
         {
             ColliderObjects = new List<BoundingBox>();
-            AllowClimb = AppConfig._DEBUG_AUTO_NO_CLIP_;
+            NoClip = AppConfig._DEBUG_AUTO_NO_CLIP_;
             ShowColliders = false;
 
             cameraSpeed = speed;
             Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Game.GraphicsDevice.Viewport.AspectRatio, 0.05f, 1000);
             MoveTo(position, rotation);
 
-            ShowCenterLine = AppConfig._DEBUG_SHOW_DIRECTION_TO_CENTER_;
+            ShowLines = AppConfig._DEBUG_SHOW_DIRECTION_TO_CENTER_;
 
             prevMouseState = Mouse.GetState();
         }
@@ -133,7 +133,7 @@ namespace MazeEscape.CustomClasses
                 if (keyboardState.IsKeyDown(Keys.D))
                     moveVector.X = -1;
 
-                if (AllowClimb)
+                if (NoClip)
                 {
                     if (keyboardState.IsKeyDown(Keys.Space))
                         moveVector.Y = 1;
@@ -147,7 +147,7 @@ namespace MazeEscape.CustomClasses
                 }
 
                 if (keyboardState.IsKeyDown(Keys.P) && prevState.IsKeyUp(Keys.P))
-                    ShowCenterLine = !ShowCenterLine;
+                    ShowLines = !ShowLines;
 
                 if (moveVector != Vector3.Zero)
                 {
@@ -158,7 +158,7 @@ namespace MazeEscape.CustomClasses
                 }
 
 
-                if (!AllowClimb)
+                if (!NoClip)
                 {
                     var list = ColliderObjects.Where(a => a.Intersects(ColliderBox)).ToList();
                     if (list.Any() && !IsEndLevelCollision())

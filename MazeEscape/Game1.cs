@@ -1,42 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using MazeEscape.AI;
 using MazeEscape.CustomClasses;
 using MazeEscape.Enums;
 using MazeEscape.GameObjects;
+using MazeEscape.MazeGen;
 using MazeEscape.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 
 namespace MazeEscape
 {
     public class Game1 : Game
     {
-        private GraphicsDeviceManager graphics;
-        private Camera camera;
-        private Floor floor;
-        private BasicEffect basicEffect;
-        private SpriteBatch spriteBatch;
+        // Elementy monogame
+        private KeyboardState prevState;
+        GraphicsDeviceManager graphics;
+        BasicEffect basicEffect;
+        SpriteBatch spriteBatch;
+
+        // Elementy gry
+        SoundManager soundManager;
+        List<List<int>> mapMatrix;
+        List<Object3D> gameMap;
         Object3D cameraAxies;
+        Camera camera;
+        Floor floor;
         Enemy enemy;
+        // List<Collider> colliders;
 
-        MazeGen.Maze Maze;
+        // Generator labiryntu
+        Maze mazeGenerator;
 
-        private List<Object3D> obj;
-        private List<Line> lines;
-
-        List<List<int>> map;
-        List<List<int>> floorList;
-
-        SpriteFont _spr_font;
-        private int _total_frames = 0, _fps = 0;
-        float _elapsed_time = 0.0f;
-        private Line playerLine;
-        private SoundManager soundMgr;
+        // Licznik FPS i informacje debugowania
+        SpriteFont Font;
+        int totalFrames, fps;
+        float elapsedTime;
 
         public Game1()
         {
@@ -51,19 +52,6 @@ namespace MazeEscape
 
         protected override void Initialize()
         {
-
-            camera = new Camera(this, new Vector3(0, 15, 0), Vector3.Zero, 5);
-            Components.Add(camera);
-
-            soundMgr = new SoundManager(Content);
-            // Tworzenie przeciwnika
-            enemy = new Enemy(new Vector3(0, 10, 0), Content.Load<Model>("Models/stozek"), this.Content, this.camera, soundMgr)
-            {
-                Scale = new Vector3(0.01f, 0.1f, 0.01f)
-            };
-            floor = new Floor(GraphicsDevice, 120, 120);
-            camera.AddColliderObject(floor.ColliderBox);
-
             basicEffect = new BasicEffect(GraphicsDevice)
             {
                 Alpha = 1,
@@ -71,34 +59,31 @@ namespace MazeEscape
                 LightingEnabled = false,
             };
 
-            playerLine = new Line(new Vector3(0, 1, -50), new Vector3(0, 1, 0));
-            lines = new List<Line>()
-            {
-                //new Line(new Vector3(0,0,0), new Vector3(30,10,30)),
-                //new Line(new Vector3(0,1,-50), new Vector3(0,1,0))
-            };
-            _INIT_TEST_MAP_();
+            // Tworzenie i dodawanie kamery
+            camera = new Camera(this, new Vector3(0, 15, 0), Vector3.Zero, 5);
+            Components.Add(camera);
 
-
+            // Tworzenie podłogi i dodanie collidera
+            floor = new Floor(GraphicsDevice, 120, 120);
+            camera.AddColliderObject(floor.ColliderBox);
+            
+            //Wyświetlenie kierunków XYZ świata
             cameraAxies = new Object3D(Content, camera, "Models/axies")
             {
                 Scale = new Vector3(0.01f),
                 Rotation = new Vector3(MathHelper.ToRadians(-90), MathHelper.ToRadians(180), 0)
             };
-            //obj.Add(new Object3D(Content, camera, "Models/axies")
-            //{
-            //    Position = new Vector3(1, 0, 1),
-            //    Scale = new Vector3(1.5f),
-            //    Rotation = new Vector3(MathHelper.ToRadians(-90), MathHelper.ToRadians(180), 0)
-            //});
 
-
-            soundMgr.Add(
+            // Tworzenie menagera dzwięków i dodawanie
+            soundManager = new SoundManager(Content);
+            soundManager.Add(
+                // Song
                 new Dictionary<string, string>()
                 {
                     {"menu-ambient","Music/menu" },
                     {"game-ambient","Sounds/horror_ambient" }
                 },
+                // SoundEffect
                 new Dictionary<string, string>()
                 {
                     {" ","Sounds/menu_click"},
@@ -109,128 +94,37 @@ namespace MazeEscape
                 }
             );
 
-            soundMgr.Play("talk-1");
-            soundMgr.Play("game-ambient");
+            // Tworzenie przeciwnika
+            enemy = new Enemy(new Vector3(0, 15, 0), Content.Load<Model>("Models/stozek"), this.Content, this.camera, soundManager)
+            {
+                Scale = new Vector3(0.01f, 0.05f, 0.01f)
+            };
+
+            // Tworzenie losowej mapy o podanych rozmiarach
+            mazeGenerator = new Maze(20, 20);
+
+            // Tworzenie mapy i reprezentacji 3D
+            GenerateGameMap();
+
+            // Odtworzenie dzwięków
+            soundManager.Play("talk-1");
+            soundManager.Play("game-ambient");
 
             base.Initialize();
         }
-
-        private void _INIT_TEST_MAP_()
-        {
-            //Maze generator
-            //Jest od chuja różnych konstruktorów
-            //najprosszy robi wszystko randomowo
-            Maze = new MazeGen.Maze(20, 20);
-            //Init musi być najpierw
-            Maze.Initialize();
-            Maze.Generate();
-            // Matrix opisujący co gdzie jest w Mazie
-            short[,] Matrix = MazeGen.Maze.GenerateMatrix(Maze);
-            //to co oznacza poszczególna liczba jest w enumie
-            var x1 = MazeGen.Maze.Matrix.DeadEnd;
-            // ten matrix jest jeszcze lekko zdupiony bo wewnętrzne ściany są podwójne
-
-
-            map = new List<List<int>>();
-
-            for (int i = 0; i < Matrix.GetLength(0); i++)
-            {
-                map.Add(new List<int>());
-                for (int j = 0; j < Matrix.GetLength(1); j++)
-                {
-                    map[i].Add(Matrix[i, j]);
-                }
-            }
-
-
-            var wallBlock = new List<Model>()
-            {
-                Content.Load<Model>("Models/Wall_Block_v1a"),
-                Content.Load<Model>("Models/Wall_Block_v2a")
-            };
-
-            var ladder = Content.Load<Model>("Models/ladder");
-
-            obj = new List<Object3D>();
-
-            Random rnd = new Random();
-
-            camera.ResetColiders();
-
-            var row = 0;
-            foreach (var mapRow in map)
-            {
-                var col = 0;
-                foreach (var mapCell in mapRow)
-                {
-                    if (mapCell == (int)MazeGen.Maze.Matrix.Wall)
-                    {
-                        obj.Add(new Object3D(Content, camera, wallBlock[rnd.Next(0,wallBlock.Count())])
-                        {
-                            Position = new Vector3(row * 2, 1, col * 2),
-                            Scale = new Vector3(0.01f),
-                            Type = ColliderType.Wall
-                        });
-                    }
-                    else if (mapCell == (int)MazeGen.Maze.Matrix.EndCell)
-                    {
-                        obj.Add(new Object3D(Content, camera, ladder)
-                        {
-                            Position = new Vector3(row * 2, 2, col * 2),
-                            Scale = new Vector3(0.03f),
-                            Type = ColliderType.LadderExit
-                        });
-
-                        camera.EndCollider = obj.Last().ColliderBox;
-                            camera.NextLevelStartPosition = new Vector3(row * 2, 1, col * 2);
-                    }
-                    else if (mapCell == (int)MazeGen.Maze.Matrix.StartCell)
-                    {
-                        obj.Add(new Object3D(Content, camera, ladder)
-                        {
-                            Position = new Vector3(row * 2, 2, col * 2),
-                            Scale = new Vector3(0.04f),
-                            Type = ColliderType.LadderEnter
-                        });
-                        if (!AppConfig._DEBUG_DISABLE_START_SPAWN_)
-                            camera.Position = new Vector3(row * 2, 1, col * 2);
-                    }
-
-                    col++;
-                }
-
-                row++;
-            }
-
-            camera.AddColliderObjects(obj.Where(a => a.Type != ColliderType.LadderEnter).Select(a => a.ColliderBox).ToList());
-            
-            int Pos1 = 0;
-            int Pos2 = 0;
-            do
-            {
-                Pos1 = rnd.Next(0, map.Count - 1);
-                Pos2 = rnd.Next(0, map.Count - 1);
-            }
-            while (map[Pos1][Pos2] == (int)MazeGen.Maze.Matrix.Wall);
-            enemy.Position = new Vector3(Pos1 * 2, 1, Pos2 * 2);
-            //camera.AddColliderObject(enemy.ColliderBox);
-        }
-
+        
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            _spr_font = Content.Load<SpriteFont>("Fonts/SpriteFontPL");
+            Font = Content.Load<SpriteFont>("Fonts/SpriteFontPL");
         }
 
         protected override void UnloadContent() { }
-
-        private KeyboardState prevState;
-
+        
         protected override void Update(GameTime gameTime)
         {
             var keyboardState = Keyboard.GetState();
             var mouseState = Mouse.GetState();
-            var gamepadState = GamePad.GetState(PlayerIndex.One);
             var mousePostion = new Point(mouseState.X, mouseState.Y);
 
             if (keyboardState.IsKeyDown(Keys.LeftShift))
@@ -242,7 +136,7 @@ namespace MazeEscape
                 camera.cameraSpeed = 5;
             }
 
-            if (gamepadState.Buttons.Back == ButtonState.Pressed || keyboardState.IsKeyDown(Keys.Escape))
+            if (keyboardState.IsKeyDown(Keys.Escape))
             {
                 Exit();
             }
@@ -250,7 +144,7 @@ namespace MazeEscape
             #region Przyciski
             if (keyboardState.IsKeyDown(Keys.M) && prevState.IsKeyUp(Keys.M))
             {
-                camera.AllowClimb = !camera.AllowClimb;
+                camera.NoClip = !camera.NoClip;
             }
 
             if (keyboardState.IsKeyDown(Keys.U) && prevState.IsKeyUp(Keys.U))
@@ -260,29 +154,28 @@ namespace MazeEscape
 
             if (keyboardState.IsKeyDown(Keys.J) && prevState.IsKeyUp(Keys.J))
             {
-                camera.ShowCenterLine = !camera.ShowCenterLine;
+                camera.ShowLines = !camera.ShowLines;
             }
 
             if (keyboardState.IsKeyDown(Keys.L) && prevState.IsKeyUp(Keys.L))
             {
-                _INIT_TEST_MAP_();
+                GenerateGameMap();
             }
             #endregion
 
             if (camera.IsEndLevelCollision())
             {
-                _INIT_TEST_MAP_();
+                GenerateGameMap();
             }
 
-            // Update
-            _elapsed_time += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+            // Licznik FPS
+            elapsedTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
 
-            // 1 Second has passed
-            if (_elapsed_time >= 1000.0f)
+            if (elapsedTime >= 1000.0f)
             {
-                _fps = _total_frames;
-                _total_frames = 0;
-                _elapsed_time = 0;
+                fps = totalFrames;
+                totalFrames = 0;
+                elapsedTime = 0;
             }
 
             prevState = keyboardState;
@@ -303,14 +196,14 @@ namespace MazeEscape
 
             floor.Draw(camera, basicEffect);
 
-
-            RasterizerState rasterizerState = new RasterizerState()
+            var rasterizerState = new RasterizerState()
             {
                 CullMode = CullMode.None
             };
             GraphicsDevice.RasterizerState = rasterizerState;
 
-            foreach (var object3D in obj)
+            // Rysowanie mapy
+            foreach (var object3D in gameMap)
             {
                 object3D.Draw();
                 if (camera.ShowColliders && object3D is Collider objectCollider)
@@ -321,19 +214,12 @@ namespace MazeEscape
 
             enemy.Draw();
 
+            // Rysowanie osi kierunków świata
             cameraAxies.Position = camera.cameraAxiesPosition;
             cameraAxies.Draw();
 
-            foreach (var line in lines)
+            if (camera.ShowLines)
             {
-                line.DrawLine(basicEffect, GraphicsDevice);
-            }
-
-            if (camera.ShowCenterLine)
-            {
-                playerLine.DrawLine(basicEffect, GraphicsDevice, Vector3.Zero,
-                    new Vector3(camera.Position.X, camera.Position.Y - 0.02f, camera.Position.Z));
-
                 enemy.EnemyPlayerLine.DrawLine(basicEffect, GraphicsDevice, enemy.Position, new Vector3(camera.Position.X, camera.Position.Y - 0.02f, camera.Position.Z));
             }
 
@@ -347,28 +233,28 @@ namespace MazeEscape
             spriteBatch.Begin();
             {
                 float xPos = 5f, yPos = 5f, inc = 25f;
-                _total_frames++;
+                totalFrames++;
 
                 #region  lewy panel
-                spriteBatch.DrawString(_spr_font, $"GRACZ FPS:{_fps}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"GRACZ FPS:{fps}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"Pozycja X: {camera.Position.X:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"Pozycja X: {camera.Position.X:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"Pozycja Y: {camera.Position.Y:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"Pozycja Y: {camera.Position.Y:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"Pozycja Z: {camera.Position.Z:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"Pozycja Z: {camera.Position.Z:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"[M] NoClip: {camera.AllowClimb}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"[M] NoClip: {camera.NoClip}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"[J] Linie: {camera.ShowCenterLine}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"[J] Linie: {camera.ShowLines}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"[U] Colliders: {camera.ShowColliders}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"[U] Colliders: {camera.ShowColliders}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
                 #endregion
 
@@ -377,19 +263,19 @@ namespace MazeEscape
                 inc = 25f;
 
                 #region prawy panel
-                spriteBatch.DrawString(_spr_font, $"PRZECIWNIK", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"PRZECIWNIK", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"Pozycja X: {enemy.Position.X:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"Pozycja X: {enemy.Position.X:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"Pozycja Y: {enemy.Position.Y:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"Pozycja Y: {enemy.Position.Y:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"Pozycja Z: {enemy.Position.Z:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"Pozycja Z: {enemy.Position.Z:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
 
-                spriteBatch.DrawString(_spr_font, $"Timer dzwięku: {enemy.timer} / {soundMgr.GetDuration("enemy_step")}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"Timer dzwięku: {enemy.timer} / {soundManager.GetDuration("enemy_step")}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
 
                 #endregion
@@ -398,7 +284,100 @@ namespace MazeEscape
 
             base.Draw(gameTime);
         }
+
+
+        private void GenerateGameMap()
+        {
+            // Init musi być najpierw
+            mazeGenerator.Initialize();
+
+            // A potem to 
+            mazeGenerator.Generate();
+
+            // MapTile opisujący co gdzie jest w Mazie
+            short[,] Matrix = Maze.GenerateMatrix(mazeGenerator);
+
+            mapMatrix = new List<List<int>>();
+            for (var i = 0; i < Matrix.GetLength(0); i++)
+            {
+                mapMatrix.Add(new List<int>());
+                for (var j = 0; j < Matrix.GetLength(1); j++)
+                {
+                    mapMatrix[i].Add(Matrix[i, j]);
+                }
+            }
+
+            var wallBlock = new List<Model>()
+            {
+                Content.Load<Model>("Models/Wall_Block_v1a"),
+                Content.Load<Model>("Models/Wall_Block_v2a")
+            };
+
+            var ladder = Content.Load<Model>("Models/ladder");
+
+            gameMap = new List<Object3D>();
+
+            Random rnd = new Random();
+
+            camera.ResetColiders();
+
+            var row = 0;
+            foreach (var mapRow in mapMatrix)
+            {
+                var col = 0;
+                foreach (var mapCell in mapRow)
+                {
+                    if (mapCell == (int)MapTile.Wall)
+                    {
+                        gameMap.Add(new Object3D(Content, camera, wallBlock[rnd.Next(0, wallBlock.Count())])
+                        {
+                            Position = new Vector3(row * 2, 1, col * 2),
+                            Scale = new Vector3(0.01f),
+                            Type = ColliderType.Wall
+                        });
+                    }
+                    else if (mapCell == (int)MapTile.EndCell)
+                    {
+                        gameMap.Add(new Object3D(Content, camera, ladder)
+                        {
+                            Position = new Vector3(row * 2, 2, col * 2),
+                            Scale = new Vector3(0.03f),
+                            Type = ColliderType.LadderExit
+                        });
+
+                        camera.EndCollider = gameMap.Last().ColliderBox;
+                        camera.NextLevelStartPosition = new Vector3(row * 2, 1, col * 2);
+                    }
+                    else if (mapCell == (int)MapTile.StartCell)
+                    {
+                        gameMap.Add(new Object3D(Content, camera, ladder)
+                        {
+                            Position = new Vector3(row * 2, 2, col * 2),
+                            Scale = new Vector3(0.04f),
+                            Type = ColliderType.LadderEnter
+                        });
+                        if (!AppConfig._DEBUG_DISABLE_START_SPAWN_)
+                            camera.Position = new Vector3(row * 2, 1, col * 2);
+                    }
+
+                    col++;
+                }
+
+                row++;
+            }
+
+            camera.AddColliderObjects(gameMap.Where(a => a.Type != ColliderType.LadderEnter).Select(a => a.ColliderBox).ToList());
+
+            int Pos1 = 0;
+            int Pos2 = 0;
+            do
+            {
+                Pos1 = rnd.Next(0, mapMatrix.Count - 1);
+                Pos2 = rnd.Next(0, mapMatrix.Count - 1);
+            }
+            while (mapMatrix[Pos1][Pos2] == (int)MapTile.Wall);
+            enemy.Position = new Vector3(Pos1 * 2, 1, Pos2 * 2);
+            //camera.AddColliderObject(enemy.ColliderBox);
+        }
     }
-
-
 }

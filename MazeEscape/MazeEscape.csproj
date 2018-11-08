@@ -47,6 +47,8 @@
     <Compile Include="CustomClasses\Floor.cs" />
     <Compile Include="CustomClasses\Line.cs" />
     <Compile Include="Enums\ColliderType.cs" />
+    <Compile Include="Enums\Directions.cs" />
+    <Compile Include="Enums\MapTile.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="CustomClasses\Collider.cs" />
     <Compile Include="Interfaces\IObject3D.cs" />
