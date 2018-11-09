@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using MazeEscape.Sounds;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -14,6 +15,10 @@ namespace MazeEscape.MainMenu
         SpriteBatch spriteBatch;
         Texture2D menuBackground;
         SoundEffects button_click;
+        private MouseState prevState;
+        SpriteFont Font;
+
+        private MenuState State;
 
         bool mouseLock = false;
         bool opcjePressed = false;
@@ -31,12 +36,12 @@ namespace MazeEscape.MainMenu
             graphics.PreferredBackBufferWidth = AppConfig.WIDTH;
             graphics.IsFullScreen = AppConfig.FULL_SCREEN;
             IsMouseVisible = AppConfig.IS_MOUSE_VISIBLE;
+            State = MenuState.MainMenu;
         }
 
         protected override void Initialize()
         {
             runGame = false;
-            Buttons = new List<MenuButton>();
             soundMgr = new SoundManager(Content);
 
             base.Initialize();
@@ -50,6 +55,7 @@ namespace MazeEscape.MainMenu
 
         protected override void LoadContent()
         {
+            Font = Content.Load<SpriteFont>("Fonts/SpriteFontPL");
             spriteBatch = new SpriteBatch(GraphicsDevice);
             menuBackground = Content.Load<Texture2D>("Main_Menu/Menu_background");
 
@@ -65,14 +71,32 @@ namespace MazeEscape.MainMenu
                 }
                 );
 
-            soundMgr.Play("menu-ambient",true);
+            soundMgr.Play("menu-ambient", true);
 
             int xOffset = 130, yOffset = 400, yPadding = 65;
 
-            Buttons.Add(new MenuButton(Content, "Main_Menu/Graj_buttnon_A", "Main_Menu/Graj_buttnon_B", new Point(xOffset, yOffset), soundMgr, "menu-btn-hover", "menu-btn-click")); // i = 0  PLAY button
-            Buttons.Add(new MenuButton(Content, "Main_Menu/Autorzy_buttnon_A", "Main_Menu/Autorzy_buttnon_B", new Point(xOffset, yOffset + yPadding), soundMgr, "menu-btn-hover", "menu-btn-click"));
-            Buttons.Add(new MenuButton(Content, "Main_Menu/Opcje_buttnon_A", "Main_Menu/Opcje_buttnon_B", new Point(xOffset, yOffset + yPadding * 2), soundMgr, "menu-btn-hover", "menu-btn-click"));
-            Buttons.Add(new MenuButton(Content, "Main_Menu/Wyjscie_buttnon_A", "Main_Menu/Wyjscie_buttnon_B", new Point(xOffset, yOffset + yPadding * 3), soundMgr, "menu-btn-hover", "menu-btn-click")); // i = 3  EXIT Button
+            Buttons = new List<MenuButton>
+            {
+                new MenuButton(Content, "Main_Menu/Graj_buttnon_A", "Main_Menu/Graj_buttnon_B",
+                    new Point(xOffset, yOffset), soundMgr, "menu-btn-hover", "menu-btn-click", MenuState.MainMenu),
+
+                new MenuButton(Content, "Main_Menu/Autorzy_buttnon_A", "Main_Menu/Autorzy_buttnon_B",
+                    new Point(xOffset, yOffset + yPadding), soundMgr, "menu-btn-hover", "menu-btn-click",MenuState.MainMenu),
+
+                new MenuButton(Content, "Main_Menu/Opcje_buttnon_A", "Main_Menu/Opcje_buttnon_B",
+                    new Point(xOffset, yOffset + yPadding * 2), soundMgr, "menu-btn-hover", "menu-btn-click",MenuState.MainMenu),
+
+                new MenuButton(Content, "Main_Menu/Wyjscie_buttnon_A", "Main_Menu/Wyjscie_buttnon_B",
+                    new Point(xOffset, yOffset + yPadding * 3), soundMgr, "menu-btn-hover", "menu-btn-click",MenuState.MainMenu),
+
+                new MenuButton(Content, "Main_Menu/Back_buttnon_A", "Main_Menu/Back_buttnon_B",
+                    new Point(50, GraphicsDevice.Viewport.Height-200), soundMgr, "menu-btn-hover", "menu-btn-click",MenuState.Authors), // TODO Przycisk powrotu
+
+                new MenuButton(Content, "Main_Menu/Back_buttnon_A", "Main_Menu/Back_buttnon_B",
+                    new Point(50, GraphicsDevice.Viewport.Height-200), soundMgr, "menu-btn-hover", "menu-btn-click",MenuState.Options), // TODO Przycisk powrotu
+            };
+            // i = 0  PLAY button
+            // i = 3  EXIT Button
         }
 
         protected override void UnloadContent() { }
@@ -89,46 +113,51 @@ namespace MazeEscape.MainMenu
                 Exit();
             }
 
-            // Rozpocznij gre
-            if (Buttons[0].IsOn(mousePos) && Buttons[0].LeftClick(mouseState) && !mouseLock &&!opcjePressed && !autorzyPressed)
-            {
-                runGame = true;
-                soundMgr.Stop("menu-ambient");
-                Exit();
-            }
 
-            // Autorzy 
-            if (Buttons[1].IsOn(mousePos) && Buttons[1].LeftClick(mouseState) && !mouseLock && !opcjePressed && !autorzyPressed)
+            if (State == MenuState.MainMenu && prevState.LeftButton == ButtonState.Released)
             {
-                autorzyPressed = true;
-            }
-
-            // Opcje
-            if (Buttons[2].IsOn(mousePos) && Buttons[2].LeftClick(mouseState) && !mouseLock && !opcjePressed && !autorzyPressed)
-            {
-                opcjePressed = true;
-            }
-
-            // Wyjdź
-            if (Buttons[3].IsOn(mousePos) && Buttons[3].LeftClick(mouseState) && !mouseLock && !opcjePressed && !autorzyPressed)
-            {
-                soundMgr.Stop("menu-ambient");
-                Exit();
-            }
-
-
-            foreach (var button in Buttons)
-            {
-                if (button.IsOn(mousePos))
+                // Rozpocznij gre
+                if (Buttons[0].IsOn(mousePos) && Buttons[0].LeftClick(mouseState) && !mouseLock)
                 {
-                    button.OnHover(button.IsOn(mousePos));
+                    runGame = true;
+                    soundMgr.Stop("menu-ambient");
+                    Exit();
                 }
-                else
+                else if (Buttons[1].IsOn(mousePos) && Buttons[1].LeftClick(mouseState) && !mouseLock)
                 {
-                    button.OnHover(false);
+                    State = MenuState.Authors;
+                }
+                else if (Buttons[2].IsOn(mousePos) && Buttons[2].LeftClick(mouseState) && !mouseLock)
+                {
+                    State = MenuState.Options;
+                }
+                else if (Buttons[3].IsOn(mousePos) && Buttons[3].LeftClick(mouseState) && !mouseLock)
+                {
+                    soundMgr.Stop("menu-ambient");
+                    Exit();
                 }
             }
+            else if (State == MenuState.Authors && prevState.LeftButton == ButtonState.Released)
+            {
+                if (Buttons[4].IsOn(mousePos) && Buttons[4].LeftClick(mouseState) && !mouseLock)
+                {
+                    State = MenuState.MainMenu;
+                }
+            }
+            else if (State == MenuState.Options && prevState.LeftButton == ButtonState.Released)
+            {
+                if (Buttons[4].IsOn(mousePos) && Buttons[4].LeftClick(mouseState) && !mouseLock)
+                {
+                    State = MenuState.MainMenu;
+                }
+            }
 
+            foreach (var button in Buttons.Where(a => a.BelongsToState == State))
+            {
+                button.OnHover(button.IsOn(mousePos));
+            }
+
+            prevState = mouseState;
             base.Update(gameTime);
         }
 
@@ -139,29 +168,22 @@ namespace MazeEscape.MainMenu
             spriteBatch.Begin();
             spriteBatch.Draw(menuBackground, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
 
-
-            if(opcjePressed)
+            foreach (var menuButton in Buttons.Where(a => a.BelongsToState == State))
             {
-
+                menuButton.Draw(spriteBatch);
             }
 
-            else if(autorzyPressed)
+            if (State == MenuState.Options)
             {
-
+                spriteBatch.DrawString(Font, $"TODO", new Vector2(550, 300), Color.Yellow, 0, Vector2.Zero, new Vector2(0.5f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"Włącz/Wyłącz dzwięk", new Vector2(550, 350), Color.White, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"Zmiana czułości myszy", new Vector2(550, 400), Color.White, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"Może coś jeszcze", new Vector2(550, 450), Color.White, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
             }
-
-            else
+            else if (State == MenuState.Authors)
             {
-                // Rysowanie MainMenu
-                for (int i = 0; i < 4; i++)
-                {
-                    Buttons[i].Draw(spriteBatch);
-                }
+                spriteBatch.DrawString(Font, $"Ktoś na pewno...", new Vector2(550, 300), Color.White, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
             }
-           
-            
-
-
 
             spriteBatch.End();
             base.Draw(gameTime);

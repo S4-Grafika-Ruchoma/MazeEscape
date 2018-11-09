@@ -11,6 +11,8 @@ namespace MazeEscape.MainMenu
     {
         private SoundEffects ButtonHoverSound, ButtonClickSound;
 
+        public MenuState BelongsToState { get; set; }
+
         private Rectangle Position;
         private Texture2D Sprite, SpriteOnHover;
         private SoundManager SoundManager;
@@ -21,28 +23,8 @@ namespace MazeEscape.MainMenu
 
         // -----------------------------------------------------------
 
-        public MenuButton(Texture2D sprite, Texture2D spriteOnHover, Rectangle position, SoundEffect hoverSound)
-        {
-            BasicAssign();
-            Sprite = sprite;
-            Position = position;
-            SpriteOnHover = spriteOnHover;
-            ButtonHoverSound = new SoundEffects(hoverSound);
-        }
 
-        public MenuButton(ContentManager Content, string buttonPath, string buttonHoverPath, Point position, string hoverSoundPath, string clickSoundPath)
-        {
-            BasicAssign();
-
-            Sprite = Content.Load<Texture2D>(buttonPath);
-            SpriteOnHover = Content.Load<Texture2D>(buttonHoverPath);
-
-            Position = new Rectangle(position, new Point(Sprite.Width, Sprite.Height));
-            ButtonHoverSound = new SoundEffects(Content, hoverSoundPath);
-            ButtonClickSound = new SoundEffects(Content, hoverSoundPath);
-        }
-
-        public MenuButton(ContentManager Content, string buttonPath, string buttonHoverPath, Point position, SoundManager soundMgr, string hoverSoundName, string clickSoundName)
+        public MenuButton(ContentManager Content, string buttonPath, string buttonHoverPath, Point position, SoundManager soundMgr, string hoverSoundName, string clickSoundName, MenuState state)
         {
             BasicAssign();
 
@@ -54,6 +36,8 @@ namespace MazeEscape.MainMenu
 
             ButtonHoverSound = new SoundEffects(SoundManager.GetSoundEffect(hoverSoundName));
             ButtonClickSound = new SoundEffects(SoundManager.GetSoundEffect(clickSoundName));
+
+            BelongsToState = state;
         }
         
         // -----------------------------------------------------------
