@@ -85,8 +85,8 @@ float4 PS(VertexShaderOutput input) : SV_TARGET
 	float4 baseColor = DiffuseTexture.Sample(textureSampler, input.TexCoord);
 
 
-	float4 diffuseLight = float4(0, 0, 0, 0);
-	float4 specularLight = float4(0, 0, 0, 0);
+	float4 diffuseLight = float4(0, 0, 0, 1);
+	float4 specularLight = float4(0, 0, 0, 1);
 
 	//calculate our viewDirection
 	float3 cameraDirection = normalize(input.WorldPos - CameraPosition);

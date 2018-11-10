@@ -57,12 +57,12 @@ namespace MazeEscape.GameObjects
 
         public void DrawAt(Vector3 position)
         {
-            try
-            {
-                var transform = new Matrix[Model.Bones.Count];
-                Model.CopyAbsoluteBoneTransformsTo(transform);
+            var transform = new Matrix[Model.Bones.Count];
+            Model.CopyAbsoluteBoneTransformsTo(transform);
 
-                foreach (var mesh in Model.Meshes)
+            foreach (var mesh in Model.Meshes)
+            {
+                try
                 {
                     var currentTexture = ((BasicEffect)(mesh.Effects[0])).Texture;
                     lighting.Parameters["DiffuseTexture"].SetValue(currentTexture);
@@ -97,14 +97,33 @@ namespace MazeEscape.GameObjects
 
                     }
                     //mesh.Draw();
+
+
+                }
+                catch (Exception ex)
+                {
                 }
 
+                var worldMatrix2 = Matrix.CreateScale(Scale*0.9f) * Matrix.CreateRotationX(Rotation.X) *
+                                   Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) *
+                                   Matrix.CreateTranslation(position);
 
-            }
-            catch (Exception ex)
-            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    //effect.EnableDefaultLighting();
+                    effect.PreferPerPixelLighting = true;
+                    effect.World = worldMatrix2;
+                    effect.View = Camera.View;
+                    effect.Projection = Camera.Projection;
+                    effect.Alpha = 1f;
 
+                }
             }
+
+            //var worldMatrix3 = Matrix.CreateScale(Scale * 0.9f) * Matrix.CreateRotationX(Rotation.X) *
+            //                   Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) *
+            //                   Matrix.CreateTranslation(position);
+            //Model.Draw(worldMatrix3, Camera.View, Camera.Projection);
         }
     }
 }

@@ -302,7 +302,7 @@ namespace MazeEscape
 
             var rasterizerState = new RasterizerState()
             {
-                CullMode = CullMode.None
+                CullMode = CullMode.CullCounterClockwiseFace
             };
             GraphicsDevice.RasterizerState = rasterizerState;
 
