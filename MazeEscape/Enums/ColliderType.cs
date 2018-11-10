@@ -14,5 +14,6 @@ namespace MazeEscape.Enums
         Empty,
         Camera,
         Enemy,
+        Collectable,
     }
 }

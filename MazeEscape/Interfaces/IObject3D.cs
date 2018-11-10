@@ -6,6 +6,7 @@ namespace MazeEscape.Interfaces
 {
     public interface IObject3D
     {
+        Effect lighting { get; set; }
         Vector3 Position { get; set; }
         
         bool Visible { get; set; }

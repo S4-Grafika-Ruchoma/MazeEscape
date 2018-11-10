@@ -11,7 +11,7 @@ namespace MazeEscape.GameObjects
 {
     public class Object3D : Collider, IObject3D
     {
-        public Effect lighting;
+        public Effect lighting { get; set; }
         public GraphicsDevice GraphicsDevice { get; set; }
 
         public Vector3 Position { get; set; }
@@ -25,6 +25,7 @@ namespace MazeEscape.GameObjects
         public Camera Camera { get; set; }
 
         public override BoundingBox ColliderBox => new BoundingBox(Position - new Vector3(1, 1, 1), Position + new Vector3(1, 1, 1));
+
 
         public Object3D(ContentManager content, Camera camera, string path = null)
         {

@@ -12,6 +12,13 @@ namespace MazeEscape.CustomClasses
         private Vector3 cameraPosition;
         public Vector3 cameraRotation;
 
+        public int Collected { get; set; }
+
+        public BoundingBox ColliderBox => new BoundingBox(cameraPosition - new Vector3(0.3f), cameraPosition + new Vector3(0.3f));
+        public ColliderType ColliderType => ColliderType.Camera;
+
+
+        public BoundingBox GrabCollider => new BoundingBox(cameraPosition - new Vector3(0.2f), cameraPosition + new Vector3(0.2f));
         public bool Falshlight { get; set; }
 
         public float cameraSpeed { get; set; }
@@ -22,9 +29,6 @@ namespace MazeEscape.CustomClasses
         private MouseState prevMouseState;
 
         public Matrix World { get; set; }
-
-        public BoundingBox ColliderBox => new BoundingBox(cameraPosition - new Vector3(0.3f), cameraPosition + new Vector3(0.3f));
-        public ColliderType ColliderType => ColliderType.Camera;
 
         public bool ShowLines { get; set; }
 
@@ -58,6 +62,7 @@ namespace MazeEscape.CustomClasses
 
         public Camera(Game game, Vector3 position, Vector3 rotation, float speed) : base(game)
         {
+            Collected = 0;
             this.game = game as Game1;
             ColliderObjects = new List<BoundingBox>();
             NoClip = AppConfig._DEBUG_AUTO_NO_CLIP_;
@@ -88,6 +93,15 @@ namespace MazeEscape.CustomClasses
             cameraLookAt = cameraPosition + lookAtOffset;
         }
 
+        private Vector3 PreviewMove3D(Vector3 amount)
+        {
+            var rotate = Matrix.CreateRotationX(cameraRotation.X) * Matrix.CreateRotationY(cameraRotation.Y) * Matrix.CreateRotationZ(cameraRotation.Z);
+
+            var movment = new Vector3(amount.X, amount.Y, amount.Z);
+            movment = Vector3.Transform(movment, rotate);
+
+            return cameraPosition + movment;
+        }
         private Vector3 PreviewMove(Vector3 amount)
         {
             var rotate = Matrix.CreateRotationY(cameraRotation.Y);
@@ -112,6 +126,7 @@ namespace MazeEscape.CustomClasses
 
         public bool ShowColliders { get; internal set; }
         public List<BoundingBox> ColliderObjects { get; set; }
+        public List<BoundingBox> CollectablesObjects { get; set; }
         public BoundingBox EndCollider { get; set; }
         public Vector3 NextLevelStartPosition { get; set; }
 
@@ -153,6 +168,15 @@ namespace MazeEscape.CustomClasses
                 {
                     // Grawitacja
                     //moveVector.Y = -1.0f;
+                }
+
+                if (CollectablesObjects.Any(a => a.Intersects(GrabCollider)))
+                {
+                    if (keyboardState.IsKeyDown(Keys.E) && prevState.IsKeyUp(Keys.E))
+                    {
+                        CollectablesObjects.RemoveAll(a=>a.Intersects(GrabCollider));
+                        Collected++;
+                    }
                 }
 
                 if (keyboardState.IsKeyDown(Keys.F) && prevState.IsKeyUp(Keys.F))
@@ -221,13 +245,15 @@ namespace MazeEscape.CustomClasses
             }
         }
 
+        public bool TestColl { get; set; }
+
         public bool IsEndLevelCollision()
         {
             return EndCollider.Intersects(this.ColliderBox);
         }
         public bool IsEnemyCollision()
         {
-             return game.enemy.ColliderBox.Intersects(this.ColliderBox);
+            return game.enemy.ColliderBox.Intersects(this.ColliderBox);
         }
 
         public void DrawCollider(BasicEffect basicEffect, GraphicsDevice GraphicsDevice)
@@ -270,10 +296,20 @@ namespace MazeEscape.CustomClasses
         {
             ColliderObjects.AddRange(cols);
         }
+        public void AddColectableObject(BoundingBox col)
+        {
+            CollectablesObjects.Add(col);
+        }
+
+        public void AddColectableObjects(List<BoundingBox> cols)
+        {
+            CollectablesObjects.AddRange(cols);
+        }
 
         public void ResetColiders()
         {
             ColliderObjects = new List<BoundingBox>();
+            CollectablesObjects = new List<BoundingBox>();
         }
     }
 }

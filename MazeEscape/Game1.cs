@@ -25,6 +25,7 @@ namespace MazeEscape
         SoundManager soundManager;
         List<List<int>> mapMatrix;
         List<Object3D> gameMap;
+        List<Object3D> collectables;
         Object3D cameraAxies;
         Camera camera;
         Floor floor;
@@ -266,7 +267,18 @@ namespace MazeEscape
 
             if (camera.IsEndLevelCollision())
             {
-                GenerateGameMap();
+                if (camera.CollectablesObjects.Any())
+                {
+                    NotAllCollected = true;
+                }
+                else
+                {
+                    GenerateGameMap();
+                }
+            }
+            else
+            {
+                NotAllCollected = false;
             }
 
             // Licznik FPS
@@ -287,6 +299,8 @@ namespace MazeEscape
 
             _ambientEffect.Parameters["CameraPosition"].SetValue(camera.Position);
         }
+
+        public bool NotAllCollected { get; set; }
 
         protected override void Draw(GameTime gameTime)
         {
@@ -315,6 +329,14 @@ namespace MazeEscape
                     objectCollider.DrawCollider(basicEffect, GraphicsDevice);
                 }
             }
+            foreach (var object3D in collectables.Where(a=>camera.CollectablesObjects.Any(b=>a.ColliderBox==b)))
+            {
+                object3D.Draw();
+                if (camera.ShowColliders && object3D is Collider objectCollider)
+                {
+                    objectCollider.DrawCollider(basicEffect, GraphicsDevice);
+                }
+            }
 
             enemy.Draw();
 
@@ -332,10 +354,21 @@ namespace MazeEscape
                 camera.DrawCollider(basicEffect, GraphicsDevice);
                 floor.DrawCollider(basicEffect, GraphicsDevice);
                 enemy.DrawCollider(basicEffect, GraphicsDevice);
+                DrawCollider(camera.GrabCollider);
             }
 
             spriteBatch.Begin();
             {
+                if (camera.CollectablesObjects.Any(a => a.Intersects(camera.GrabCollider)))
+                {
+                    spriteBatch.DrawString(Font, $"Podnieś znajdźke", new Vector2(GraphicsDevice.Viewport.Width/2-50, GraphicsDevice.Viewport.Height/2-50), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                }
+
+                if (NotAllCollected)
+                {
+                    spriteBatch.DrawString(Font, $"Żeby przejść dalej muszisz znaleść wszystkie cosie....", new Vector2(GraphicsDevice.Viewport.Width / 2 - 250, GraphicsDevice.Viewport.Height / 2 - 20), Color.Red, 0, Vector2.Zero, new Vector2(0.4f), SpriteEffects.None, 0);
+                }
+
                 float xPos = 5f, yPos = 5f, inc = 25f;
                 totalFrames++;
 
@@ -362,6 +395,12 @@ namespace MazeEscape
                 yPos += inc;
 
                 spriteBatch.DrawString(Font, $"[F] Flashlight: {camera.Falshlight}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
+
+                spriteBatch.DrawString(Font, $"Znajdziek: {camera.CollectablesObjects.Count}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
+
+                spriteBatch.DrawString(Font, $"Znajdzkia: {camera.CollectablesObjects.Any(a => a.Intersects(camera.GrabCollider))}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
                 #endregion
 
@@ -392,6 +431,37 @@ namespace MazeEscape
             base.Draw(gameTime);
         }
 
+
+        public void DrawCollider(BoundingBox ColliderBox)
+        {
+            using (var line = new Line())
+            {
+                var n = ColliderBox.Min;
+                var x = ColliderBox.Max;
+
+                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(n.X, n.Y, x.Z), Color.Red); // N -> N+X.z 1-2
+                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(n.X, x.Y, n.Z), Color.Red); // N -> N+X.y 1-3
+                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(x.X, n.Y, n.Z), Color.Red); // N -> N+X.z 1-4
+
+                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(n.X, x.Y, x.Z), Color.Blue); // X -> X+N.x 5-6
+                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(x.X, n.Y, x.Z), Color.Blue); // X -> X+N.y 5-7
+                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(x.X, x.Y, n.Z), Color.Blue); // X -> X+N.z 5-8
+
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, n.Y, n.Z), new Vector3(x.X, n.Y, x.Z),
+                    Color.Salmon); // 4-7
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, n.Y, x.Z), new Vector3(n.X, n.Y, x.Z),
+                    Color.Salmon); // 7-2
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, n.Y, x.Z), new Vector3(n.X, x.Y, x.Z),
+                    Color.Salmon); // 2-6
+
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, x.Y, x.Z), new Vector3(n.X, x.Y, n.Z),
+                    Color.Cyan); // 6-3
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, x.Y, n.Z), new Vector3(x.X, x.Y, n.Z),
+                    Color.Cyan); // 3-8
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, x.Y, n.Z), new Vector3(x.X, n.Y, n.Z),
+                    Color.Cyan); // 8-4
+            }
+        }
 
         private void GenerateGameMap()
         {
@@ -426,6 +496,7 @@ namespace MazeEscape
             var ladder = Content.Load<Model>("Models/ladder");
 
             gameMap = new List<Object3D>();
+            collectables = new List<Object3D>();
 
             Random rnd = new Random();
 
@@ -477,6 +548,16 @@ namespace MazeEscape
 
                         if (!AppConfig._DEBUG_DISABLE_START_SPAWN_)
                             camera.Position = new Vector3(row * 2, 1, col * 2);
+                    }else if (rnd.Next(0, 100) > 97)
+                    {
+                        collectables.Add(new Object3D(Content, camera, wallBlock[rnd.Next(0, wallBlock.Count())] /*collectable*/)
+                        {
+                            Position = new Vector3(row * 2, 0, col * 2),
+                            Scale = new Vector3(0.002f),
+                            Type = ColliderType.Collectable,
+                            lighting = _ambientEffect,
+                            GraphicsDevice = GraphicsDevice
+                        });
                     }
 
                     col++;
@@ -485,8 +566,12 @@ namespace MazeEscape
                 row++;
             }
 
+            NotAllCollected = false;
+            camera.Collected = 0;
             camera.AddColliderObject(enemy.ColliderBox);
             camera.AddColliderObjects(gameMap.Where(a => a.Type != ColliderType.LadderEnter).Select(a => a.ColliderBox).ToList());
+
+            camera.AddColectableObjects(collectables.Select(a => a.ColliderBox).ToList());
 
             int Pos1 = 0;
             int Pos2 = 0;

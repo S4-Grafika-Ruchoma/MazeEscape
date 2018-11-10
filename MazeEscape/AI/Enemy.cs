@@ -12,6 +12,7 @@ namespace MazeEscape.AI
 {
     public class Enemy : Collider, IObject3D
     {
+        public Effect lighting { get; set; }
         public Vector3 Position { get; set; }
         public bool Visible { get; set; }
         public Vector3 Rotation { get; set; }
