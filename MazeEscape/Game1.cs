@@ -143,8 +143,8 @@ namespace MazeEscape
             lightsColors[4] = Color.Wheat.ToVector3();
 
             lightIntensities[0] = 2f;
-            lightIntensities[1] = 1f;
-            lightIntensities[2] = 1f;
+            lightIntensities[1] = 2f;
+            lightIntensities[2] = 2f;
             lightIntensities[3] = 2f;
             lightIntensities[4] = 2f;
 
@@ -416,7 +416,8 @@ namespace MazeEscape
 
             var wallBlock = new List<Model>()
             {
-                Content.Load<Model>("Models/TestTexturNaModelach"),
+                Content.Load<Model>("Models/TestTexturNaModelach_v2"),
+                //Content.Load<Model>("Models/TestTexturNaModelach"),
                 //Content.Load<Model>("Models/wallBlock"),
                 //Content.Load<Model>("Models/Wall_Block_v1a"),
                 //Content.Load<Model>("Models/Wall_Block_v2a")
