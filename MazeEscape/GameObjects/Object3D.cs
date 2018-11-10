@@ -1,4 +1,7 @@
-﻿using MazeEscape.CustomClasses;
+﻿using System;
+using System.Runtime.Remoting.Messaging;
+using MazeEscape.CustomClasses;
+using MazeEscape.Enums;
 using MazeEscape.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -8,6 +11,9 @@ namespace MazeEscape.GameObjects
 {
     public class Object3D : Collider, IObject3D
     {
+        public Effect lighting;
+        public GraphicsDevice GraphicsDevice { get; set; }
+
         public Vector3 Position { get; set; }
         public bool Visible { get; set; }
         public Model Model { get; set; }
@@ -51,25 +57,61 @@ namespace MazeEscape.GameObjects
 
         public void DrawAt(Vector3 position)
         {
-            //var transform = new MapTile[Model.Bones.Count];
-            //Model.CopyAbsoluteBoneTransformsTo(transform);
-            foreach (var mesh in Model.Meshes)
+            try
             {
-                foreach (BasicEffect effect in mesh.Effects)
+                var transform = new Matrix[Model.Bones.Count];
+                Model.CopyAbsoluteBoneTransformsTo(transform);
+
+                foreach (var mesh in Model.Meshes)
                 {
-                    effect.EnableDefaultLighting();
-                    effect.PreferPerPixelLighting = true;
-                    effect.World = Matrix.CreateTranslation(position);
-                    effect.View = Camera.View;
-                    effect.Projection = Camera.Projection;
-                    effect.Alpha = 1;
-                    effect.EnableDefaultLighting();
+                    var currentTexture = ((BasicEffect) (mesh.Effects[0])).Texture;
+                    lighting.Parameters["DiffuseTexture"].SetValue(currentTexture);
+                    
+                    var worldMatrix = Matrix.CreateScale(Scale) * Matrix.CreateRotationX(Rotation.X) *
+                                      Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) * transform[mesh.ParentBone.Index] *
+                                      Matrix.CreateTranslation(position) ;
+
+                    lighting.Parameters["World"].SetValue(worldMatrix);
+                    lighting.Parameters["WorldViewProj"].SetValue(worldMatrix * Camera.View * Camera.Projection);
+
+
+                    foreach (BasicEffect effect in mesh.Effects)
+                    {
+                        //effect.EnableDefaultLighting();
+                        effect.PreferPerPixelLighting = true;
+                        effect.World = worldMatrix;
+                        effect.View = Camera.View;
+                        effect.Projection = Camera.Projection;
+                        effect.Alpha = 0;
+
+                    }
+
+                    foreach (var meshParts in mesh.MeshParts)
+                    {
+                        GraphicsDevice.SetVertexBuffer(meshParts.VertexBuffer, meshParts.VertexOffset);
+                        GraphicsDevice.Indices = meshParts.IndexBuffer;
+                        lighting.CurrentTechnique.Passes[0].Apply();
+
+                        if (Type == ColliderType.Wall)
+                        {
+                            GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, meshParts.StartIndex,
+                                meshParts.PrimitiveCount);
+                        }
+                    }
+                    //mesh.Draw();
                 }
-                //mesh.Draw();
+
+
+                var worldMatrix2 = Matrix.CreateScale(Scale) * Matrix.CreateRotationX(Rotation.X) *
+                                  Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) *
+                                  Matrix.CreateTranslation(position);
+
+                //Model.Draw(worldMatrix2, Camera.View, Camera.Projection);
             }
-            var worldMatrix = Matrix.CreateScale(Scale) * Matrix.CreateRotationX(Rotation.X) * Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) * Matrix.CreateTranslation(position);
-            
-            Model.Draw(worldMatrix, Camera.View, Camera.Projection);
+            catch (Exception ex)
+            {
+
+            }
         }
     }
 }

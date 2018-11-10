@@ -29,7 +29,8 @@ namespace MazeEscape
         Camera camera;
         Floor floor;
         Enemy enemy;
-        // List<Collider> colliders;
+
+        Effect _ambientEffect;
 
         // Generator labiryntu
         Maze mazeGenerator;
@@ -48,6 +49,8 @@ namespace MazeEscape
             graphics.PreferredBackBufferWidth = AppConfig.WIDTH;
             graphics.IsFullScreen = AppConfig.FULL_SCREEN;
             IsMouseVisible = AppConfig.IS_MOUSE_VISIBLE;
+
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
         }
 
         protected override void Initialize()
@@ -66,7 +69,7 @@ namespace MazeEscape
             // Tworzenie podłogi i dodanie collidera
             floor = new Floor(GraphicsDevice, 120, 120);
             camera.AddColliderObject(floor.ColliderBox);
-            
+
             //Wyświetlenie kierunków XYZ świata
             cameraAxies = new Object3D(Content, camera, "Models/axies")
             {
@@ -103,6 +106,51 @@ namespace MazeEscape
             // Tworzenie losowej mapy o podanych rozmiarach
             mazeGenerator = new Maze(20, 20);
 
+
+            _ambientEffect = Content.Load<Effect>("Effects/Test");
+            _ambientEffect.Parameters["SunLightColor"].SetValue(Color.Red.ToVector3());
+            _ambientEffect.Parameters["SunLightDirection"].SetValue(Vector2.Zero);
+            _ambientEffect.Parameters["SunLightIntensity"].SetValue(0.1f);
+
+            var lightEffectPointLightPosition = _ambientEffect.Parameters["PointLightPosition"];
+            var lightEffectPointLightColor = _ambientEffect.Parameters["PointLightColor"];
+            var lightEffectPointLightIntensity = _ambientEffect.Parameters["PointLightIntensity"];
+
+            var lightEffectPointLightRadius = _ambientEffect.Parameters["PointLightRadius"];
+            var lightEffectPointLightRendered = _ambientEffect.Parameters["MaxLightsRendered"];
+
+            const int MaxLights = 4;
+            lightEffectPointLightRendered.SetValue(MaxLights);
+            Vector3[] lightsPositions = new Vector3[MaxLights];
+            Vector3[] lightsColors = new Vector3[MaxLights];
+            float[] lightIntensities = new float[MaxLights];
+            float[] lightRedii = new float[MaxLights];
+
+            lightsPositions[0] = new Vector3(100, 5, 100);
+            lightsPositions[1] = new Vector3(80, 5, 80);
+            lightsPositions[2] = new Vector3(60, 5, 60);
+            lightsPositions[3] = new Vector3(40, 5, 40);
+
+            lightsColors[0] = Color.Red.ToVector3();
+            lightsColors[1] = Color.Green.ToVector3();
+            lightsColors[2] = Color.Blue.ToVector3();
+            lightsColors[3] = Color.Wheat.ToVector3();
+
+            lightIntensities[0] = 2f;
+            lightIntensities[1] = 2f;
+            lightIntensities[2] = 2f;
+            lightIntensities[3] = 2f;
+
+            lightRedii[0] = 25;
+            lightRedii[1] = 25;
+            lightRedii[2] = 25;
+            lightRedii[3] = 25;
+
+            lightEffectPointLightPosition.SetValue(lightsPositions);
+            lightEffectPointLightColor.SetValue(lightsColors);
+            lightEffectPointLightIntensity.SetValue(lightIntensities);
+            lightEffectPointLightRadius.SetValue(lightRedii);
+
             // Tworzenie mapy i reprezentacji 3D
             GenerateGameMap();
 
@@ -112,7 +160,7 @@ namespace MazeEscape
 
             base.Initialize();
         }
-        
+
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -120,7 +168,7 @@ namespace MazeEscape
         }
 
         protected override void UnloadContent() { }
-        
+
         protected override void Update(GameTime gameTime)
         {
             var keyboardState = Keyboard.GetState();
@@ -182,6 +230,9 @@ namespace MazeEscape
 
             enemy.Step(gameTime);
             base.Update(gameTime);
+
+
+            _ambientEffect.Parameters["CameraPosition"].SetValue(camera.Position);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -309,8 +360,10 @@ namespace MazeEscape
 
             var wallBlock = new List<Model>()
             {
-                Content.Load<Model>("Models/Wall_Block_v1a"),
-                Content.Load<Model>("Models/Wall_Block_v2a")
+                Content.Load<Model>("Models/TestTexturNaModelach"),
+                //Content.Load<Model>("Models/wallBlock"),
+                //Content.Load<Model>("Models/Wall_Block_v1a"),
+                //Content.Load<Model>("Models/Wall_Block_v2a")
             };
 
             var ladder = Content.Load<Model>("Models/ladder");
@@ -333,7 +386,9 @@ namespace MazeEscape
                         {
                             Position = new Vector3(row * 2, 1, col * 2),
                             Scale = new Vector3(0.01f),
-                            Type = ColliderType.Wall
+                            Type = ColliderType.Wall,
+                            lighting = _ambientEffect,
+                            GraphicsDevice = GraphicsDevice
                         });
                     }
                     else if (mapCell == (int)MapTile.EndCell)
@@ -342,7 +397,9 @@ namespace MazeEscape
                         {
                             Position = new Vector3(row * 2, 2, col * 2),
                             Scale = new Vector3(0.03f),
-                            Type = ColliderType.LadderExit
+                            Type = ColliderType.LadderExit,
+                            lighting = _ambientEffect,
+                            GraphicsDevice = GraphicsDevice
                         });
 
                         camera.EndCollider = gameMap.Last().ColliderBox;
@@ -354,7 +411,9 @@ namespace MazeEscape
                         {
                             Position = new Vector3(row * 2, 2, col * 2),
                             Scale = new Vector3(0.04f),
-                            Type = ColliderType.LadderEnter
+                            Type = ColliderType.LadderEnter,
+                            lighting = _ambientEffect,
+                            GraphicsDevice = GraphicsDevice
                         });
                         if (!AppConfig._DEBUG_DISABLE_START_SPAWN_)
                             camera.Position = new Vector3(row * 2, 1, col * 2);

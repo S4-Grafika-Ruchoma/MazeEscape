@@ -19,6 +19,8 @@ namespace MazeEscape.CustomClasses
         private MouseState currentMouseState;
         private MouseState prevMouseState;
 
+        public Matrix World { get; set; }
+
         public BoundingBox ColliderBox => new BoundingBox(cameraPosition - new Vector3(0.3f), cameraPosition + new Vector3(0.3f));
         public ColliderType ColliderType => ColliderType.Camera;
 

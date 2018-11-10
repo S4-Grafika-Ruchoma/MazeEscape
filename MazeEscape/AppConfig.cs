@@ -16,10 +16,12 @@ namespace MazeEscape
 
         public static bool PLAY_SOUNDS = false;
 
-        public static bool _DEBUG_SKIP_MAIN_MENU_ = false;//=false; // Pomijanie menu
+        public static bool _DEBUG_SKIP_MAIN_MENU_ = true;//=false; // Pomijanie menu
         public static bool _DEBUG_AUTO_NO_CLIP_ = true;//=false; // PRzechodzenie przez ściany
         public static bool _DEBUG_SHOW_DIRECTION_TO_CENTER_ = false;
         public static bool _DEBUG_DISABLE_START_SPAWN_ = true; // POminięcie respawnu na początkowej drabince
+
+        public static int INITED_MESHES = 0;
 
         //public static ;
         //public static bool ;
