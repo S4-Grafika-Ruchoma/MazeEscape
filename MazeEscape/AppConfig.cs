@@ -21,6 +21,9 @@ namespace MazeEscape
         public static bool _DEBUG_SHOW_DIRECTION_TO_CENTER_ = false;
         public static bool _DEBUG_DISABLE_START_SPAWN_ = true; // POminięcie respawnu na początkowej drabince
 
+
+        public static bool _DEBUG_DISABLE_COLLECTABLES_CHECK_ = false; // POminięcie respawnu na początkowej drabince
+
         public static int INITED_MESHES = 0;
 
         //public static ;

@@ -113,10 +113,6 @@ namespace MazeEscape
                 Scale = new Vector3(0.01f, 0.05f, 0.01f)
             };
 
-            // Tworzenie losowej mapy o podanych rozmiarach
-            mazeGenerator = new Maze(15, 15);
-
-
             _ambientEffect = Content.Load<Effect>("Effects/Test");
             _ambientEffect.Parameters["SunLightColor"].SetValue(Color.Red.ToVector3());
             _ambientEffect.Parameters["SunLightDirection"].SetValue(Vector2.Zero);
@@ -267,7 +263,7 @@ namespace MazeEscape
 
             if (camera.IsEndLevelCollision())
             {
-                if (camera.CollectablesObjects.Any())
+                if (camera.CollectablesObjects.Any() && !AppConfig._DEBUG_DISABLE_COLLECTABLES_CHECK_)
                 {
                     NotAllCollected = true;
                 }
@@ -364,7 +360,7 @@ namespace MazeEscape
                     spriteBatch.DrawString(Font, $"Podnieś znajdźke", new Vector2(GraphicsDevice.Viewport.Width/2-50, GraphicsDevice.Viewport.Height/2-50), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 }
 
-                if (NotAllCollected)
+                if (NotAllCollected || AppConfig._DEBUG_DISABLE_COLLECTABLES_CHECK_)
                 {
                     spriteBatch.DrawString(Font, $"Żeby przejść dalej muszisz znaleść wszystkie cosie....", new Vector2(GraphicsDevice.Viewport.Width / 2 - 250, GraphicsDevice.Viewport.Height / 2 - 20), Color.Red, 0, Vector2.Zero, new Vector2(0.4f), SpriteEffects.None, 0);
                 }
@@ -465,6 +461,9 @@ namespace MazeEscape
 
         private void GenerateGameMap()
         {
+            // Tworzenie losowej mapy o podanych rozmiarach
+            mazeGenerator = new Maze(15, 15);
+
             // Init musi być najpierw
             mazeGenerator.Initialize();
 
