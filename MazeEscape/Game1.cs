@@ -28,7 +28,7 @@ namespace MazeEscape
         Object3D cameraAxies;
         Camera camera;
         Floor floor;
-        Enemy enemy;
+        public Enemy enemy;
 
         Effect _ambientEffect;
 
@@ -76,7 +76,7 @@ namespace MazeEscape
             Components.Add(camera);
 
             // Tworzenie podłogi i dodanie collidera
-            floor = new Floor(GraphicsDevice, 120, 120);
+            floor = new Floor(GraphicsDevice, 90, 90);
             camera.AddColliderObject(floor.ColliderBox);
 
             //Wyświetlenie kierunków XYZ świata
@@ -113,7 +113,7 @@ namespace MazeEscape
             };
 
             // Tworzenie losowej mapy o podanych rozmiarach
-            mazeGenerator = new Maze(20, 20);
+            mazeGenerator = new Maze(15, 15);
 
 
             _ambientEffect = Content.Load<Effect>("Effects/Test");
@@ -485,6 +485,7 @@ namespace MazeEscape
                 row++;
             }
 
+            camera.AddColliderObject(enemy.ColliderBox);
             camera.AddColliderObjects(gameMap.Where(a => a.Type != ColliderType.LadderEnter).Select(a => a.ColliderBox).ToList());
 
             int Pos1 = 0;

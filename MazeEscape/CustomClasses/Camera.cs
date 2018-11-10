@@ -54,8 +54,11 @@ namespace MazeEscape.CustomClasses
 
         public Matrix View => Matrix.CreateLookAt(cameraPosition, cameraLookAt, Vector3.Up);
 
+        public Game1 game { get; set; }
+
         public Camera(Game game, Vector3 position, Vector3 rotation, float speed) : base(game)
         {
+            this.game = game as Game1;
             ColliderObjects = new List<BoundingBox>();
             NoClip = AppConfig._DEBUG_AUTO_NO_CLIP_;
             ShowColliders = false;
@@ -170,16 +173,18 @@ namespace MazeEscape.CustomClasses
                 if (!NoClip)
                 {
                     var list = ColliderObjects.Where(a => a.Intersects(ColliderBox)).ToList();
-                    if (list.Any() && !IsEndLevelCollision())
+                    if (list.Any())
                     {
-                        //    var camPos = cameraPosition;
-                        //    var blocksCenter = list.Select(a => new Vector3(
-                        //        a.Min.X + ((a.Max.X - a.Min.X) / 2),
-                        //        a.Min.Y + ((a.Max.Y - a.Min.Y) / 2),
-                        //        a.Min.Z + ((a.Max.Z - a.Min.Z) / 2)
-                        //    ));
+                        if (!IsEndLevelCollision())
+                        {
+                            Move(moveVector * -1);
+                        }
 
-                        Move(moveVector * -1);
+                    }
+
+                    if (IsEnemyCollision())
+                    {
+                        game.Exit();
                     }
                 }
 
@@ -219,6 +224,10 @@ namespace MazeEscape.CustomClasses
         public bool IsEndLevelCollision()
         {
             return EndCollider.Intersects(this.ColliderBox);
+        }
+        public bool IsEnemyCollision()
+        {
+             return game.enemy.ColliderBox.Intersects(this.ColliderBox);
         }
 
         public void DrawCollider(BasicEffect basicEffect, GraphicsDevice GraphicsDevice)
