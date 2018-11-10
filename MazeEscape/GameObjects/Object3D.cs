@@ -24,7 +24,7 @@ namespace MazeEscape.GameObjects
         public ContentManager Content { get; set; }
         public Camera Camera { get; set; }
 
-        public override BoundingBox ColliderBox => new BoundingBox(Position - new Vector3(1,1,1), Position + new Vector3(1, 1, 1));
+        public override BoundingBox ColliderBox => new BoundingBox(Position - new Vector3(1, 1, 1), Position + new Vector3(1, 1, 1));
 
         public Object3D(ContentManager content, Camera camera, string path = null)
         {
@@ -64,12 +64,12 @@ namespace MazeEscape.GameObjects
 
                 foreach (var mesh in Model.Meshes)
                 {
-                    var currentTexture = ((BasicEffect) (mesh.Effects[0])).Texture;
+                    var currentTexture = ((BasicEffect)(mesh.Effects[0])).Texture;
                     lighting.Parameters["DiffuseTexture"].SetValue(currentTexture);
-                    
+
                     var worldMatrix = Matrix.CreateScale(Scale) * Matrix.CreateRotationX(Rotation.X) *
                                       Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) * transform[mesh.ParentBone.Index] *
-                                      Matrix.CreateTranslation(position) ;
+                                      Matrix.CreateTranslation(position);
 
                     lighting.Parameters["World"].SetValue(worldMatrix);
                     lighting.Parameters["WorldViewProj"].SetValue(worldMatrix * Camera.View * Camera.Projection);
@@ -82,7 +82,7 @@ namespace MazeEscape.GameObjects
                         effect.World = worldMatrix;
                         effect.View = Camera.View;
                         effect.Projection = Camera.Projection;
-                        effect.Alpha = 0;
+                        effect.Alpha = 1f;
 
                     }
 
@@ -92,21 +92,14 @@ namespace MazeEscape.GameObjects
                         GraphicsDevice.Indices = meshParts.IndexBuffer;
                         lighting.CurrentTechnique.Passes[0].Apply();
 
-                        if (Type == ColliderType.Wall)
-                        {
-                            GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, meshParts.StartIndex,
-                                meshParts.PrimitiveCount);
-                        }
+                        GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, meshParts.StartIndex,
+                            meshParts.PrimitiveCount);
+
                     }
                     //mesh.Draw();
                 }
 
 
-                var worldMatrix2 = Matrix.CreateScale(Scale) * Matrix.CreateRotationX(Rotation.X) *
-                                  Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) *
-                                  Matrix.CreateTranslation(position);
-
-                //Model.Draw(worldMatrix2, Camera.View, Camera.Projection);
             }
             catch (Exception ex)
             {

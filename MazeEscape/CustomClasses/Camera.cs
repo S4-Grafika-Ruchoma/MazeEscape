@@ -12,6 +12,8 @@ namespace MazeEscape.CustomClasses
         private Vector3 cameraPosition;
         public Vector3 cameraRotation;
 
+        public bool Falshlight { get; set; }
+
         public float cameraSpeed { get; set; }
         public Vector3 cameraLookAt;
 
@@ -61,6 +63,8 @@ namespace MazeEscape.CustomClasses
             cameraSpeed = speed;
             Projection = Matrix.CreatePerspectiveFieldOfView(MathHelper.PiOver4, Game.GraphicsDevice.Viewport.AspectRatio, 0.05f, 1000);
             MoveTo(position, rotation);
+
+            Falshlight = true;
 
             ShowLines = AppConfig._DEBUG_SHOW_DIRECTION_TO_CENTER_;
 
@@ -147,6 +151,9 @@ namespace MazeEscape.CustomClasses
                     // Grawitacja
                     //moveVector.Y = -1.0f;
                 }
+
+                if (keyboardState.IsKeyDown(Keys.F) && prevState.IsKeyUp(Keys.F))
+                    Falshlight = !Falshlight;
 
                 if (keyboardState.IsKeyDown(Keys.P) && prevState.IsKeyUp(Keys.P))
                     ShowLines = !ShowLines;

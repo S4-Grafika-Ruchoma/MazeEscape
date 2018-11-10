@@ -53,6 +53,15 @@ namespace MazeEscape
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
         }
 
+        EffectParameter lightEffectPointLightPosition, lightEffectPointLightColor, lightEffectPointLightIntensity, lightEffectPointLightRadius, lightEffectPointLightRendered;
+
+        Vector3 MovableLight = new Vector3(-10, -10, -10);
+        const int MaxLights = 5;
+        Vector3[] lightsPositions = new Vector3[MaxLights];
+        Vector3[] lightsColors = new Vector3[MaxLights];
+        float[] lightIntensities = new float[MaxLights];
+        float[] lightRedii = new float[MaxLights];
+
         protected override void Initialize()
         {
             basicEffect = new BasicEffect(GraphicsDevice)
@@ -112,39 +121,38 @@ namespace MazeEscape
             _ambientEffect.Parameters["SunLightDirection"].SetValue(Vector2.Zero);
             _ambientEffect.Parameters["SunLightIntensity"].SetValue(0.1f);
 
-            var lightEffectPointLightPosition = _ambientEffect.Parameters["PointLightPosition"];
-            var lightEffectPointLightColor = _ambientEffect.Parameters["PointLightColor"];
-            var lightEffectPointLightIntensity = _ambientEffect.Parameters["PointLightIntensity"];
+            lightEffectPointLightPosition = _ambientEffect.Parameters["PointLightPosition"];
+            lightEffectPointLightColor = _ambientEffect.Parameters["PointLightColor"];
+            lightEffectPointLightIntensity = _ambientEffect.Parameters["PointLightIntensity"];
 
-            var lightEffectPointLightRadius = _ambientEffect.Parameters["PointLightRadius"];
-            var lightEffectPointLightRendered = _ambientEffect.Parameters["MaxLightsRendered"];
+            lightEffectPointLightRadius = _ambientEffect.Parameters["PointLightRadius"];
+            lightEffectPointLightRendered = _ambientEffect.Parameters["MaxLightsRendered"];
 
-            const int MaxLights = 4;
             lightEffectPointLightRendered.SetValue(MaxLights);
-            Vector3[] lightsPositions = new Vector3[MaxLights];
-            Vector3[] lightsColors = new Vector3[MaxLights];
-            float[] lightIntensities = new float[MaxLights];
-            float[] lightRedii = new float[MaxLights];
 
-            lightsPositions[0] = new Vector3(100, 5, 100);
-            lightsPositions[1] = new Vector3(80, 5, 80);
-            lightsPositions[2] = new Vector3(60, 5, 60);
-            lightsPositions[3] = new Vector3(40, 5, 40);
+            lightsPositions[0] = enemy.Position;
+            //lightsPositions[1] = new Vector3(80, 5, 80); // Lader in
+            //lightsPositions[2] = new Vector3(60, 5, 60); // Ladder out
+            lightsPositions[3] = MovableLight;
+            lightsPositions[4] = camera.Position;
 
             lightsColors[0] = Color.Red.ToVector3();
             lightsColors[1] = Color.Green.ToVector3();
             lightsColors[2] = Color.Blue.ToVector3();
             lightsColors[3] = Color.Wheat.ToVector3();
+            lightsColors[4] = Color.Wheat.ToVector3();
 
             lightIntensities[0] = 2f;
-            lightIntensities[1] = 2f;
-            lightIntensities[2] = 2f;
+            lightIntensities[1] = 1f;
+            lightIntensities[2] = 1f;
             lightIntensities[3] = 2f;
+            lightIntensities[4] = 2f;
 
-            lightRedii[0] = 25;
-            lightRedii[1] = 25;
-            lightRedii[2] = 25;
-            lightRedii[3] = 25;
+            lightRedii[0] = 15;
+            lightRedii[1] = 10;
+            lightRedii[2] = 10;
+            lightRedii[3] = 15;
+            lightRedii[4] = 15;
 
             lightEffectPointLightPosition.SetValue(lightsPositions);
             lightEffectPointLightColor.SetValue(lightsColors);
@@ -210,6 +218,51 @@ namespace MazeEscape
                 GenerateGameMap();
             }
             #endregion
+
+            if (keyboardState.IsKeyDown(Keys.Up))
+            {
+                MovableLight += new Vector3(0, 0, 0.2f);
+            }
+            else if (keyboardState.IsKeyDown(Keys.Down))
+            {
+                MovableLight -= new Vector3(0, 0, 0.2f);
+            }
+
+            if (keyboardState.IsKeyDown(Keys.Left))
+            {
+                MovableLight += new Vector3(0.2f, 0, 0);
+            }
+            else if (keyboardState.IsKeyDown(Keys.Right))
+            {
+                MovableLight -= new Vector3(0.2f, 0, 0);
+            }
+            
+            if (keyboardState.IsKeyDown(Keys.PageUp))
+            {
+                MovableLight += new Vector3(0, 0.2f, 0);
+            }
+            else if (keyboardState.IsKeyDown(Keys.PageDown))
+            {
+                MovableLight -= new Vector3(0, 0.2f, 0);
+            }
+
+            if (camera.Falshlight)
+            {
+                lightIntensities[4] = 2f;
+            }
+            else
+            {
+                lightIntensities[4] = 0;
+            }
+
+            lightsPositions[0] = enemy.Position;
+            lightsPositions[3] = MovableLight;
+            lightsPositions[4] = camera.Position;
+
+            lightEffectPointLightPosition.SetValue(lightsPositions);
+            lightEffectPointLightColor.SetValue(lightsColors);
+            lightEffectPointLightIntensity.SetValue(lightIntensities);
+            lightEffectPointLightRadius.SetValue(lightRedii);
 
             if (camera.IsEndLevelCollision())
             {
@@ -307,6 +360,9 @@ namespace MazeEscape
 
                 spriteBatch.DrawString(Font, $"[U] Colliders: {camera.ShowColliders}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                 yPos += inc;
+
+                spriteBatch.DrawString(Font, $"[F] Flashlight: {camera.Falshlight}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                yPos += inc;
                 #endregion
 
                 xPos = GraphicsDevice.Viewport.Width - 250;
@@ -393,28 +449,31 @@ namespace MazeEscape
                     }
                     else if (mapCell == (int)MapTile.EndCell)
                     {
-                        gameMap.Add(new Object3D(Content, camera, ladder)
+                        gameMap.Add(new Object3D(Content, camera, wallBlock[rnd.Next(0, wallBlock.Count())] /*ladder*/)
                         {
                             Position = new Vector3(row * 2, 2, col * 2),
-                            Scale = new Vector3(0.03f),
+                            Scale = new Vector3(0.01f, 0.01f, 0.1f),
                             Type = ColliderType.LadderExit,
                             lighting = _ambientEffect,
                             GraphicsDevice = GraphicsDevice
                         });
+                        lightsPositions[2] = new Vector3(row * 2, 2, col * 2); // STOP
 
                         camera.EndCollider = gameMap.Last().ColliderBox;
                         camera.NextLevelStartPosition = new Vector3(row * 2, 1, col * 2);
                     }
                     else if (mapCell == (int)MapTile.StartCell)
                     {
-                        gameMap.Add(new Object3D(Content, camera, ladder)
+                        gameMap.Add(new Object3D(Content, camera, wallBlock[rnd.Next(0, wallBlock.Count())]/*ladder*/ )
                         {
                             Position = new Vector3(row * 2, 2, col * 2),
-                            Scale = new Vector3(0.04f),
+                            Scale = new Vector3(0.01f, 0.01f, 0.1f),
                             Type = ColliderType.LadderEnter,
                             lighting = _ambientEffect,
                             GraphicsDevice = GraphicsDevice
                         });
+                        lightsPositions[1] = new Vector3(row * 2, 2, col * 2); // START
+
                         if (!AppConfig._DEBUG_DISABLE_START_SPAWN_)
                             camera.Position = new Vector3(row * 2, 1, col * 2);
                     }
