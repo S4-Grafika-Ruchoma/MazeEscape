@@ -8,17 +8,9 @@ namespace MazeEscape
         [STAThread]
         static void Main()
         {
-            using (var Menu = new MainMenu.MainMenu())
+            using (var game = new Game1())
             {
-                Menu.Run();
-                if (Menu.runGame)
-                {
-                    using (var game = new Game1())
-                    {
-                        game.Run();
-                    }
-                } 
-
+                game.Run();
             }
         }
     }

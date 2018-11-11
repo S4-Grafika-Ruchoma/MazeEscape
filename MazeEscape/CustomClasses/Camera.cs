@@ -192,18 +192,22 @@ namespace MazeEscape.CustomClasses
 
                     Move(moveVector);
                 }
-
+                CantGoBack = false;
 
                 if (!NoClip)
                 {
                     var list = ColliderObjects.Where(a => a.ColliderBox.Intersects(ColliderBox)).ToList();
                     if (list.Any())
                     {
-                        if (!IsEndLevelCollision())
+                        if (!IsEndLevelCollision() && !IsStartLevelCollision())
                         {
                             Move(moveVector * -1);
                         }
 
+                        if (IsStartLevelCollision())
+                        {
+                            CantGoBack = true;
+                        }
                     }
 
                     if (IsEnemyCollision())
@@ -244,7 +248,9 @@ namespace MazeEscape.CustomClasses
 
             }
         }
-        
+
+        public bool CantGoBack { get; set; }
+
         public bool IsEndLevelCollision()
         {
             return EndCollider.Intersects(this.ColliderBox);
@@ -253,6 +259,12 @@ namespace MazeEscape.CustomClasses
         public bool IsEnemyCollision()
         {
             return game.enemy.ColliderBox.Intersects(this.ColliderBox);
+        }
+
+        public bool IsStartLevelCollision()
+        {
+            return this.ColliderBox.Intersects(ColliderObjects.First(a => a.Type == ColliderType.LadderEnter)
+                .ColliderBox);
         }
 
         public void DrawCollider(BasicEffect basicEffect, GraphicsDevice GraphicsDevice)

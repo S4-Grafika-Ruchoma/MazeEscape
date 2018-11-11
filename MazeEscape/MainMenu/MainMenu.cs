@@ -7,10 +7,8 @@ using Microsoft.Xna.Framework.Input;
 
 namespace MazeEscape.MainMenu
 {
-    public class MainMenu : Game
+    public class MainMenu
     {
-        public bool runGame { get; set; }
-
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         Texture2D menuBackground;
@@ -18,110 +16,73 @@ namespace MazeEscape.MainMenu
         private MouseState prevState;
         SpriteFont Font;
 
-        private MenuState State;
+        public MenuState State;
 
         bool mouseLock = false;
         bool opcjePressed = false;
         bool autorzyPressed = false;
-
-        private SoundManager soundMgr;
-
+        
         List<MenuButton> Buttons;
+        private SoundManager soundMgr;
+        private Game1 Game;
 
-        public MainMenu()
+        public MainMenu(Game1 game, SoundManager soundMgr, GraphicsDeviceManager graphicsDevice)
         {
-            graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferHeight = AppConfig.HEIGHT;
-            graphics.PreferredBackBufferWidth = AppConfig.WIDTH;
-            graphics.IsFullScreen = AppConfig.FULL_SCREEN;
-            IsMouseVisible = AppConfig.IS_MOUSE_VISIBLE;
+            Game = game;
+            graphics = graphicsDevice;
             State = MenuState.MainMenu;
+            this.soundMgr = soundMgr;
+            LoadContent();
         }
 
-        protected override void Initialize()
+        protected void LoadContent()
         {
-            runGame = false;
-            soundMgr = new SoundManager(Content);
-
-            base.Initialize();
-
-            if (AppConfig._DEBUG_SKIP_MAIN_MENU_)
-            {
-                runGame = true;
-                Exit();
-            }
-        }
-
-        protected override void LoadContent()
-        {
-            Font = Content.Load<SpriteFont>("Fonts/SpriteFontPL");
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            menuBackground = Content.Load<Texture2D>("Main_Menu/Menu_background");
-
-            soundMgr.Add(
-                new Dictionary<string, string>()
-                {
-                    {"menu-ambient","Music/menu" }
-                },
-                new Dictionary<string, string>()
-                {
-                    {"menu-btn-hover","Sounds/menu_click"},
-                    {"menu-btn-click","Sounds/lose sound 1_0"},
-                }
-                );
-
+            Font = Game.Content.Load<SpriteFont>("Fonts/SpriteFontPL");
+            spriteBatch = new SpriteBatch(Game.GraphicsDevice);
+            menuBackground = Game.Content.Load<Texture2D>("Main_Menu/Menu_background");
+            
             soundMgr.Play("menu-ambient", true);
 
             int xOffset = 130, yOffset = 400, yPadding = 65;
 
             Buttons = new List<MenuButton>
             {
-                new MenuButton(Content, "Main_Menu/Graj_buttnon_A", "Main_Menu/Graj_buttnon_B",
+                new MenuButton(Game.Content, "Main_Menu/Graj_buttnon_A", "Main_Menu/Graj_buttnon_B",
                     new Point(xOffset, yOffset), soundMgr, "menu-btn-hover", "menu-btn-click", MenuState.MainMenu),
 
-                new MenuButton(Content, "Main_Menu/Autorzy_buttnon_A", "Main_Menu/Autorzy_buttnon_B",
+                new MenuButton(Game.Content, "Main_Menu/Autorzy_buttnon_A", "Main_Menu/Autorzy_buttnon_B",
                     new Point(xOffset, yOffset + yPadding), soundMgr, "menu-btn-hover", "menu-btn-click",MenuState.MainMenu),
 
-                new MenuButton(Content, "Main_Menu/Opcje_buttnon_A", "Main_Menu/Opcje_buttnon_B",
+                new MenuButton(Game.Content, "Main_Menu/Opcje_buttnon_A", "Main_Menu/Opcje_buttnon_B",
                     new Point(xOffset, yOffset + yPadding * 2), soundMgr, "menu-btn-hover", "menu-btn-click",MenuState.MainMenu),
 
-                new MenuButton(Content, "Main_Menu/Wyjscie_buttnon_A", "Main_Menu/Wyjscie_buttnon_B",
+                new MenuButton(Game.Content, "Main_Menu/Wyjscie_buttnon_A", "Main_Menu/Wyjscie_buttnon_B",
                     new Point(xOffset, yOffset + yPadding * 3), soundMgr, "menu-btn-hover", "menu-btn-click",MenuState.MainMenu),
 
-                new MenuButton(Content, "Main_Menu/Back_buttnon_A", "Main_Menu/Back_buttnon_B",
-                    new Point(50, GraphicsDevice.Viewport.Height-200), soundMgr, "menu-btn-hover", "menu-btn-click",MenuState.Authors), // TODO Przycisk powrotu
+                new MenuButton(Game.Content, "Main_Menu/Back_buttnon_A", "Main_Menu/Back_buttnon_B",
+                    new Point(50, Game.GraphicsDevice.Viewport.Height-200), soundMgr, "menu-btn-hover", "menu-btn-click",MenuState.Authors), // TODO Przycisk powrotu
 
-                new MenuButton(Content, "Main_Menu/Back_buttnon_A", "Main_Menu/Back_buttnon_B",
-                    new Point(50, GraphicsDevice.Viewport.Height-200), soundMgr, "menu-btn-hover", "menu-btn-click",MenuState.Options), // TODO Przycisk powrotu
+                new MenuButton(Game.Content, "Main_Menu/Back_buttnon_A", "Main_Menu/Back_buttnon_B",
+                    new Point(50, Game.GraphicsDevice.Viewport.Height-200), soundMgr, "menu-btn-hover", "menu-btn-click",MenuState.Options), // TODO Przycisk powrotu
             };
             // i = 0  PLAY button
             // i = 3  EXIT Button
         }
 
-        protected override void UnloadContent() { }
-
-        protected override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             var mouseState = Mouse.GetState();
             var mousePos = new Point(mouseState.X, mouseState.Y);
             var keyboardState = Keyboard.GetState();
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
-            {
-                runGame = true;
-                Exit();
-            }
-
-
+            
             if (State == MenuState.MainMenu && prevState.LeftButton == ButtonState.Released)
             {
                 // Rozpocznij gre
                 if (Buttons[0].IsOn(mousePos) && Buttons[0].LeftClick(mouseState) && !mouseLock)
                 {
-                    runGame = true;
+                    Mouse.SetPosition(Game.GraphicsDevice.Viewport.Width / 2, Game.GraphicsDevice.Viewport.Height / 2);
+                    Game.RunGame = false;
                     soundMgr.Stop("menu-ambient");
-                    Exit();
                 }
                 else if (Buttons[1].IsOn(mousePos) && Buttons[1].LeftClick(mouseState) && !mouseLock)
                 {
@@ -134,7 +95,7 @@ namespace MazeEscape.MainMenu
                 else if (Buttons[3].IsOn(mousePos) && Buttons[3].LeftClick(mouseState) && !mouseLock)
                 {
                     soundMgr.Stop("menu-ambient");
-                    Exit();
+                    Game.Exit();
                 }
             }
             else if (State == MenuState.Authors && prevState.LeftButton == ButtonState.Released)
@@ -158,15 +119,14 @@ namespace MazeEscape.MainMenu
             }
 
             prevState = mouseState;
-            base.Update(gameTime);
         }
 
-        protected override void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            Game.GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
-            spriteBatch.Draw(menuBackground, new Rectangle(0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), Color.White);
+            spriteBatch.Draw(menuBackground, new Rectangle(0, 0, Game.GraphicsDevice.Viewport.Width, Game.GraphicsDevice.Viewport.Height), Color.White);
 
             foreach (var menuButton in Buttons.Where(a => a.BelongsToState == State))
             {
@@ -186,7 +146,6 @@ namespace MazeEscape.MainMenu
             }
 
             spriteBatch.End();
-            base.Draw(gameTime);
         }
     }
 }

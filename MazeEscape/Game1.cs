@@ -5,6 +5,7 @@ using MazeEscape.AI;
 using MazeEscape.CustomClasses;
 using MazeEscape.Enums;
 using MazeEscape.GameObjects;
+using MazeEscape.MainMenu;
 using MazeEscape.MazeGen;
 using MazeEscape.Sounds;
 using Microsoft.Xna.Framework;
@@ -15,6 +16,10 @@ namespace MazeEscape
 {
     public class Game1 : Game
     {
+        private MainMenu.MainMenu menu;
+
+        public bool RunGame = AppConfig._DEBUG_SKIP_MAIN_MENU_;
+
         // Elementy monogame
         private KeyboardState prevState;
         GraphicsDeviceManager graphics;
@@ -100,12 +105,15 @@ namespace MazeEscape
                 new Dictionary<string, string>()
                 {
                     {" ","Sounds/menu_click"},
-                    {"menu-btn-click","Sounds/lose sound 1_0"},
                     {"talk-1","Sounds/angry"},
                     {"talk-2","Sounds/dont_leave"},
-                    {"enemy_step","Sounds/enemy_step"}
+                    {"enemy_step","Sounds/enemy_step"},
+                    {"menu-btn-hover","Sounds/menu_click"},
+                    {"menu-btn-click","Sounds/lose sound 1_0"},
                 }
             );
+
+            menu = new MainMenu.MainMenu(this, soundManager, graphics);
 
             // Tworzenie przeciwnika
             enemy = new Enemy(new Vector3(0, 15, 0), Content.Load<Model>("Models/stozek"), this.Content, this.camera, soundManager)
@@ -181,251 +189,309 @@ namespace MazeEscape
             var mouseState = Mouse.GetState();
             var mousePostion = new Point(mouseState.X, mouseState.Y);
 
-            if (keyboardState.IsKeyDown(Keys.LeftShift))
+            if (keyboardState.IsKeyDown(Keys.Escape) && prevState.IsKeyUp(Keys.Escape))
             {
-                camera.cameraSpeed = 20;
-            }
-            else if (keyboardState.IsKeyUp(Keys.LeftShift))
-            {
-                camera.cameraSpeed = 5;
+                RunGame = !RunGame;
+                menu.State = MenuState.MainMenu;
             }
 
-            if (keyboardState.IsKeyDown(Keys.Escape))
+            if (!RunGame)
             {
-                Exit();
-            }
-
-            #region Przyciski
-            if (keyboardState.IsKeyDown(Keys.M) && prevState.IsKeyUp(Keys.M))
-            {
-                camera.NoClip = !camera.NoClip;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.U) && prevState.IsKeyUp(Keys.U))
-            {
-                camera.ShowColliders = !camera.ShowColliders;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.J) && prevState.IsKeyUp(Keys.J))
-            {
-                camera.ShowLines = !camera.ShowLines;
-            }
-
-            if (keyboardState.IsKeyDown(Keys.L) && prevState.IsKeyUp(Keys.L))
-            {
-                GenerateGameMap();
-            }
-            #endregion
-
-            if (keyboardState.IsKeyDown(Keys.Up))
-            {
-                MovableLight += new Vector3(0, 0, 0.2f);
-            }
-            else if (keyboardState.IsKeyDown(Keys.Down))
-            {
-                MovableLight -= new Vector3(0, 0, 0.2f);
-            }
-
-            if (keyboardState.IsKeyDown(Keys.Left))
-            {
-                MovableLight += new Vector3(0.2f, 0, 0);
-            }
-            else if (keyboardState.IsKeyDown(Keys.Right))
-            {
-                MovableLight -= new Vector3(0.2f, 0, 0);
-            }
-            
-            if (keyboardState.IsKeyDown(Keys.PageUp))
-            {
-                MovableLight += new Vector3(0, 0.2f, 0);
-            }
-            else if (keyboardState.IsKeyDown(Keys.PageDown))
-            {
-                MovableLight -= new Vector3(0, 0.2f, 0);
-            }
-
-            if (camera.Falshlight)
-            {
-                lightIntensities[4] = 2f;
-            }
-            else
-            {
-                lightIntensities[4] = 0;
-            }
-
-            lightsPositions[0] = enemy.Position;
-            lightsPositions[3] = MovableLight;
-            lightsPositions[4] = camera.Position;
-
-            lightEffectPointLightPosition.SetValue(lightsPositions);
-            lightEffectPointLightColor.SetValue(lightsColors);
-            lightEffectPointLightIntensity.SetValue(lightIntensities);
-            lightEffectPointLightRadius.SetValue(lightRedii);
-
-            if (camera.IsEndLevelCollision())
-            {
-                if (camera.CollectablesObjects.Any() && !AppConfig._DEBUG_DISABLE_COLLECTABLES_CHECK_)
+                if (keyboardState.IsKeyDown(Keys.LeftShift))
                 {
-                    NotAllCollected = true;
+                    camera.cameraSpeed = 20;
                 }
-                else
+                else if (keyboardState.IsKeyUp(Keys.LeftShift))
+                {
+                    camera.cameraSpeed = 5;
+                }
+
+                #region Przyciski
+
+                if (keyboardState.IsKeyDown(Keys.M) && prevState.IsKeyUp(Keys.M))
+                {
+                    camera.NoClip = !camera.NoClip;
+                }
+
+                if (keyboardState.IsKeyDown(Keys.U) && prevState.IsKeyUp(Keys.U))
+                {
+                    camera.ShowColliders = !camera.ShowColliders;
+                }
+
+                if (keyboardState.IsKeyDown(Keys.J) && prevState.IsKeyUp(Keys.J))
+                {
+                    camera.ShowLines = !camera.ShowLines;
+                }
+
+                if (keyboardState.IsKeyDown(Keys.L) && prevState.IsKeyUp(Keys.L))
                 {
                     GenerateGameMap();
                 }
+
+                #endregion
+
+                if (keyboardState.IsKeyDown(Keys.Up))
+                {
+                    MovableLight += new Vector3(0, 0, 0.2f);
+                }
+                else if (keyboardState.IsKeyDown(Keys.Down))
+                {
+                    MovableLight -= new Vector3(0, 0, 0.2f);
+                }
+
+                if (keyboardState.IsKeyDown(Keys.Left))
+                {
+                    MovableLight += new Vector3(0.2f, 0, 0);
+                }
+                else if (keyboardState.IsKeyDown(Keys.Right))
+                {
+                    MovableLight -= new Vector3(0.2f, 0, 0);
+                }
+
+                if (keyboardState.IsKeyDown(Keys.PageUp))
+                {
+                    MovableLight += new Vector3(0, 0.2f, 0);
+                }
+                else if (keyboardState.IsKeyDown(Keys.PageDown))
+                {
+                    MovableLight -= new Vector3(0, 0.2f, 0);
+                }
+
+                if (camera.Falshlight)
+                {
+                    lightIntensities[4] = 2f;
+                }
+                else
+                {
+                    lightIntensities[4] = 0;
+                }
+
+                lightsPositions[0] = enemy.Position;
+                lightsPositions[3] = MovableLight;
+                lightsPositions[4] = camera.Position;
+
+                lightEffectPointLightPosition.SetValue(lightsPositions);
+                lightEffectPointLightColor.SetValue(lightsColors);
+                lightEffectPointLightIntensity.SetValue(lightIntensities);
+                lightEffectPointLightRadius.SetValue(lightRedii);
+
+                if (camera.IsEndLevelCollision())
+                {
+                    if (camera.CollectablesObjects.Any() && !AppConfig._DEBUG_DISABLE_COLLECTABLES_CHECK_)
+                    {
+                        NotAllCollected = true;
+                    }
+                    else
+                    {
+                        GenerateGameMap();
+                    }
+                }
+                else
+                {
+                    NotAllCollected = false;
+                }
+
+                // Licznik FPS
+                elapsedTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+
+                if (elapsedTime >= 1000.0f)
+                {
+                    fps = totalFrames;
+                    totalFrames = 0;
+                    elapsedTime = 0;
+                }
+
+                enemy.Step(gameTime);
+                base.Update(gameTime);
+
+
+                _ambientEffect.Parameters["CameraPosition"].SetValue(camera.Position);
             }
             else
             {
-                NotAllCollected = false;
-            }
-
-            // Licznik FPS
-            elapsedTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-
-            if (elapsedTime >= 1000.0f)
-            {
-                fps = totalFrames;
-                totalFrames = 0;
-                elapsedTime = 0;
+                menu.Update(gameTime);
             }
 
             prevState = keyboardState;
-
-            enemy.Step(gameTime);
-            base.Update(gameTime);
-
-
-            _ambientEffect.Parameters["CameraPosition"].SetValue(camera.Position);
         }
 
         public bool NotAllCollected { get; set; }
 
         protected override void Draw(GameTime gameTime)
         {
-            var depthStencilState = new DepthStencilState
+            if (!RunGame)
             {
-                DepthBufferEnable = true
-            };
-            GraphicsDevice.DepthStencilState = depthStencilState;
-
-            GraphicsDevice.Clear(Color.Black);
-
-            floor.Draw(camera, basicEffect);
-
-            var rasterizerState = new RasterizerState()
-            {
-                CullMode = CullMode.CullCounterClockwiseFace
-            };
-            GraphicsDevice.RasterizerState = rasterizerState;
-
-            // Rysowanie mapy
-            foreach (var object3D in gameMap)
-            {
-                object3D.Draw();
-                if (camera.ShowColliders && object3D is Collider objectCollider)
+                var depthStencilState = new DepthStencilState
                 {
-                    objectCollider.DrawCollider(basicEffect, GraphicsDevice);
-                }
-            }
-            foreach (var object3D in collectables.Where(a=>camera.CollectablesObjects.Any(b=>a.ColliderBox==b.ColliderBox)))
-            {
-                object3D.Draw();
-                if (camera.ShowColliders && object3D is Collider objectCollider)
+                    DepthBufferEnable = true
+                };
+                GraphicsDevice.DepthStencilState = depthStencilState;
+
+                GraphicsDevice.Clear(Color.Black);
+
+                floor.Draw(camera, basicEffect);
+
+                var rasterizerState = new RasterizerState()
                 {
-                    objectCollider.DrawCollider(basicEffect, GraphicsDevice);
-                }
-            }
+                    CullMode = CullMode.CullCounterClockwiseFace
+                };
+                GraphicsDevice.RasterizerState = rasterizerState;
 
-            enemy.Draw();
-
-            // Rysowanie osi kierunków świata
-            cameraAxies.Position = camera.cameraAxiesPosition;
-            cameraAxies.Draw();
-
-            if (camera.ShowLines)
-            {
-                enemy.EnemyPlayerLine.DrawLine(basicEffect, GraphicsDevice, enemy.Position, new Vector3(camera.Position.X, camera.Position.Y - 0.02f, camera.Position.Z));
-            }
-
-            if (camera.ShowColliders)
-            {
-                camera.DrawCollider(basicEffect, GraphicsDevice);
-                floor.DrawCollider(basicEffect, GraphicsDevice);
-                enemy.DrawCollider(basicEffect, GraphicsDevice);
-                DrawCollider(camera.GrabCollider);
-            }
-
-            spriteBatch.Begin();
-            {
-                if (camera.CollectablesObjects.Any(a => a.ColliderBox.Intersects(camera.GrabCollider)))
+                // Rysowanie mapy
+                foreach (var object3D in gameMap)
                 {
-                    spriteBatch.DrawString(Font, $"Podnieś znajdźke", new Vector2(GraphicsDevice.Viewport.Width/2-50, GraphicsDevice.Viewport.Height/2-50), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    object3D.Draw();
+                    if (camera.ShowColliders && object3D is Collider objectCollider)
+                    {
+                        objectCollider.DrawCollider(basicEffect, GraphicsDevice);
+                    }
                 }
 
-                if (NotAllCollected || AppConfig._DEBUG_DISABLE_COLLECTABLES_CHECK_)
+                foreach (var object3D in collectables.Where(a =>
+                    camera.CollectablesObjects.Any(b => a.ColliderBox == b.ColliderBox)))
                 {
-                    spriteBatch.DrawString(Font, $"Żeby przejść dalej muszisz znaleść wszystkie cosie....", new Vector2(GraphicsDevice.Viewport.Width / 2 - 250, GraphicsDevice.Viewport.Height / 2 - 20), Color.Red, 0, Vector2.Zero, new Vector2(0.4f), SpriteEffects.None, 0);
+                    object3D.Draw();
+                    if (camera.ShowColliders && object3D is Collider objectCollider)
+                    {
+                        objectCollider.DrawCollider(basicEffect, GraphicsDevice);
+                    }
                 }
 
-                float xPos = 5f, yPos = 5f, inc = 25f;
-                totalFrames++;
+                enemy.Draw();
 
-                #region  lewy panel
-                spriteBatch.DrawString(Font, $"GRACZ FPS:{fps}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                // Rysowanie osi kierunków świata
+                cameraAxies.Position = camera.cameraAxiesPosition;
+                cameraAxies.Draw();
 
-                spriteBatch.DrawString(Font, $"Pozycja X: {camera.Position.X:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                if (camera.ShowLines)
+                {
+                    enemy.EnemyPlayerLine.DrawLine(basicEffect, GraphicsDevice, enemy.Position,
+                        new Vector3(camera.Position.X, camera.Position.Y - 0.02f, camera.Position.Z));
+                }
 
-                spriteBatch.DrawString(Font, $"Pozycja Y: {camera.Position.Y:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                if (camera.ShowColliders)
+                {
+                    camera.DrawCollider(basicEffect, GraphicsDevice);
+                    floor.DrawCollider(basicEffect, GraphicsDevice);
+                    enemy.DrawCollider(basicEffect, GraphicsDevice);
+                    DrawCollider(camera.GrabCollider);
+                }
 
-                spriteBatch.DrawString(Font, $"Pozycja Z: {camera.Position.Z:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                spriteBatch.Begin();
+                {
+                    if (camera.CollectablesObjects.Any(a => a.ColliderBox.Intersects(camera.GrabCollider)))
+                    {
+                        spriteBatch.DrawString(Font, $"Podnieś znajdźke",
+                            new Vector2(GraphicsDevice.Viewport.Width / 2 - 50,
+                                GraphicsDevice.Viewport.Height / 2 - 50), Color.Green, 0, Vector2.Zero,
+                            new Vector2(0.3f), SpriteEffects.None, 0);
+                    }
 
-                spriteBatch.DrawString(Font, $"[M] NoClip: {camera.NoClip}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                    if (NotAllCollected || AppConfig._DEBUG_DISABLE_COLLECTABLES_CHECK_)
+                    {
+                        spriteBatch.DrawString(Font, $"Żeby przejść dalej muszisz znaleść wszystkie cosie....",
+                            new Vector2(GraphicsDevice.Viewport.Width / 2 - 250,
+                                GraphicsDevice.Viewport.Height / 2 - 20), Color.Red, 0, Vector2.Zero, new Vector2(0.4f),
+                            SpriteEffects.None, 0);
+                    }
 
-                spriteBatch.DrawString(Font, $"[J] Linie: {camera.ShowLines}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                    if (camera.CantGoBack)
+                    {
+                        spriteBatch.DrawString(Font, $"Nie mogę się cofać...",
+                            new Vector2(GraphicsDevice.Viewport.Width / 2 - 250,
+                                GraphicsDevice.Viewport.Height / 2 - 20), Color.Red, 0, Vector2.Zero, new Vector2(0.4f),
+                            SpriteEffects.None, 0);
+                    }
 
-                spriteBatch.DrawString(Font, $"[U] Colliders: {camera.ShowColliders}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                    float xPos = 5f, yPos = 5f, inc = 25f;
+                    totalFrames++;
 
-                spriteBatch.DrawString(Font, $"[F] Flashlight: {camera.Falshlight}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                    #region  lewy panel
 
-                spriteBatch.DrawString(Font, $"Znajdziek: {camera.CollectablesObjects.Count}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                    spriteBatch.DrawString(Font, $"GRACZ FPS:{fps}", new Vector2(xPos, yPos), Color.Green, 0,
+                        Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
 
-                spriteBatch.DrawString(Font, $"Znajdzkia: {camera.CollectablesObjects.Any(a => a.ColliderBox.Intersects(camera.GrabCollider))}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
-                #endregion
+                    spriteBatch.DrawString(Font, $"Pozycja X: {camera.Position.X:F2}", new Vector2(xPos, yPos),
+                        Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
 
-                xPos = GraphicsDevice.Viewport.Width - 250;
-                yPos = 5f;
-                inc = 25f;
+                    spriteBatch.DrawString(Font, $"Pozycja Y: {camera.Position.Y:F2}", new Vector2(xPos, yPos),
+                        Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
 
-                #region prawy panel
-                spriteBatch.DrawString(Font, $"PRZECIWNIK", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                    spriteBatch.DrawString(Font, $"Pozycja Z: {camera.Position.Z:F2}", new Vector2(xPos, yPos),
+                        Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
 
-                spriteBatch.DrawString(Font, $"Pozycja X: {enemy.Position.X:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                    spriteBatch.DrawString(Font, $"[M] NoClip: {camera.NoClip}", new Vector2(xPos, yPos), Color.Aqua, 0,
+                        Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
 
-                spriteBatch.DrawString(Font, $"Pozycja Y: {enemy.Position.Y:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                    spriteBatch.DrawString(Font, $"[J] Linie: {camera.ShowLines}", new Vector2(xPos, yPos), Color.Aqua,
+                        0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
 
-                spriteBatch.DrawString(Font, $"Pozycja Z: {enemy.Position.Z:F2}", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                    spriteBatch.DrawString(Font, $"[U] Colliders: {camera.ShowColliders}", new Vector2(xPos, yPos),
+                        Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
 
-                spriteBatch.DrawString(Font, $"Timer dzwięku: {enemy.timer} / {soundManager.GetDuration("enemy_step")}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                yPos += inc;
+                    spriteBatch.DrawString(Font, $"[F] Flashlight: {camera.Falshlight}", new Vector2(xPos, yPos),
+                        Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
 
-                #endregion
+                    spriteBatch.DrawString(Font, $"Znajdziek: {camera.CollectablesObjects.Count}",
+                        new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
+
+                    spriteBatch.DrawString(Font,
+                        $"Znajdzkia: {camera.CollectablesObjects.Any(a => a.ColliderBox.Intersects(camera.GrabCollider))}",
+                        new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
+
+                    spriteBatch.DrawString(Font, $"RunGame: {RunGame}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero,
+                        new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
+
+                    #endregion
+
+                    xPos = GraphicsDevice.Viewport.Width - 250;
+                    yPos = 5f;
+                    inc = 25f;
+
+                    #region prawy panel
+
+                    spriteBatch.DrawString(Font, $"PRZECIWNIK", new Vector2(xPos, yPos), Color.Green, 0, Vector2.Zero,
+                        new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
+
+                    spriteBatch.DrawString(Font, $"Pozycja X: {enemy.Position.X:F2}", new Vector2(xPos, yPos),
+                        Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
+
+                    spriteBatch.DrawString(Font, $"Pozycja Y: {enemy.Position.Y:F2}", new Vector2(xPos, yPos),
+                        Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
+
+                    spriteBatch.DrawString(Font, $"Pozycja Z: {enemy.Position.Z:F2}", new Vector2(xPos, yPos),
+                        Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
+
+                    spriteBatch.DrawString(Font,
+                        $"Timer dzwięku: {enemy.timer} / {soundManager.GetDuration("enemy_step")}",
+                        new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
+                    yPos += inc;
+
+                    #endregion
+                }
+                spriteBatch.End();
+
+                base.Draw(gameTime);
             }
-            spriteBatch.End();
-
-            base.Draw(gameTime);
+            else
+            {
+                menu.Draw(gameTime);
+            }
         }
 
 
@@ -529,7 +595,7 @@ namespace MazeEscape
                             lighting = _ambientEffect,
                             GraphicsDevice = GraphicsDevice
                         });
-                        lightsPositions[2] = new Vector3(row * 2, 2, col * 2); // STOP
+                        lightsPositions[2] = new Vector3(row * 2, 2, col * 2); // RunGame
 
                         camera.EndCollider = gameMap.Last().ColliderBox;
                         camera.NextLevelStartPosition = new Vector3(row * 2, 1, col * 2);
@@ -548,7 +614,8 @@ namespace MazeEscape
 
                         if (!AppConfig._DEBUG_DISABLE_START_SPAWN_)
                             camera.Position = new Vector3(row * 2, 1, col * 2);
-                    }else if (rnd.Next(0, 100) > 97)
+                    }
+                    else if (rnd.Next(0, 100) > 97)
                     {
                         collectables.Add(new Object3D(Content, camera, wallBlock[rnd.Next(0, wallBlock.Count())] /*collectable*/)
                         {
@@ -570,7 +637,7 @@ namespace MazeEscape
             camera.Collected = 0;
 
             camera.AddColliderObject(enemy);
-            camera.AddColliderObjects(gameMap.Where(a => a.Type != ColliderType.LadderEnter).Cast<Collider>().ToList());
+            camera.AddColliderObjects(gameMap.Cast<Collider>().ToList());
             camera.AddColectableObjects(collectables.Cast<Collider>().ToList());
 
             int Pos1 = 0;
