@@ -8,7 +8,7 @@ namespace MazeEscape.CustomClasses
     {
         public abstract BoundingBox ColliderBox { get; }
 
-        public ColliderType Type { get; set; }
+        public abstract ColliderType Type { get; set; }
 
         public void DrawCollider(BasicEffect basicEffect, GraphicsDevice GraphicsDevice)
         {

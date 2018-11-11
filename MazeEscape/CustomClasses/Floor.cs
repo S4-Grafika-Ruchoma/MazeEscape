@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MazeEscape.Enums;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -76,6 +77,6 @@ namespace MazeEscape.CustomClasses
         public BoundingBox Collider { get; }
 
         public override BoundingBox ColliderBox  => new BoundingBox(new Vector3(0,-1,0), new Vector3(floorWidth, 0, floorHeight));
-
+        public override ColliderType Type { get; set; }
     }
 }

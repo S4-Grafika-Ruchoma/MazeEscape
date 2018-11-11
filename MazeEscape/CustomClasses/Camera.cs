@@ -64,7 +64,7 @@ namespace MazeEscape.CustomClasses
         {
             Collected = 0;
             this.game = game as Game1;
-            ColliderObjects = new List<BoundingBox>();
+            ColliderObjects = new List<Collider>();
             NoClip = AppConfig._DEBUG_AUTO_NO_CLIP_;
             ShowColliders = false;
 
@@ -125,8 +125,8 @@ namespace MazeEscape.CustomClasses
         }
 
         public bool ShowColliders { get; internal set; }
-        public List<BoundingBox> ColliderObjects { get; set; }
-        public List<BoundingBox> CollectablesObjects { get; set; }
+        public List<Collider> ColliderObjects { get; set; }
+        public List<Collider> CollectablesObjects { get; set; }
         public BoundingBox EndCollider { get; set; }
         public Vector3 NextLevelStartPosition { get; set; }
 
@@ -170,11 +170,11 @@ namespace MazeEscape.CustomClasses
                     //moveVector.Y = -1.0f;
                 }
 
-                if (CollectablesObjects.Any(a => a.Intersects(GrabCollider)))
+                if (CollectablesObjects.Any(a => a.ColliderBox.Intersects(GrabCollider)))
                 {
                     if (keyboardState.IsKeyDown(Keys.E) && prevState.IsKeyUp(Keys.E))
                     {
-                        CollectablesObjects.RemoveAll(a=>a.Intersects(GrabCollider));
+                        CollectablesObjects.RemoveAll(a=>a.ColliderBox.Intersects(GrabCollider));
                         Collected++;
                     }
                 }
@@ -196,7 +196,7 @@ namespace MazeEscape.CustomClasses
 
                 if (!NoClip)
                 {
-                    var list = ColliderObjects.Where(a => a.Intersects(ColliderBox)).ToList();
+                    var list = ColliderObjects.Where(a => a.ColliderBox.Intersects(ColliderBox)).ToList();
                     if (list.Any())
                     {
                         if (!IsEndLevelCollision())
@@ -244,13 +244,12 @@ namespace MazeEscape.CustomClasses
 
             }
         }
-
-        public bool TestColl { get; set; }
-
+        
         public bool IsEndLevelCollision()
         {
             return EndCollider.Intersects(this.ColliderBox);
         }
+
         public bool IsEnemyCollision()
         {
             return game.enemy.ColliderBox.Intersects(this.ColliderBox);
@@ -287,29 +286,29 @@ namespace MazeEscape.CustomClasses
             }
         }
 
-        public void AddColliderObject(BoundingBox col)
+        public void AddColliderObject(Collider col)
         {
             ColliderObjects.Add(col);
         }
 
-        public void AddColliderObjects(List<BoundingBox> cols)
+        public void AddColliderObjects(List<Collider> cols)
         {
             ColliderObjects.AddRange(cols);
         }
-        public void AddColectableObject(BoundingBox col)
+        public void AddColectableObject(Collider col)
         {
             CollectablesObjects.Add(col);
         }
 
-        public void AddColectableObjects(List<BoundingBox> cols)
+        public void AddColectableObjects(List<Collider> cols)
         {
             CollectablesObjects.AddRange(cols);
         }
 
         public void ResetColiders()
         {
-            ColliderObjects = new List<BoundingBox>();
-            CollectablesObjects = new List<BoundingBox>();
+            ColliderObjects = new List<Collider>();
+            CollectablesObjects = new List<Collider>();
         }
     }
 }

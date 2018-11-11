@@ -25,6 +25,7 @@ namespace MazeEscape.GameObjects
         public Camera Camera { get; set; }
 
         public override BoundingBox ColliderBox => new BoundingBox(Position - new Vector3(1, 1, 1), Position + new Vector3(1, 1, 1));
+        public override ColliderType Type { get; set; }
 
 
         public Object3D(ContentManager content, Camera camera, string path = null)

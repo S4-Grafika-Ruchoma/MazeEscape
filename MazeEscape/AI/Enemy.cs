@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MazeEscape.Enums;
 
 namespace MazeEscape.AI
 {
@@ -22,6 +23,7 @@ namespace MazeEscape.AI
         public Camera Camera { get; set; }
         public Line EnemyPlayerLine;
         public override BoundingBox ColliderBox => new BoundingBox(Position - new Vector3(0.9f), Position + new Vector3(0.9f));
+        public override ColliderType Type { get; set; }
         public Vector3 MoveVector { get; set; }
         public SoundManager SoundManager { get; set; }
 
@@ -51,7 +53,7 @@ namespace MazeEscape.AI
         public void Step(GameTime gameTime)
         {
             this.Position += MoveVector;
-            var list = Camera.ColliderObjects.Where(a => a.Intersects(ColliderBox)).ToList();
+            var list = Camera.ColliderObjects.Where(a => a.Type != ColliderType.Enemy && a.ColliderBox.Intersects(ColliderBox)).ToList();
             if (list.Any())
             {
                 Random rnd = new Random();
@@ -59,7 +61,7 @@ namespace MazeEscape.AI
 
                 MoveVector = Directions[rnd.Next(0, 4)];
             }
-            
+
             if (timer >= SoundManager.GetDuration("enemy_step"))
             {
                 SoundManager.Play("enemy_step");
