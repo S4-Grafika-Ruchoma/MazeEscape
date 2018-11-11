@@ -61,7 +61,7 @@ namespace MazeEscape
 
         EffectParameter lightEffectPointLightPosition, lightEffectPointLightColor, lightEffectPointLightIntensity, lightEffectPointLightRadius, lightEffectPointLightRendered;
 
-        Vector3 MovableLight = new Vector3(-10, -10, -10);
+        Vector3 MovableLight = new Vector3(10, 10, 10);
         const int MaxLights = 5;
         Vector3[] lightsPositions = new Vector3[MaxLights];
         Vector3[] lightsColors = new Vector3[MaxLights];
@@ -151,13 +151,13 @@ namespace MazeEscape
             lightIntensities[0] = 2f;
             lightIntensities[1] = 2f;
             lightIntensities[2] = 2f;
-            lightIntensities[3] = 2f;
+            lightIntensities[3] = 0;
             lightIntensities[4] = 2f;
 
             lightRedii[0] = 15;
             lightRedii[1] = 10;
             lightRedii[2] = 10;
-            lightRedii[3] = 15;
+            lightRedii[3] = 0;
             lightRedii[4] = 15;
 
             lightEffectPointLightPosition.SetValue(lightsPositions);
@@ -255,6 +255,24 @@ namespace MazeEscape
                 else if (keyboardState.IsKeyDown(Keys.PageDown))
                 {
                     MovableLight -= new Vector3(0, 0.2f, 0);
+                }
+
+                if (keyboardState.IsKeyDown(Keys.NumPad2))
+                {
+                    lightRedii[3] -= 1;
+                }
+                else if (keyboardState.IsKeyDown(Keys.NumPad5))
+                {
+                    lightRedii[3] += 1;
+                }
+
+                if (keyboardState.IsKeyDown(Keys.NumPad1))
+                {
+                    lightIntensities[3] -= 0.5f;
+                }
+                else if (keyboardState.IsKeyDown(Keys.NumPad4))
+                {
+                    lightIntensities[3] += 0.5f;
                 }
 
                 if (camera.Falshlight)
