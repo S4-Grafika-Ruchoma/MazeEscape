@@ -15,5 +15,6 @@ namespace MazeEscape.Enums
         Camera,
         Enemy,
         Collectable,
+        Floor,
     }
 }
