@@ -164,7 +164,7 @@ namespace MazeEscape
             #endregion
 
             // Tworzenie podłogi i dodanie collidera
-            floor = new Floor(Content, camera, Content.Load<Model>("Models/TestWieluTekstur"))
+            floor = new Floor(Content, camera, Content.Load<Model>("Models/Wall_v2"))
             {
                 Position = new Vector3(40,-1,40),
                 Type = ColliderType.Floor,
@@ -574,7 +574,7 @@ namespace MazeEscape
 
             var wallBlock = new List<Model>()
             {
-                Content.Load<Model>("Models/TestWieluTekstur"),
+                Content.Load<Model>("Models/Wall_v2"),
                 //Content.Load<Model>("Models/TestTexturNaModelach"),
                 //Content.Load<Model>("Models/wallBlock"),
                 //Content.Load<Model>("Models/Wall_Block_v1a"),
@@ -607,9 +607,9 @@ namespace MazeEscape
                     }
                     else if (mapCell == (int)MapTile.EndCell)
                     {
-                        gameMap.Add(new Object3D(Content, camera, wallBlock[rnd.Next(0, wallBlock.Count())] /*ladder*/)
+                        gameMap.Add(new Object3D(Content, camera, Content.Load<Model>("Models/Portal_Model_v2") /*ladder*/)
                         {
-                            Position = new Vector3(row * 2, 2, col * 2),
+                            Position = new Vector3(row * 2, 0.7f, col * 2),
                             Scale = new Vector3(0.01f, 0.01f, 0.1f),
                             Type = ColliderType.LadderExit,
                             lighting = _ambientEffect,
@@ -622,9 +622,9 @@ namespace MazeEscape
                     }
                     else if (mapCell == (int)MapTile.StartCell)
                     {
-                        gameMap.Add(new Object3D(Content, camera, wallBlock[rnd.Next(0, wallBlock.Count())]/*ladder*/ )
+                        gameMap.Add(new Object3D(Content, camera, Content.Load<Model>("Models/Portal_Model_v2")/*ladder*/ )
                         {
-                            Position = new Vector3(row * 2, 2, col * 2),
+                            Position = new Vector3(row * 2, 0.7f, col * 2),
                             Scale = new Vector3(0.01f, 0.01f, 0.1f),
                             Type = ColliderType.LadderEnter,
                             lighting = _ambientEffect,
