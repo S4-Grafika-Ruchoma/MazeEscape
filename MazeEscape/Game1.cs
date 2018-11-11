@@ -80,11 +80,7 @@ namespace MazeEscape
             // Tworzenie i dodawanie kamery
             camera = new Camera(this, new Vector3(0, 15, 0), Vector3.Zero, 5);
             Components.Add(camera);
-
-            // Tworzenie podłogi i dodanie collidera
-            floor = new Floor(GraphicsDevice, 90, 90);
-            camera.AddColliderObject(floor);
-
+            
             //Wyświetlenie kierunków XYZ świata
             cameraAxies = new Object3D(Content, camera, "Models/axies")
             {
@@ -121,7 +117,8 @@ namespace MazeEscape
                 Scale = new Vector3(0.01f, 0.05f, 0.01f),
                 Type = ColliderType.Enemy
             };
-
+            
+            #region Light
             _ambientEffect = Content.Load<Effect>("Effects/Test");
             _ambientEffect.Parameters["SunLightColor"].SetValue(Color.Red.ToVector3());
             _ambientEffect.Parameters["SunLightDirection"].SetValue(Vector2.Zero);
@@ -164,6 +161,17 @@ namespace MazeEscape
             lightEffectPointLightColor.SetValue(lightsColors);
             lightEffectPointLightIntensity.SetValue(lightIntensities);
             lightEffectPointLightRadius.SetValue(lightRedii);
+            #endregion
+
+            // Tworzenie podłogi i dodanie collidera
+            floor = new Floor(Content, camera, Content.Load<Model>("Models/TestTexturNaModelach_v2"))
+            {
+                Position = new Vector3(40,0,40),
+                Type = ColliderType.Floor,
+                lighting = _ambientEffect,
+                Scale = new Vector3(0.5f, 0.5f, 0.01f),
+                GraphicsDevice = GraphicsDevice,
+            };
 
             // Tworzenie mapy i reprezentacji 3D
             GenerateGameMap();
@@ -322,8 +330,11 @@ namespace MazeEscape
                 enemy.Step(gameTime);
                 base.Update(gameTime);
 
-
                 _ambientEffect.Parameters["CameraPosition"].SetValue(camera.Position);
+
+                basicEffect.View = camera.View;
+                basicEffect.Projection = camera.Projection;
+                basicEffect.World = Matrix.Identity;
             }
             else
             {
@@ -347,14 +358,7 @@ namespace MazeEscape
 
                 GraphicsDevice.Clear(Color.Black);
 
-                floor.Draw(camera, basicEffect);
-
-                var rasterizerState = new RasterizerState()
-                {
-                    CullMode = CullMode.CullCounterClockwiseFace
-                };
-                GraphicsDevice.RasterizerState = rasterizerState;
-
+                floor.Draw();
                 // Rysowanie mapy
                 foreach (var object3D in gameMap)
                 {
@@ -577,8 +581,6 @@ namespace MazeEscape
                 //Content.Load<Model>("Models/Wall_Block_v2a")
             };
 
-            var ladder = Content.Load<Model>("Models/ladder");
-
             gameMap = new List<Object3D>();
             collectables = new List<Object3D>();
 
@@ -654,6 +656,8 @@ namespace MazeEscape
             NotAllCollected = false;
             camera.Collected = 0;
 
+
+            camera.AddColliderObject(floor);
             camera.AddColliderObject(enemy);
             camera.AddColliderObjects(gameMap.Cast<Collider>().ToList());
             camera.AddColectableObjects(collectables.Cast<Collider>().ToList());

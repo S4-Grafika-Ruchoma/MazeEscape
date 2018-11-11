@@ -1,82 +1,129 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using MazeEscape.Enums;
+using MazeEscape.Interfaces;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MazeEscape.CustomClasses
 {
-    public class Floor : Collider
+    public class Floor : Collider, IObject3D
     {
-        private int floorWidth;
-        private int floorHeight;
-        private VertexBuffer floorBuffer;
-        private GraphicsDevice device;
-        Color[] floorColors = new Color[2] { new Color(53,23,23), new Color(23, 23, 23) };
+        public Effect lighting { get; set; }
+        public GraphicsDevice GraphicsDevice { get; set; }
 
-        public Floor(GraphicsDevice device, int width, int height)
+        public Vector3 Position { get; set; }
+        public bool Visible { get; set; }
+        public Model Model { get; set; }
+
+        public Vector3 Rotation { get; set; }
+        public Vector3 Scale { get; set; }
+
+        public ContentManager Content { get; set; }
+        public Camera Camera { get; set; }
+
+        public override BoundingBox ColliderBox => new BoundingBox(new Vector3(0,-1,0), new Vector3(80,0,80));
+        public override ColliderType Type { get; set; }
+
+
+        public Floor(ContentManager content, Camera camera, string path = null)
         {
-            this.device = device;
-            floorWidth = width;
-            floorHeight = height;
-            BuildFloorBuffer();
+            Scale = new Vector3(1, 1, 1);
+            Content = content;
+            this.Camera = camera;
+            if (!string.IsNullOrEmpty(path))
+            {
+                Load(path);
+            }
+        }
+        public Floor(ContentManager content, Camera camera, Model model)
+        {
+            Scale = new Vector3(1, 1, 1);
+            Content = content;
+            this.Camera = camera;
+            Model = model;
         }
 
-        private void BuildFloorBuffer()
+
+        public void Draw()
         {
-            List<VertexPositionColor> vertexList = new List<VertexPositionColor>();
-            int counter = 0;
+            DrawAt(Position);
+        }
 
-            for (int x = 0; x < floorWidth; x++)
+        public void Load(string path)
+        {
+            Model = Content.Load<Model>(path);
+        }
+
+        public void DrawAt(Vector3 position)
+        {
+            var transform = new Matrix[Model.Bones.Count];
+            Model.CopyAbsoluteBoneTransformsTo(transform);
+
+            foreach (var mesh in Model.Meshes)
             {
-                counter++;
-                for (int z = 0; z < floorHeight; z++)
+                try
                 {
-                    counter++;
+                    var currentTexture = ((BasicEffect)(mesh.Effects[0])).Texture;
+                    lighting.Parameters["DiffuseTexture"].SetValue(currentTexture);
 
-                    foreach (var vertex in FloorTile(x, z, floorColors[counter % 2]))
+                    var worldMatrix = Matrix.CreateScale(Scale) * Matrix.CreateRotationX(Rotation.X) *
+                                      Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) * transform[mesh.ParentBone.Index] *
+                                      Matrix.CreateTranslation(position);
+
+                    lighting.Parameters["World"].SetValue(worldMatrix);
+                    lighting.Parameters["WorldViewProj"].SetValue(worldMatrix * Camera.View * Camera.Projection);
+
+
+                    foreach (BasicEffect effect in mesh.Effects)
                     {
-                        vertexList.Add(vertex);
+                        //effect.EnableDefaultLighting();
+                        effect.PreferPerPixelLighting = true;
+                        effect.World = worldMatrix;
+                        effect.View = Camera.View;
+                        effect.Projection = Camera.Projection;
+                        effect.Alpha = 1f;
+
                     }
+
+                    foreach (var meshParts in mesh.MeshParts)
+                    {
+                        GraphicsDevice.SetVertexBuffer(meshParts.VertexBuffer, meshParts.VertexOffset);
+                        GraphicsDevice.Indices = meshParts.IndexBuffer;
+                        lighting.CurrentTechnique.Passes[0].Apply();
+
+                        GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, meshParts.StartIndex,
+                            meshParts.PrimitiveCount);
+
+                    }
+                    //mesh.Draw();
+
+
+                }
+                catch (Exception ex)
+                {
+                }
+
+                var worldMatrix2 = Matrix.CreateScale(Scale * 0.9f) * Matrix.CreateRotationX(Rotation.X) *
+                                   Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) *
+                                   Matrix.CreateTranslation(position);
+
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    //effect.EnableDefaultLighting();
+                    effect.PreferPerPixelLighting = true;
+                    effect.World = worldMatrix2;
+                    effect.View = Camera.View;
+                    effect.Projection = Camera.Projection;
+                    effect.Alpha = 1f;
+
                 }
             }
 
-            floorBuffer = new VertexBuffer(device, VertexPositionColor.VertexDeclaration, vertexList.Count, BufferUsage.None);
-            floorBuffer.SetData(vertexList.ToArray());
+            //var worldMatrix3 = Matrix.CreateScale(Scale * 0.9f) * Matrix.CreateRotationX(Rotation.X) *
+            //                   Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) *
+            //                   Matrix.CreateTranslation(position);
+            //Model.Draw(worldMatrix3, Camera.View, Camera.Projection);
         }
-
-        private List<VertexPositionColor> FloorTile(int xOffset, int zOffset, Color tileColor)
-        {
-            var vList = new List<VertexPositionColor>()
-            {
-                new VertexPositionColor(new Vector3(0 + xOffset, 0, 0 + zOffset), tileColor),
-                new VertexPositionColor(new Vector3(1 + xOffset, 0, 0 + zOffset), tileColor),
-                new VertexPositionColor(new Vector3(0 + xOffset, 0, 1 + zOffset), tileColor),
-                new VertexPositionColor(new Vector3(1 + xOffset, 0, 0 + zOffset), tileColor),
-                new VertexPositionColor(new Vector3(1 + xOffset, 0, 1 + zOffset), tileColor),
-                new VertexPositionColor(new Vector3(0 + xOffset, 0, 1 + zOffset), tileColor),
-            };
-
-            return vList;
-        }
-
-        public void Draw(Camera camera, BasicEffect effect)
-        {
-            effect.VertexColorEnabled = true;
-            effect.View = camera.View;
-            effect.Projection = camera.Projection;
-            effect.World = Matrix.Identity;
-
-            foreach (var pass in effect.CurrentTechnique.Passes)
-            {
-                pass.Apply();
-                device.SetVertexBuffer(floorBuffer);
-                device.DrawPrimitives(PrimitiveType.TriangleList, 0, floorBuffer.VertexCount / 3);
-            }
-        }
-
-        public BoundingBox Collider { get; }
-
-        public override BoundingBox ColliderBox  => new BoundingBox(new Vector3(0,-1,0), new Vector3(floorWidth, 0, floorHeight));
-        public override ColliderType Type { get; set; }
     }
 }
