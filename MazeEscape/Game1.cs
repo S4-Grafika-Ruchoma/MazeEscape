@@ -164,9 +164,9 @@ namespace MazeEscape
             #endregion
 
             // Tworzenie podłogi i dodanie collidera
-            floor = new Floor(Content, camera, Content.Load<Model>("Models/TestTexturNaModelach_v2"))
+            floor = new Floor(Content, camera, Content.Load<Model>("Models/TestWieluTekstur"))
             {
-                Position = new Vector3(40,0,40),
+                Position = new Vector3(40,-1,40),
                 Type = ColliderType.Floor,
                 lighting = _ambientEffect,
                 Scale = new Vector3(0.5f, 0.5f, 0.01f),
@@ -574,7 +574,7 @@ namespace MazeEscape
 
             var wallBlock = new List<Model>()
             {
-                Content.Load<Model>("Models/TestTexturNaModelach_v2"),
+                Content.Load<Model>("Models/TestWieluTekstur"),
                 //Content.Load<Model>("Models/TestTexturNaModelach"),
                 //Content.Load<Model>("Models/wallBlock"),
                 //Content.Load<Model>("Models/Wall_Block_v1a"),
