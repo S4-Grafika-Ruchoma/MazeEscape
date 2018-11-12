@@ -33,7 +33,6 @@ namespace MazeEscape
         List<Object3D> collectables;
         Object3D cameraAxies;
         Camera camera;
-        Floor floor;
         public Enemy enemy;
 
         Effect _ambientEffect;
@@ -80,7 +79,7 @@ namespace MazeEscape
             // Tworzenie i dodawanie kamery
             camera = new Camera(this, new Vector3(0, 15, 0), Vector3.Zero, 5);
             Components.Add(camera);
-            
+
             //Wyświetlenie kierunków XYZ świata
             cameraAxies = new Object3D(Content, camera, "Models/axies")
             {
@@ -117,7 +116,7 @@ namespace MazeEscape
                 Scale = new Vector3(0.01f, 0.05f, 0.01f),
                 Type = ColliderType.Enemy
             };
-            
+
             #region Light
             _ambientEffect = Content.Load<Effect>("Effects/Test");
             _ambientEffect.Parameters["SunLightColor"].SetValue(Color.Red.ToVector3());
@@ -163,16 +162,7 @@ namespace MazeEscape
             lightEffectPointLightRadius.SetValue(lightRedii);
             #endregion
 
-            // Tworzenie podłogi i dodanie collidera
-            floor = new Floor(Content, camera, Content.Load<Model>("Models/Wall_v2"))
-            {
-                Position = new Vector3(40,-1,40),
-                Type = ColliderType.Floor,
-                lighting = _ambientEffect,
-                Scale = new Vector3(0.5f, 0.5f, 0.01f),
-                GraphicsDevice = GraphicsDevice,
-            };
-
+         
             // Tworzenie mapy i reprezentacji 3D
             GenerateGameMap();
 
@@ -358,7 +348,6 @@ namespace MazeEscape
 
                 GraphicsDevice.Clear(Color.Black);
 
-                floor.Draw();
                 // Rysowanie mapy
                 foreach (var object3D in gameMap)
                 {
@@ -394,7 +383,6 @@ namespace MazeEscape
                 if (camera.ShowColliders)
                 {
                     camera.DrawCollider(basicEffect, GraphicsDevice);
-                    floor.DrawCollider(basicEffect, GraphicsDevice);
                     enemy.DrawCollider(basicEffect, GraphicsDevice);
                     DrawCollider(camera.GrabCollider);
                 }
@@ -635,16 +623,29 @@ namespace MazeEscape
                         if (!AppConfig._DEBUG_DISABLE_START_SPAWN_)
                             camera.Position = new Vector3(row * 2, 1, col * 2);
                     }
-                    else if (rnd.Next(0, 100) > 97)
+
+                    if (mapCell == (int)MapTile.Empty || mapCell == (int)MapTile.StartCell || mapCell == (int)MapTile.EndCell)
                     {
-                        collectables.Add(new Object3D(Content, camera, wallBlock[rnd.Next(0, wallBlock.Count())] /*collectable*/)
+                        gameMap.Add(new Object3D(Content, camera, Content.Load<Model>("Models/Floor_Model_v1") /* Podloga*/ )
                         {
-                            Position = new Vector3(row * 2, 0, col * 2),
-                            Scale = new Vector3(0.002f),
-                            Type = ColliderType.Collectable,
+                            Position = new Vector3(row * 2, -1, col * 2),
+                            Scale = new Vector3(0.01f),
+                            Type = ColliderType.Floor,
                             lighting = _ambientEffect,
                             GraphicsDevice = GraphicsDevice
                         });
+
+                        if (rnd.Next(0, 100) > 97)
+                        {
+                            collectables.Add(new Object3D(Content, camera, wallBlock[rnd.Next(0, wallBlock.Count())] /*collectable*/)
+                            {
+                                Position = new Vector3(row * 2, 0, col * 2),
+                                Scale = new Vector3(0.002f),
+                                Type = ColliderType.Collectable,
+                                lighting = _ambientEffect,
+                                GraphicsDevice = GraphicsDevice
+                            });
+                        }
                     }
 
                     col++;
@@ -657,7 +658,6 @@ namespace MazeEscape
             camera.Collected = 0;
 
 
-            camera.AddColliderObject(floor);
             camera.AddColliderObject(enemy);
             camera.AddColliderObjects(gameMap.Cast<Collider>().ToList());
             camera.AddColectableObjects(collectables.Cast<Collider>().ToList());
