@@ -83,6 +83,13 @@ namespace MazeEscape.MainMenu
                     Mouse.SetPosition(Game.GraphicsDevice.Viewport.Width / 2, Game.GraphicsDevice.Viewport.Height / 2);
                     Game.RunGame = false;
                     soundMgr.Stop("menu-ambient");
+
+                    if (State != MenuState.MainMenu)
+                    {
+                        // Odtworzenie dzwięków
+                        soundMgr.Play("talk-1");
+                        soundMgr.Play("game-ambient");
+                    }
                 }
                 else if (Buttons[1].IsOn(mousePos) && Buttons[1].LeftClick(mouseState) && !mouseLock)
                 {

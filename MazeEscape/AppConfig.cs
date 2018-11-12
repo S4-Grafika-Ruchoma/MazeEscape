@@ -16,18 +16,17 @@ namespace MazeEscape
 
         public static bool PLAY_SOUNDS = false;
 
-        public static bool _DEBUG_SKIP_MAIN_MENU_ = false;//=false; // Pomijanie menu
-        public static bool _DEBUG_AUTO_NO_CLIP_ = true;//=false; // PRzechodzenie przez ściany
-        public static bool _DEBUG_SHOW_DIRECTION_TO_CENTER_ = false;
-        public static bool _DEBUG_DISABLE_START_SPAWN_ = true; // POminięcie respawnu na początkowej drabince
+        public static bool _DEBUG_SKIP_MAIN_MENU_ = true;//=false; // Pomijanie menu
+        public static bool _DEBUG_AUTO_NO_CLIP_ = false;//=false; // PRzechodzenie przez ściany
+        public static bool _DEBUG_DISABLE_START_SPAWN_ = false; // POminięcie respawnu na początkowej drabince
 
-        public static bool _DEBUG_SUN_ = true;
+        public static bool _DEBUG_SUN_ = false;
 
         public static bool _DEBUG_DISABLE_COLLECTABLES_CHECK_ = false; // 
 
-        //public static ;
-        //public static bool ;
-        //public static int ;
-        //public static TYPE NAME = VALUE;
+        public static int _SPRINT_SPEED = 30;
+        public static int _WALK_SPEED = 5;
+
+        public static float _MOUSE_SPEED = 0.05f;
     }
 }

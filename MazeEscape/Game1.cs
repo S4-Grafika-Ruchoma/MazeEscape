@@ -19,6 +19,7 @@ namespace MazeEscape
         private MainMenu.MainMenu menu;
 
         public bool RunGame = AppConfig._DEBUG_SKIP_MAIN_MENU_;
+        public bool NotAllCollected { get; set; }
 
         // Elementy monogame
         private KeyboardState prevState;
@@ -173,10 +174,6 @@ namespace MazeEscape
             // Tworzenie mapy i reprezentacji 3D
             GenerateGameMap();
 
-            // Odtworzenie dzwięków
-            soundManager.Play("talk-1");
-            soundManager.Play("game-ambient");
-
             base.Initialize();
         }
 
@@ -204,11 +201,11 @@ namespace MazeEscape
             {
                 if (keyboardState.IsKeyDown(Keys.LeftShift))
                 {
-                    camera.cameraSpeed = 20;
+                    camera.cameraSpeed = AppConfig._SPRINT_SPEED;
                 }
                 else if (keyboardState.IsKeyUp(Keys.LeftShift))
                 {
-                    camera.cameraSpeed = 5;
+                    camera.cameraSpeed = AppConfig._WALK_SPEED;
                 }
 
                 #region Przyciski
@@ -222,12 +219,7 @@ namespace MazeEscape
                 {
                     camera.ShowColliders = !camera.ShowColliders;
                 }
-
-                if (keyboardState.IsKeyDown(Keys.J) && prevState.IsKeyUp(Keys.J))
-                {
-                    camera.ShowLines = !camera.ShowLines;
-                }
-
+                
                 if (keyboardState.IsKeyDown(Keys.L) && prevState.IsKeyUp(Keys.L))
                 {
                     GenerateGameMap();
@@ -341,7 +333,6 @@ namespace MazeEscape
             prevState = keyboardState;
         }
 
-        public bool NotAllCollected { get; set; }
 
         protected override void Draw(GameTime gameTime)
         {
@@ -377,17 +368,10 @@ namespace MazeEscape
 
                 enemy.Draw();
                 
-                if (camera.ShowLines)
-                {
-                    enemy.EnemyPlayerLine.DrawLine(basicEffect, GraphicsDevice, enemy.Position,
-                        new Vector3(camera.Position.X, camera.Position.Y - 0.02f, camera.Position.Z));
-                }
-
                 if (camera.ShowColliders)
                 {
                     camera.DrawCollider(basicEffect, GraphicsDevice);
                     enemy.DrawCollider(basicEffect, GraphicsDevice);
-                    DrawCollider(camera.GrabCollider);
                 }
 
                 spriteBatch.Begin();
@@ -425,26 +409,14 @@ namespace MazeEscape
                         Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                     yPos += inc;
 
-                    spriteBatch.DrawString(Font, $"Pozycja X: {camera.Position.X:F2}", new Vector2(xPos, yPos),
-                        Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                    yPos += inc;
-
-                    spriteBatch.DrawString(Font, $"Pozycja Y: {camera.Position.Y:F2}", new Vector2(xPos, yPos),
-                        Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                    yPos += inc;
-
-                    spriteBatch.DrawString(Font, $"Pozycja Z: {camera.Position.Z:F2}", new Vector2(xPos, yPos),
+                    spriteBatch.DrawString(Font, $"Pozycja : {camera.Position.X:F2} x {camera.Position.Y:F2} x {camera.Position.Z:F2}", new Vector2(xPos, yPos),
                         Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                     yPos += inc;
 
                     spriteBatch.DrawString(Font, $"[M] NoClip: {camera.NoClip}", new Vector2(xPos, yPos), Color.Aqua, 0,
                         Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                     yPos += inc;
-
-                    spriteBatch.DrawString(Font, $"[J] Linie: {camera.ShowLines}", new Vector2(xPos, yPos), Color.Aqua,
-                        0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                    yPos += inc;
-
+                    
                     spriteBatch.DrawString(Font, $"[U] Colliders: {camera.ShowColliders}", new Vector2(xPos, yPos),
                         Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                     yPos += inc;
@@ -457,18 +429,9 @@ namespace MazeEscape
                         new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                     yPos += inc;
 
-                    spriteBatch.DrawString(Font,
-                        $"Znajdzkia: {camera.CollectablesObjects.Any(a => a.ColliderBox.Intersects(camera.GrabCollider))}",
-                        new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                    yPos += inc;
-
-                    spriteBatch.DrawString(Font, $"RunGame: {RunGame}", new Vector2(xPos, yPos), Color.Aqua, 0, Vector2.Zero,
-                        new Vector2(0.3f), SpriteEffects.None, 0);
-                    yPos += inc;
-
                     #endregion
 
-                    xPos = GraphicsDevice.Viewport.Width - 250;
+                    xPos = GraphicsDevice.Viewport.Width - 300;
                     yPos = 5f;
                     inc = 25f;
 
@@ -478,15 +441,7 @@ namespace MazeEscape
                         new Vector2(0.3f), SpriteEffects.None, 0);
                     yPos += inc;
 
-                    spriteBatch.DrawString(Font, $"Pozycja X: {enemy.Position.X:F2}", new Vector2(xPos, yPos),
-                        Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                    yPos += inc;
-
-                    spriteBatch.DrawString(Font, $"Pozycja Y: {enemy.Position.Y:F2}", new Vector2(xPos, yPos),
-                        Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                    yPos += inc;
-
-                    spriteBatch.DrawString(Font, $"Pozycja Z: {enemy.Position.Z:F2}", new Vector2(xPos, yPos),
+                    spriteBatch.DrawString(Font, $"Pozycja : {enemy.Position.X:F2} x {enemy.Position.Y:F2} x {enemy.Position.Z:F2}", new Vector2(xPos, yPos),
                         Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                     yPos += inc;
 
@@ -507,37 +462,6 @@ namespace MazeEscape
             }
         }
 
-
-        public void DrawCollider(BoundingBox ColliderBox)
-        {
-            using (var line = new Line())
-            {
-                var n = ColliderBox.Min;
-                var x = ColliderBox.Max;
-
-                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(n.X, n.Y, x.Z), Color.Red); // N -> N+X.z 1-2
-                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(n.X, x.Y, n.Z), Color.Red); // N -> N+X.y 1-3
-                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(x.X, n.Y, n.Z), Color.Red); // N -> N+X.z 1-4
-
-                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(n.X, x.Y, x.Z), Color.Blue); // X -> X+N.x 5-6
-                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(x.X, n.Y, x.Z), Color.Blue); // X -> X+N.y 5-7
-                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(x.X, x.Y, n.Z), Color.Blue); // X -> X+N.z 5-8
-
-                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, n.Y, n.Z), new Vector3(x.X, n.Y, x.Z),
-                    Color.Salmon); // 4-7
-                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, n.Y, x.Z), new Vector3(n.X, n.Y, x.Z),
-                    Color.Salmon); // 7-2
-                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, n.Y, x.Z), new Vector3(n.X, x.Y, x.Z),
-                    Color.Salmon); // 2-6
-
-                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, x.Y, x.Z), new Vector3(n.X, x.Y, n.Z),
-                    Color.Cyan); // 6-3
-                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, x.Y, n.Z), new Vector3(x.X, x.Y, n.Z),
-                    Color.Cyan); // 3-8
-                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, x.Y, n.Z), new Vector3(x.X, n.Y, n.Z),
-                    Color.Cyan); // 8-4
-            }
-        }
 
         private void GenerateGameMap()
         {

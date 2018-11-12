@@ -27,17 +27,6 @@ namespace MazeEscape.GameObjects
         public override BoundingBox ColliderBox => new BoundingBox(Position - new Vector3(1, 1, 1), Position + new Vector3(1, 1, 1));
         public override ColliderType Type { get; set; }
 
-
-        public Object3D(ContentManager content, Camera camera, string path = null)
-        {
-            Scale = new Vector3(1, 1, 1);
-            Content = content;
-            this.Camera = camera;
-            if (!string.IsNullOrEmpty(path))
-            {
-                Load(path);
-            }
-        }
         public Object3D(ContentManager content, Camera camera, Model model)
         {
             Scale = new Vector3(1, 1, 1);
@@ -45,8 +34,7 @@ namespace MazeEscape.GameObjects
             this.Camera = camera;
             Model = model;
         }
-
-
+        
         public void Draw()
         {
             DrawAt(Position);
@@ -105,27 +93,7 @@ namespace MazeEscape.GameObjects
                 catch (Exception ex)
                 {
                 }
-
-                var worldMatrix2 = Matrix.CreateScale(Scale*0.9f) * Matrix.CreateRotationX(Rotation.X) *
-                                   Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) *
-                                   Matrix.CreateTranslation(position);
-
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    //effect.EnableDefaultLighting();
-                    effect.PreferPerPixelLighting = true;
-                    effect.World = worldMatrix2;
-                    effect.View = Camera.View;
-                    effect.Projection = Camera.Projection;
-                    effect.Alpha = 1f;
-
-                }
             }
-
-            //var worldMatrix3 = Matrix.CreateScale(Scale * 0.9f) * Matrix.CreateRotationX(Rotation.X) *
-            //                   Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) *
-            //                   Matrix.CreateTranslation(position);
-            //Model.Draw(worldMatrix3, Camera.View, Camera.Projection);
         }
     }
 }

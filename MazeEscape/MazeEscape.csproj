@@ -44,7 +44,6 @@
     <Compile Include="AI\Enemy.cs" />
     <Compile Include="AppConfig.cs" />
     <Compile Include="CustomClasses\Camera.cs" />
-    <Compile Include="CustomClasses\Floor.cs" />
     <Compile Include="CustomClasses\Line.cs" />
     <Compile Include="Enums\ColliderType.cs" />
     <Compile Include="Enums\Directions.cs" />

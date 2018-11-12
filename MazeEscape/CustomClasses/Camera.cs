@@ -30,8 +30,6 @@ namespace MazeEscape.CustomClasses
 
         public Matrix World { get; set; }
 
-        public bool ShowLines { get; set; }
-
         public bool NoClip { get; set; }
 
         public Vector3 Position
@@ -73,9 +71,7 @@ namespace MazeEscape.CustomClasses
             MoveTo(position, rotation);
 
             Falshlight = true;
-
-            ShowLines = AppConfig._DEBUG_SHOW_DIRECTION_TO_CENTER_;
-
+            
             prevMouseState = Mouse.GetState();
         }
 
@@ -181,10 +177,7 @@ namespace MazeEscape.CustomClasses
 
                 if (keyboardState.IsKeyDown(Keys.F) && prevState.IsKeyUp(Keys.F))
                     Falshlight = !Falshlight;
-
-                if (keyboardState.IsKeyDown(Keys.P) && prevState.IsKeyUp(Keys.P))
-                    ShowLines = !ShowLines;
-
+                
                 if (moveVector != Vector3.Zero)
                 {
                     moveVector.Normalize();
@@ -222,8 +215,8 @@ namespace MazeEscape.CustomClasses
                     var deltaX = currentMouseState.X - (Game.GraphicsDevice.Viewport.Width / 2);
                     var deltaY = currentMouseState.Y - (Game.GraphicsDevice.Viewport.Height / 2);
 
-                    mouseRotationBuffer.X -= 0.05F * deltaX * dt;
-                    mouseRotationBuffer.Y -= 0.05F * deltaY * dt;
+                    mouseRotationBuffer.X -= AppConfig._MOUSE_SPEED * deltaX * dt;
+                    mouseRotationBuffer.Y -= AppConfig._MOUSE_SPEED * deltaY * dt;
 
                     if (mouseRotationBuffer.Y < MathHelper.ToRadians(-75))
                         mouseRotationBuffer.Y -= mouseRotationBuffer.Y - MathHelper.ToRadians(-75);
