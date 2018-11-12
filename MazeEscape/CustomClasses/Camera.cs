@@ -149,7 +149,7 @@ namespace MazeEscape.CustomClasses
                 {
                     if (walkTimer >= game.soundManager.GetDuration("enemy_step"))
                     {
-                        game.soundManager.Play("enemy_step", 0.1f);
+                        game.soundManager.Play("player_step", 0.1f);
                         walkTimer = 0;
                     }
 
@@ -159,7 +159,7 @@ namespace MazeEscape.CustomClasses
                 {
                     if (walkTimer >= game.soundManager.GetDuration("enemy_step"))
                     {
-                        game.soundManager.Play("enemy_step", 0.1f);
+                        game.soundManager.Play("player_step", 0.1f);
                         walkTimer = 0;
                     }
                     moveVector.Z = -1;
@@ -169,7 +169,7 @@ namespace MazeEscape.CustomClasses
                 {
                     if (walkTimer >= game.soundManager.GetDuration("enemy_step"))
                     {
-                        game.soundManager.Play("enemy_step", 0.1f);
+                        game.soundManager.Play("player_step", 0.1f);
                         walkTimer = 0;
                     }
                     moveVector.X = 1;
@@ -178,7 +178,7 @@ namespace MazeEscape.CustomClasses
                 {
                     if (walkTimer >= game.soundManager.GetDuration("enemy_step"))
                     {
-                        game.soundManager.Play("enemy_step", 0.1f);
+                        game.soundManager.Play("player_step", 0.1f);
                         walkTimer = 0;
                     }
                     moveVector.X = -1;
@@ -186,18 +186,12 @@ namespace MazeEscape.CustomClasses
 
                 walkTimer += gameTime.ElapsedGameTime.Milliseconds + (keyboardState.IsKeyDown(Keys.LeftShift)?5:0);
 
-
                 if (NoClip)
                 {
                     if (keyboardState.IsKeyDown(Keys.Space))
                         moveVector.Y = 1;
                     if (keyboardState.IsKeyDown(Keys.C))
                         moveVector.Y = -1;
-                }
-                else
-                {
-                    // Grawitacja
-                    //moveVector.Y = -1.0f;
                 }
 
                 if (keyboardState.IsKeyDown(Keys.K) && prevState.IsKeyUp(Keys.K))
@@ -243,11 +237,6 @@ namespace MazeEscape.CustomClasses
                     if (list.Any())
                     {
                         if (IsWallCollision())
-                        {
-                            Move(moveVector * -1);
-                        }
-
-                        if (!IsEndLevelCollision() && !IsStartLevelCollision())
                         {
                             Move(moveVector * -1);
                         }

@@ -49,7 +49,7 @@ namespace MazeEscape.MainMenu
 
             if (isOn)
             {
-                ButtonHoverSound.Play();
+                ButtonHoverSound.Play(0.5f);
                 onHover = true;
             }
 
@@ -72,7 +72,7 @@ namespace MazeEscape.MainMenu
         {
             if (mouseState.LeftButton == ButtonState.Pressed)
             {
-                ButtonClickSound.Play();
+                ButtonClickSound.Play(0.5f);
                 ButtonClickSound.Wait = true;
             }
             else if (mouseState.LeftButton == ButtonState.Released)

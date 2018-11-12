@@ -99,10 +99,11 @@ namespace MazeEscape
                     {"talk-1","Sounds/angry"},
                     {"talk-2","Sounds/dont_leave"},
                     {"enemy_step","Sounds/enemy_step"},
+                    {"player_step","Sounds/enemy_step"},
                     {"menu-btn-hover","Sounds/menu_click"},
                     {"menu-btn-click","Sounds/lose sound 1_0"},
                     {"pick-up","Sounds/zombie-collect"},
-                    {"portal","Sounds/portal"},
+                    {"portal","Sounds/portal"}
                 }
             );
 
@@ -185,14 +186,14 @@ namespace MazeEscape
         protected override void Update(GameTime gameTime)
         {
             var keyboardState = Keyboard.GetState();
-            var mouseState = Mouse.GetState();
 
             if (keyboardState.IsKeyDown(Keys.Escape) && prevState.IsKeyUp(Keys.Escape))
             {
                 RunGame = !RunGame;
                 menu.State = MenuState.MainMenu;
                 soundManager.Pause("game-ambient");
-                soundManager.Play("menu-ambient",0);
+                soundManager.Stop("talk-1");
+                soundManager.Play("menu-ambient", 0.5f);
             }
 
             if (!RunGame)

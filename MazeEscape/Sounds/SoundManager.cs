@@ -154,7 +154,7 @@ namespace MazeEscape.Sounds
 
         public void Stop(string name)
         {
-            var sound = FindActiveSound(name);
+            var sound = FindSound(name);
 
             if (sound != null)
             {
@@ -180,6 +180,20 @@ namespace MazeEscape.Sounds
             }
 
             return 0;
+        }
+
+        public void ChangeSoundVolume(string name, float volume)
+        {
+            var sound = FindSound(name);
+
+            if (sound != null)
+            {
+                if (sound is SoundEffects song)
+                {
+                    //song.Stop();
+                    //song.Play(volume);
+                }
+            }
         }
     }
 }

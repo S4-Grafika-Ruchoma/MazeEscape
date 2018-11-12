@@ -41,7 +41,7 @@ namespace MazeEscape.MainMenu
             spriteBatch = new SpriteBatch(Game.GraphicsDevice);
             menuBackground = Game.Content.Load<Texture2D>("Main_Menu/Menu_background");
             
-            soundMgr.Play("menu-ambient",0, true);
+            soundMgr.Play("menu-ambient",0.5f, true);
 
             int xOffset = 130, yOffset = 400, yPadding = 65;
 
@@ -73,7 +73,6 @@ namespace MazeEscape.MainMenu
         {
             var mouseState = Mouse.GetState();
             var mousePos = new Point(mouseState.X, mouseState.Y);
-            var keyboardState = Keyboard.GetState();
             
             if (State == MenuState.MainMenu && prevState.LeftButton == ButtonState.Released)
             {
@@ -87,12 +86,13 @@ namespace MazeEscape.MainMenu
                     if (State == MenuState.MainMenu)
                     {
                         // Odtworzenie dzwięków
-                        //soundMgr.Play("talk-1");
-                        soundMgr.Play("game-ambient",0);
+                        //soundMgr.Play("talk-1",0.1f);
+                        soundMgr.Play("game-ambient",0.7f);
                     }
                     else
                     {
                         soundMgr.Resume("game-ambient");
+                        //soundMgr.Play("talk-1",0.1f);
                     }
                 }
                 else if (Buttons[1].IsOn(mousePos) && Buttons[1].LeftClick(mouseState) && !mouseLock)

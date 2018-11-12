@@ -40,7 +40,6 @@ namespace MazeEscape.Sounds
 
         public void Stop()
         {
-            
         }
 
         public void Resume()

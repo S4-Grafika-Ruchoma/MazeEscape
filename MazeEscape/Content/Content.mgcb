@@ -373,6 +373,18 @@
 /processorParam:Quality=Best
 /build:Sounds/portal.wav
 
+#begin Sounds/portal_a.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/portal_a.mp3
+
+#begin Sounds/portal_b.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/portal_b.mp3
+
 #begin Sounds/zombie-collect.mp3
 /importer:Mp3Importer
 /processor:SoundEffectProcessor
