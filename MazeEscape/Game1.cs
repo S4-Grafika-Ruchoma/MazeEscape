@@ -157,6 +157,13 @@ namespace MazeEscape
             lightRedii[3] = 0;
             lightRedii[4] = 15;
 
+            if (AppConfig._DEBUG_SUN_)
+            {
+                lightsPositions[3] = new Vector3(50,10,50);
+                lightIntensities[3] = 18;
+                lightRedii[3] = 120;
+            }
+
             lightEffectPointLightPosition.SetValue(lightsPositions);
             lightEffectPointLightColor.SetValue(lightsColors);
             lightEffectPointLightIntensity.SetValue(lightIntensities);
