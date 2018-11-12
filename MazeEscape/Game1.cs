@@ -31,7 +31,6 @@ namespace MazeEscape
         List<List<int>> mapMatrix;
         List<Object3D> gameMap;
         List<Object3D> collectables;
-        Object3D cameraAxies;
         Camera camera;
         public Enemy enemy;
 
@@ -58,6 +57,8 @@ namespace MazeEscape
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
         }
 
+        private Model Wall, Floor, Portal,Enemy, Collectable;
+
         EffectParameter lightEffectPointLightPosition, lightEffectPointLightColor, lightEffectPointLightIntensity, lightEffectPointLightRadius, lightEffectPointLightRendered;
 
         Vector3 MovableLight = new Vector3(10, 10, 10);
@@ -79,13 +80,6 @@ namespace MazeEscape
             // Tworzenie i dodawanie kamery
             camera = new Camera(this, new Vector3(0, 15, 0), Vector3.Zero, 5);
             Components.Add(camera);
-
-            //Wyświetlenie kierunków XYZ świata
-            cameraAxies = new Object3D(Content, camera, "Models/axies")
-            {
-                Scale = new Vector3(0.01f),
-                Rotation = new Vector3(MathHelper.ToRadians(-90), MathHelper.ToRadians(180), 0)
-            };
 
             // Tworzenie menagera dzwięków i dodawanie
             soundManager = new SoundManager(Content);
@@ -110,8 +104,15 @@ namespace MazeEscape
 
             menu = new MainMenu.MainMenu(this, soundManager, graphics);
 
+            //Wall, Floor, Portal,Axies,Enemy
+            Wall = Content.Load<Model>("Models/Wall_v2");
+            Floor = Content.Load<Model>("Models/Floor_Model_v1");
+            Portal = Content.Load<Model>("Models/Portal_Model_v2");
+            Enemy = Content.Load<Model>("Models/stozek");
+            Collectable = Wall;
+
             // Tworzenie przeciwnika
-            enemy = new Enemy(new Vector3(0, 15, 0), Content.Load<Model>("Models/stozek"), this.Content, this.camera, soundManager)
+            enemy = new Enemy(new Vector3(0, 15, 0), Enemy, this.Content, this.camera, soundManager)
             {
                 Scale = new Vector3(0.01f, 0.05f, 0.01f),
                 Type = ColliderType.Enemy
@@ -161,8 +162,7 @@ namespace MazeEscape
             lightEffectPointLightIntensity.SetValue(lightIntensities);
             lightEffectPointLightRadius.SetValue(lightRedii);
             #endregion
-
-         
+            
             // Tworzenie mapy i reprezentacji 3D
             GenerateGameMap();
 
@@ -369,11 +369,7 @@ namespace MazeEscape
                 }
 
                 enemy.Draw();
-
-                // Rysowanie osi kierunków świata
-                cameraAxies.Position = camera.cameraAxiesPosition;
-                cameraAxies.Draw();
-
+                
                 if (camera.ShowLines)
                 {
                     enemy.EnemyPlayerLine.DrawLine(basicEffect, GraphicsDevice, enemy.Position,
@@ -559,16 +555,7 @@ namespace MazeEscape
                     mapMatrix[i].Add(Matrix[i, j]);
                 }
             }
-
-            var wallBlock = new List<Model>()
-            {
-                Content.Load<Model>("Models/Wall_v2"),
-                //Content.Load<Model>("Models/TestTexturNaModelach"),
-                //Content.Load<Model>("Models/wallBlock"),
-                //Content.Load<Model>("Models/Wall_Block_v1a"),
-                //Content.Load<Model>("Models/Wall_Block_v2a")
-            };
-
+            
             gameMap = new List<Object3D>();
             collectables = new List<Object3D>();
 
@@ -584,7 +571,7 @@ namespace MazeEscape
                 {
                     if (mapCell == (int)MapTile.Wall)
                     {
-                        gameMap.Add(new Object3D(Content, camera, wallBlock[rnd.Next(0, wallBlock.Count())])
+                        gameMap.Add(new Object3D(Content, camera, Wall)
                         {
                             Position = new Vector3(row * 2, 1, col * 2),
                             Scale = new Vector3(0.01f),
@@ -595,7 +582,7 @@ namespace MazeEscape
                     }
                     else if (mapCell == (int)MapTile.EndCell)
                     {
-                        gameMap.Add(new Object3D(Content, camera, Content.Load<Model>("Models/Portal_Model_v2") /*ladder*/)
+                        gameMap.Add(new Object3D(Content, camera, Portal)
                         {
                             Position = new Vector3(row * 2, 0.7f, col * 2),
                             Scale = new Vector3(0.01f, 0.01f, 0.1f),
@@ -610,7 +597,7 @@ namespace MazeEscape
                     }
                     else if (mapCell == (int)MapTile.StartCell)
                     {
-                        gameMap.Add(new Object3D(Content, camera, Content.Load<Model>("Models/Portal_Model_v2")/*ladder*/ )
+                        gameMap.Add(new Object3D(Content, camera, Portal)
                         {
                             Position = new Vector3(row * 2, 0.7f, col * 2),
                             Scale = new Vector3(0.01f, 0.01f, 0.1f),
@@ -626,7 +613,7 @@ namespace MazeEscape
 
                     if (mapCell == (int)MapTile.Empty || mapCell == (int)MapTile.StartCell || mapCell == (int)MapTile.EndCell)
                     {
-                        gameMap.Add(new Object3D(Content, camera, Content.Load<Model>("Models/Floor_Model_v1") /* Podloga*/ )
+                        gameMap.Add(new Object3D(Content, camera, Floor)
                         {
                             Position = new Vector3(row * 2, -1, col * 2),
                             Scale = new Vector3(0.01f),
@@ -637,7 +624,7 @@ namespace MazeEscape
 
                         if (rnd.Next(0, 100) > 97)
                         {
-                            collectables.Add(new Object3D(Content, camera, wallBlock[rnd.Next(0, wallBlock.Count())] /*collectable*/)
+                            collectables.Add(new Object3D(Content, camera, Collectable)
                             {
                                 Position = new Vector3(row * 2, 0, col * 2),
                                 Scale = new Vector3(0.002f),
