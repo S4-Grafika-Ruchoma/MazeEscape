@@ -101,7 +101,7 @@ namespace MazeEscape
                     {"enemy_step","Sounds/enemy_step"},
                     {"menu-btn-hover","Sounds/menu_click"},
                     {"menu-btn-click","Sounds/lose sound 1_0"},
-                    {"pick-up","Sounds/pick_up"},
+                    {"pick-up","Sounds/zombie-collect"},
                     {"portal","Sounds/portal"},
                 }
             );
@@ -192,7 +192,7 @@ namespace MazeEscape
                 RunGame = !RunGame;
                 menu.State = MenuState.MainMenu;
                 soundManager.Pause("game-ambient");
-                soundManager.Play("menu-ambient");
+                soundManager.Play("menu-ambient",0);
             }
 
             if (!RunGame)
@@ -297,7 +297,7 @@ namespace MazeEscape
                     else
                     {
                         GenerateGameMap();
-                        soundManager.Play("portal");
+                        soundManager.Play("portal",0.2f);
                     }
                 }
                 else

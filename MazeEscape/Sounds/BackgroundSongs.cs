@@ -28,7 +28,7 @@ namespace MazeEscape.Sounds
             MediaPlayer.Volume = Volume;
         }
 
-        public void Play()
+        public void Play(float volume = 0)
         {
             if (AppConfig.PLAY_SOUNDS)
             {

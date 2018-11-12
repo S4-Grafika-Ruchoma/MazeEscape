@@ -373,3 +373,9 @@
 /processorParam:Quality=Best
 /build:Sounds/portal.wav
 
+#begin Sounds/zombie-collect.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Sounds/zombie-collect.mp3
+

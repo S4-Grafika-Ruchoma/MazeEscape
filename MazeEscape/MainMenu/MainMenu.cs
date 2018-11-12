@@ -41,7 +41,7 @@ namespace MazeEscape.MainMenu
             spriteBatch = new SpriteBatch(Game.GraphicsDevice);
             menuBackground = Game.Content.Load<Texture2D>("Main_Menu/Menu_background");
             
-            soundMgr.Play("menu-ambient", true);
+            soundMgr.Play("menu-ambient",0, true);
 
             int xOffset = 130, yOffset = 400, yPadding = 65;
 
@@ -88,7 +88,7 @@ namespace MazeEscape.MainMenu
                     {
                         // Odtworzenie dzwięków
                         //soundMgr.Play("talk-1");
-                        soundMgr.Play("game-ambient");
+                        soundMgr.Play("game-ambient",0);
                     }
                     else
                     {

@@ -64,7 +64,19 @@ namespace MazeEscape.AI
 
             if (timer >= SoundManager.GetDuration("enemy_step"))
             {
-                //SoundManager.Play("enemy_step");
+                float deltaX = Camera.Position.X - Position.X;
+                float deltaY = Camera.Position.Y - Position.Y;
+                float deltaZ = Camera.Position.Z - Position.Z;
+
+                float distance = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+
+                float volume = 0;
+                if (distance < 20.0f)
+                {
+                    volume = 1.0f - (distance / 20.0f);
+                }
+
+                SoundManager.Play("enemy_step", volume); // TODO DO DO DO
                 timer = 0;
             }
 

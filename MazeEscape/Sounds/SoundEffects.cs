@@ -25,11 +25,11 @@ namespace MazeEscape.Sounds
 
 
         // Odtwarzanie dzwięku
-        public void Play()
+        public void Play(float volume = 0)
         {
             if (!Wait &&  AppConfig.PLAY_SOUNDS)
             {
-                sound.Play();
+                sound.Play(volume,0,0);
             }
         }
 

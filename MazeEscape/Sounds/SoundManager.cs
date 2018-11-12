@@ -133,7 +133,7 @@ namespace MazeEscape.Sounds
             Song?.Pause();
         }
 
-        public void Play(string name,bool replay = false)
+        public void Play(string name, float volume, bool replay = false)
         {
             var sound = FindSound(name);
 
@@ -144,7 +144,7 @@ namespace MazeEscape.Sounds
                     song.Repeating(true);
                 }
 
-                sound.Play();
+                sound.Play(volume);
                 if (!Active.ContainsKey(name))
                 {
                     Active.Add(name, sound);

@@ -24,7 +24,7 @@ namespace MazeEscape
 
         public static bool _DEBUG_DISABLE_COLLECTABLES_CHECK_ = false; // 
 
-        public static int _SPRINT_SPEED = 30;
+        public static int _SPRINT_SPEED = 20;
         public static int _WALK_SPEED = 5;
 
         public static float _MOUSE_SPEED = 0.05f;

@@ -133,6 +133,8 @@ namespace MazeEscape.CustomClasses
 
         private KeyboardState prevState;
 
+        public int walkTimer = 0;
+
         public override void Update(GameTime gameTime)
         {
             if (Game.IsActive)
@@ -144,14 +146,46 @@ namespace MazeEscape.CustomClasses
                 var moveVector = Vector3.Zero;
 
                 if (keyboardState.IsKeyDown(Keys.W))
+                {
+                    if (walkTimer >= game.soundManager.GetDuration("enemy_step"))
+                    {
+                        game.soundManager.Play("enemy_step", 0.1f);
+                        walkTimer = 0;
+                    }
+
                     moveVector.Z = 1;
+                }
                 if (keyboardState.IsKeyDown(Keys.S))
+                {
+                    if (walkTimer >= game.soundManager.GetDuration("enemy_step"))
+                    {
+                        game.soundManager.Play("enemy_step", 0.1f);
+                        walkTimer = 0;
+                    }
                     moveVector.Z = -1;
+                }
 
                 if (keyboardState.IsKeyDown(Keys.A))
+                {
+                    if (walkTimer >= game.soundManager.GetDuration("enemy_step"))
+                    {
+                        game.soundManager.Play("enemy_step", 0.1f);
+                        walkTimer = 0;
+                    }
                     moveVector.X = 1;
+                }
                 if (keyboardState.IsKeyDown(Keys.D))
+                {
+                    if (walkTimer >= game.soundManager.GetDuration("enemy_step"))
+                    {
+                        game.soundManager.Play("enemy_step", 0.1f);
+                        walkTimer = 0;
+                    }
                     moveVector.X = -1;
+                }
+
+                walkTimer += gameTime.ElapsedGameTime.Milliseconds + (keyboardState.IsKeyDown(Keys.LeftShift)?5:0);
+
 
                 if (NoClip)
                 {
@@ -170,10 +204,10 @@ namespace MazeEscape.CustomClasses
                 {
                     CollectablesObjects.RemoveAt(0);
                     Collected++;
-                    game.soundManager.Play("pick-up");
+                    game.soundManager.Play("pick-up", 0.4f);
                     if (!CollectablesObjects.Any())
                     {
-                        game.soundManager.Play("excited-sound");
+                        game.soundManager.Play("excited-sound", 0.8f);
                     }
                 }
 
@@ -183,10 +217,10 @@ namespace MazeEscape.CustomClasses
                     {
                         CollectablesObjects.RemoveAll(a => a.ColliderBox.Intersects(GrabCollider));
                         Collected++;
-                        game.soundManager.Play("pick-up");
+                        game.soundManager.Play("pick-up", 0.4f);
                         if (!CollectablesObjects.Any())
                         {
-                            game.soundManager.Play("excited-sound");
+                            game.soundManager.Play("excited-sound", 0.8f);
                         }
                     }
                 }

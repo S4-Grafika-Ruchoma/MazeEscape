@@ -8,7 +8,7 @@ namespace MazeEscape.Sounds
 {
     public interface ISound
     {
-        void Play();
+        void Play(float volume = 0);
         void Pause();
         void Stop();
         void Resume();
