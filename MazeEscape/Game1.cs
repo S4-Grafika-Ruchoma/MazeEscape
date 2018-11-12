@@ -110,7 +110,8 @@ namespace MazeEscape
             Floor = Content.Load<Model>("Models/Floor_Model_v2");
             Portal = Content.Load<Model>("Models/Portal_Model_v2");
             Enemy = Content.Load<Model>("Models/stozek");
-            Collectable = Wall;
+            Collectable = Content.Load<Model>("Models/Box_model_v3"); //Wall;
+                                                                      // Content.Load<Model>("Models/Box_model_v2"); 
 
             // Tworzenie przeciwnika
             enemy = new Enemy(new Vector3(0, 15, 0), Enemy, this.Content, this.camera, soundManager)
@@ -555,10 +556,10 @@ namespace MazeEscape
 
                         if (rnd.Next(0, 100) > 97)
                         {
-                            collectables.Add(new Object3D(Content, camera, Collectable)
+                            collectables.Add(new Object3D(Content, camera, Collectable) // Znajdźka
                             {
-                                Position = new Vector3(row * 2, 0, col * 2),
-                                Scale = new Vector3(0.002f),
+                                Position = new Vector3(row * 2, 0.2f, col * 2),
+                                Scale = new Vector3(0.01f),
                                 Type = ColliderType.Collectable,
                                 lighting = _ambientEffect,
                                 GraphicsDevice = GraphicsDevice
