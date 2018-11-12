@@ -8,8 +8,8 @@ namespace MazeEscape
 {
     public static class AppConfig
     {
-        public static int WIDTH = 800;// 1920
-        public static int HEIGHT = 600;// 1080
+        public static int WIDTH = 1280;// 1920
+        public static int HEIGHT = 720;// 1080
         public static bool FULL_SCREEN = false;
         public static bool IS_MOUSE_VISIBLE = true;
         public static bool ALLOW_RESIZING = false;
