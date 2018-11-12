@@ -71,7 +71,7 @@ namespace MazeEscape.CustomClasses
             MoveTo(position, rotation);
 
             Falshlight = true;
-            
+
             prevMouseState = Mouse.GetState();
         }
 
@@ -166,18 +166,34 @@ namespace MazeEscape.CustomClasses
                     //moveVector.Y = -1.0f;
                 }
 
+                if (keyboardState.IsKeyDown(Keys.K) && prevState.IsKeyUp(Keys.K))
+                {
+                    CollectablesObjects.RemoveAt(0);
+                    Collected++;
+                    game.soundManager.Play("pick-up");
+                    if (!CollectablesObjects.Any())
+                    {
+                        game.soundManager.Play("excited-sound");
+                    }
+                }
+
                 if (CollectablesObjects.Any(a => a.ColliderBox.Intersects(GrabCollider)))
                 {
                     if (keyboardState.IsKeyDown(Keys.E) && prevState.IsKeyUp(Keys.E))
                     {
-                        CollectablesObjects.RemoveAll(a=>a.ColliderBox.Intersects(GrabCollider));
+                        CollectablesObjects.RemoveAll(a => a.ColliderBox.Intersects(GrabCollider));
                         Collected++;
+                        game.soundManager.Play("pick-up");
+                        if (!CollectablesObjects.Any())
+                        {
+                            game.soundManager.Play("excited-sound");
+                        }
                     }
                 }
 
                 if (keyboardState.IsKeyDown(Keys.F) && prevState.IsKeyUp(Keys.F))
                     Falshlight = !Falshlight;
-                
+
                 if (moveVector != Vector3.Zero)
                 {
                     moveVector.Normalize();
@@ -192,6 +208,11 @@ namespace MazeEscape.CustomClasses
                     var list = ColliderObjects.Where(a => a.ColliderBox.Intersects(ColliderBox)).ToList();
                     if (list.Any())
                     {
+                        if (IsWallCollision())
+                        {
+                            Move(moveVector * -1);
+                        }
+
                         if (!IsEndLevelCollision() && !IsStartLevelCollision())
                         {
                             Move(moveVector * -1);
@@ -240,6 +261,11 @@ namespace MazeEscape.CustomClasses
                 base.Update(gameTime);
 
             }
+        }
+
+        private bool IsWallCollision()
+        {
+            return ColliderObjects.Any(a => a.Type == ColliderType.Wall && a.ColliderBox.Intersects(ColliderBox));
         }
 
         public bool CantGoBack { get; set; }

@@ -120,6 +120,19 @@ namespace MazeEscape.Sounds
             return list.FirstOrDefault();
         }
 
+        internal void Resume(string name)
+        {
+            var Song = FindSound(name);
+
+            Song?.Resume();
+        }
+        internal void Pause(string name)
+        {
+            var Song = FindSound(name);
+
+            Song?.Pause();
+        }
+
         public void Play(string name,bool replay = false)
         {
             var sound = FindSound(name);

@@ -64,7 +64,7 @@ namespace MazeEscape.AI
 
             if (timer >= SoundManager.GetDuration("enemy_step"))
             {
-                SoundManager.Play("enemy_step");
+                //SoundManager.Play("enemy_step");
                 timer = 0;
             }
 

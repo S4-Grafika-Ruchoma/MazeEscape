@@ -84,11 +84,15 @@ namespace MazeEscape.MainMenu
                     Game.RunGame = false;
                     soundMgr.Stop("menu-ambient");
 
-                    if (State != MenuState.MainMenu)
+                    if (State == MenuState.MainMenu)
                     {
                         // Odtworzenie dzwięków
-                        soundMgr.Play("talk-1");
+                        //soundMgr.Play("talk-1");
                         soundMgr.Play("game-ambient");
+                    }
+                    else
+                    {
+                        soundMgr.Resume("game-ambient");
                     }
                 }
                 else if (Buttons[1].IsOn(mousePos) && Buttons[1].LeftClick(mouseState) && !mouseLock)

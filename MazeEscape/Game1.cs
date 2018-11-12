@@ -28,7 +28,7 @@ namespace MazeEscape
         SpriteBatch spriteBatch;
 
         // Elementy gry
-        SoundManager soundManager;
+        public SoundManager soundManager;
         List<List<int>> mapMatrix;
         List<Object3D> gameMap;
         List<Object3D> collectables;
@@ -71,6 +71,7 @@ namespace MazeEscape
 
         protected override void Initialize()
         {
+            spriteBatch = new SpriteBatch(GraphicsDevice);
             basicEffect = new BasicEffect(GraphicsDevice)
             {
                 Alpha = 1,
@@ -94,24 +95,27 @@ namespace MazeEscape
                 // SoundEffect
                 new Dictionary<string, string>()
                 {
-                    {" ","Sounds/menu_click"},
+                    {"excited-sound","Sounds/excited_sound"},
                     {"talk-1","Sounds/angry"},
                     {"talk-2","Sounds/dont_leave"},
                     {"enemy_step","Sounds/enemy_step"},
                     {"menu-btn-hover","Sounds/menu_click"},
                     {"menu-btn-click","Sounds/lose sound 1_0"},
+                    {"pick-up","Sounds/pick_up"},
+                    {"portal","Sounds/portal"},
                 }
             );
 
             menu = new MainMenu.MainMenu(this, soundManager, graphics);
+
+            Font = Content.Load<SpriteFont>("Fonts/SpriteFontPL");
 
             //Wall, Floor, Portal,Axies,Enemy
             Wall = Content.Load<Model>("Models/Wall_v2");
             Floor = Content.Load<Model>("Models/Floor_Model_v2");
             Portal = Content.Load<Model>("Models/Portal_Model_v2");
             Enemy = Content.Load<Model>("Models/stozek");
-            Collectable = Content.Load<Model>("Models/Box_model_v3"); //Wall;
-                                                                      // Content.Load<Model>("Models/Box_model_v2"); 
+            Collectable = Content.Load<Model>("Models/Box_model_v3"); 
 
             // Tworzenie przeciwnika
             enemy = new Enemy(new Vector3(0, 15, 0), Enemy, this.Content, this.camera, soundManager)
@@ -177,25 +181,18 @@ namespace MazeEscape
 
             base.Initialize();
         }
-
-        protected override void LoadContent()
-        {
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            Font = Content.Load<SpriteFont>("Fonts/SpriteFontPL");
-        }
-
-        protected override void UnloadContent() { }
-
+        
         protected override void Update(GameTime gameTime)
         {
             var keyboardState = Keyboard.GetState();
             var mouseState = Mouse.GetState();
-            var mousePostion = new Point(mouseState.X, mouseState.Y);
 
             if (keyboardState.IsKeyDown(Keys.Escape) && prevState.IsKeyUp(Keys.Escape))
             {
                 RunGame = !RunGame;
                 menu.State = MenuState.MainMenu;
+                soundManager.Pause("game-ambient");
+                soundManager.Play("menu-ambient");
             }
 
             if (!RunGame)
@@ -300,6 +297,7 @@ namespace MazeEscape
                     else
                     {
                         GenerateGameMap();
+                        soundManager.Play("portal");
                     }
                 }
                 else
@@ -333,8 +331,7 @@ namespace MazeEscape
 
             prevState = keyboardState;
         }
-
-
+        
         protected override void Draw(GameTime gameTime)
         {
             if (!RunGame)
