@@ -58,7 +58,7 @@ namespace MazeEscape
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
         }
 
-        private Model Wall, Floor, Portal,Enemy, Collectable;
+        private Model Wall, Floor, Portal, Enemy, Collectable;
 
         EffectParameter lightEffectPointLightPosition, lightEffectPointLightColor, lightEffectPointLightIntensity, lightEffectPointLightRadius, lightEffectPointLightRendered;
 
@@ -156,18 +156,18 @@ namespace MazeEscape
             lightIntensities[0] = 2f;
             lightIntensities[1] = 2f;
             lightIntensities[2] = 2f;
-            lightIntensities[3] = 0;
+            lightIntensities[3] = 3f;
             lightIntensities[4] = 2f;
 
             lightRedii[0] = 15;
             lightRedii[1] = 10;
             lightRedii[2] = 10;
-            lightRedii[3] = 0;
+            lightRedii[3] = 50;
             lightRedii[4] = 15;
 
             if (AppConfig._DEBUG_SUN_)
             {
-                lightsPositions[3] = new Vector3(50,10,50);
+                lightsPositions[3] = new Vector3(50, 10, 50);
                 lightIntensities[3] = 18;
                 lightRedii[3] = 120;
             }
@@ -177,13 +177,13 @@ namespace MazeEscape
             lightEffectPointLightIntensity.SetValue(lightIntensities);
             lightEffectPointLightRadius.SetValue(lightRedii);
             #endregion
-            
+
             // Tworzenie mapy i reprezentacji 3D
             GenerateGameMap();
 
             base.Initialize();
         }
-        
+
         protected override void Update(GameTime gameTime)
         {
             var keyboardState = Keyboard.GetState();
@@ -219,10 +219,16 @@ namespace MazeEscape
                 {
                     camera.ShowColliders = !camera.ShowColliders;
                 }
-                
+
                 if (keyboardState.IsKeyDown(Keys.L) && prevState.IsKeyUp(Keys.L))
                 {
+                    stepCount = 0;
                     GenerateGameMap();
+                }
+
+                if (keyboardState.IsKeyDown(Keys.H) && prevState.IsKeyUp(Keys.H))
+                {
+                    stepCount++;
                 }
 
                 #endregion
@@ -299,7 +305,7 @@ namespace MazeEscape
                     else
                     {
                         GenerateGameMap();
-                        soundManager.Play("portal",0.2f);
+                        soundManager.Play("portal", 0.2f);
                     }
                 }
                 else
@@ -310,6 +316,10 @@ namespace MazeEscape
                 // Licznik FPS
                 elapsedTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
 
+                if (Math.Abs(elapsedTime % 150) < 0.5f)
+                {
+                    stepCount++;
+                }
                 if (elapsedTime >= 1000.0f)
                 {
                     fps = totalFrames;
@@ -317,7 +327,12 @@ namespace MazeEscape
                     elapsedTime = 0;
                 }
 
-                enemy.Step(gameTime);
+                //enemy.Step(gameTime);
+                if (stepCount > pathFinder.PositionList.Count - 1)
+                {
+                    stepCount = 0;
+                }
+                enemy.Position = new Vector3(pathFinder.PositionList[stepCount].X * 2, 1, pathFinder.PositionList[stepCount].Y * 2);
                 base.Update(gameTime);
 
                 _ambientEffect.Parameters["CameraPosition"].SetValue(camera.Position);
@@ -333,7 +348,9 @@ namespace MazeEscape
 
             prevState = keyboardState;
         }
-        
+
+        private int stepCount = 0;
+
         protected override void Draw(GameTime gameTime)
         {
             if (!RunGame)
@@ -367,7 +384,7 @@ namespace MazeEscape
                 }
 
                 enemy.Draw();
-                
+
                 if (camera.ShowColliders)
                 {
                     camera.DrawCollider(basicEffect, GraphicsDevice);
@@ -416,7 +433,7 @@ namespace MazeEscape
                     spriteBatch.DrawString(Font, $"[M] NoClip: {camera.NoClip}", new Vector2(xPos, yPos), Color.Aqua, 0,
                         Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                     yPos += inc;
-                    
+
                     spriteBatch.DrawString(Font, $"[U] Colliders: {camera.ShowColliders}", new Vector2(xPos, yPos),
                         Color.Aqua, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                     yPos += inc;
@@ -486,7 +503,28 @@ namespace MazeEscape
                     mapMatrix[i].Add(Matrix[i, j]);
                 }
             }
-            
+
+            //mapMatrix = new List<List<int>>()
+            //{
+            //    new List<int>{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,},
+            //    new List<int>{-1,0,0,0,-1,0,0,0,0,0,0,-1,-1,0,0,4,-1,},
+            //    new List<int>{-1,0,0,0, -1, 0,0,0,0,0,-1,-1,0,0,0,0,-1,},
+            //    new List<int>{-1,0,0,0, -1, 0,0,0,0,0,-1,-1,0,0,0,0,-1,},
+            //    new List<int>{-1,0,0,0,0,0,0,0,0,0,0,-1,-1,-1,0,0,-1,},
+            //    new List<int>{-1,-1,-1,-1,-1,-1,0,0,0,-1,-1,0,0,0,0,0,-1,},
+            //    new List<int>{-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1,},
+            //    new List<int>{-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1,},
+            //    new List<int>{-1,0,0,0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,},
+            //    new List<int>{-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1,},
+            //    new List<int>{-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1,},
+            //    new List<int>{-1,0,0,0,-1,-1,-1,-1,-1,-1,-1,-1,-1,0,0,0,-1,},
+            //    new List<int>{-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1,},
+            //    new List<int>{-1,0,-1,0,0,0,0,0,0,0,0,-1,0,0,0,0,-1,},
+            //    new List<int>{-1,0,-1,0,0,0,0,0,0,0,0,-1,0,0,0,0,-1,},
+            //    new List<int>{-1,5,-1,0,0,0,0,0,0,0,0,-1,0,0,0,0,-1,},
+            //    new List<int>{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,},
+            //};
+
             gameMap = new List<Object3D>();
             collectables = new List<Object3D>();
 
@@ -494,12 +532,17 @@ namespace MazeEscape
 
             camera.ResetColiders();
 
+            var pathMap = new List<List<Spot>>();
+
             var row = 0;
             foreach (var mapRow in mapMatrix)
             {
+                pathMap.Add(new List<Spot>());
                 var col = 0;
                 foreach (var mapCell in mapRow)
                 {
+                    pathMap[row].Add(new Spot(new Point(row, col), ColliderType.Wall));
+
                     if (mapCell == (int)MapTile.Wall)
                     {
                         gameMap.Add(new Object3D(Content, camera, Wall)
@@ -510,6 +553,7 @@ namespace MazeEscape
                             lighting = _ambientEffect,
                             GraphicsDevice = GraphicsDevice
                         });
+                        pathMap[row][col].Type = ColliderType.Wall;
                     }
                     else if (mapCell == (int)MapTile.EndCell)
                     {
@@ -521,6 +565,7 @@ namespace MazeEscape
                             lighting = _ambientEffect,
                             GraphicsDevice = GraphicsDevice
                         });
+                        pathMap[row][col].Type = ColliderType.LadderExit;
                         lightsPositions[2] = new Vector3(row * 2, 2, col * 2); // RunGame
 
                         camera.EndCollider = gameMap.Last().ColliderBox;
@@ -536,6 +581,7 @@ namespace MazeEscape
                             lighting = _ambientEffect,
                             GraphicsDevice = GraphicsDevice
                         });
+                        pathMap[row][col].Type = ColliderType.LadderEnter;
                         lightsPositions[1] = new Vector3(row * 2, 2, col * 2); // START
 
                         if (!AppConfig._DEBUG_DISABLE_START_SPAWN_)
@@ -553,17 +599,32 @@ namespace MazeEscape
                             GraphicsDevice = GraphicsDevice
                         });
 
-                        if (rnd.Next(0, 100) > 97)
+                        if (mapCell == (int)MapTile.StartCell)
                         {
-                            collectables.Add(new Object3D(Content, camera, Collectable) // Znajdźka
-                            {
-                                Position = new Vector3(row * 2, 0.2f, col * 2),
-                                Scale = new Vector3(0.01f),
-                                Type = ColliderType.Collectable,
-                                lighting = _ambientEffect,
-                                GraphicsDevice = GraphicsDevice
-                            });
+                            pathMap[row][col].Type = ColliderType.LadderEnter;
                         }
+                        else if (mapCell == (int)MapTile.EndCell)
+                        {
+                            pathMap[row][col].Type = ColliderType.LadderExit;
+                        }
+                        else
+                        {
+                            pathMap[row][col].Type = ColliderType.Empty;
+
+                            if (rnd.Next(0, 100) > 97)
+                            {
+                                collectables.Add(new Object3D(Content, camera, Collectable) // Znajdźka
+                                {
+                                    Position = new Vector3(row * 2, 0.2f, col * 2),
+                                    Scale = new Vector3(0.01f),
+                                    Type = ColliderType.Collectable,
+                                    lighting = _ambientEffect,
+                                    GraphicsDevice = GraphicsDevice
+                                });
+                                pathMap[row][col].Type = ColliderType.Collectable;
+                            }
+                        }
+
                     }
 
                     col++;
@@ -571,6 +632,7 @@ namespace MazeEscape
 
                 row++;
             }
+
 
             NotAllCollected = false;
             camera.Collected = 0;
@@ -580,16 +642,21 @@ namespace MazeEscape
             camera.AddColliderObjects(gameMap.Cast<Collider>().ToList());
             camera.AddColectableObjects(collectables.Cast<Collider>().ToList());
 
-            int Pos1 = 0;
-            int Pos2 = 0;
+            int Pos1 = 1;//1x1 - 15x15
+            int Pos2 = 1;
             do
             {
                 Pos1 = rnd.Next(0, mapMatrix.Count - 1);
                 Pos2 = rnd.Next(0, mapMatrix.Count - 1);
             }
             while (mapMatrix[Pos1][Pos2] == (int)MapTile.Wall);
+
             enemy.Position = new Vector3(Pos1 * 2, 1, Pos2 * 2);
             //camera.AddColliderObject(enemy.ColliderBox);
+
+            pathFinder = new Pathfinding(pathMap, enemy);
         }
+
+        private Pathfinding pathFinder;
     }
 }
