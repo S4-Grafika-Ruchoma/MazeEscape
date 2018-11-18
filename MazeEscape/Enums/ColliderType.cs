@@ -8,13 +8,14 @@ namespace MazeEscape.Enums
 {
     public enum ColliderType
     {
-        Wall,
+        Wall,//0
         LadderEnter,
         LadderExit,
-        Empty,
+        Empty,//3
         Camera,
         Enemy,
         Collectable,
         Floor,
+        EnemyStartPosition,
     }
 }
