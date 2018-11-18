@@ -115,13 +115,14 @@ namespace MazeEscape
             Wall = Content.Load<Model>("Models/Wall_v2");
             Floor = Content.Load<Model>("Models/Floor_Model_v2");
             Portal = Content.Load<Model>("Models/Portal_Model_v2");
-            Enemy = Content.Load<Model>("Models/stozek");
+            Enemy = Content.Load<Model>("Models/kula");
+            // ("Models/stozek");
             Collectable = Content.Load<Model>("Models/Box_model_v3"); 
 
             // Tworzenie przeciwnika
             enemy = new Enemy(new Vector3(0, 15, 0), Enemy, this.Content, this.camera, soundManager)
             {
-                Scale = new Vector3(0.01f, 0.05f, 0.01f),
+                Scale = new Vector3(0.009f, 0.009f, 0.009f),
                 Type = ColliderType.Enemy
             };
 
