@@ -173,7 +173,7 @@ namespace MazeEscape.MainMenu
                 spriteBatch.DrawString(Font, $"Zmiana czułości myszy", new Vector2(400, 500), Color.White, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
 
                 spriteBatch.DrawString(Font, $"[-]", new Vector2(600, 490), Color.Green, 0, Vector2.Zero, new Vector2(0.5f), SpriteEffects.None, 0);
-                spriteBatch.DrawString(Font, $"{AppConfig._MOUSE_SPEED}", new Vector2(650, 490), Color.Green, 0, Vector2.Zero, new Vector2(0.5f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"{AppConfig._MOUSE_SPEED*100}", new Vector2(650, 490), Color.Green, 0, Vector2.Zero, new Vector2(0.5f), SpriteEffects.None, 0);
                 spriteBatch.DrawString(Font, $"[+]", new Vector2(750, 490), Color.Green, 0, Vector2.Zero, new Vector2(0.5f), SpriteEffects.None, 0);
 
             }

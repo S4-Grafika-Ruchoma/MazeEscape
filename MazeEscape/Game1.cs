@@ -422,6 +422,7 @@ namespace MazeEscape
 
                     if (camera.NoClip)
                     {
+                        spriteBatch.DrawString(Font, $"TODO Czas gry, numer poziomu, ilość znalezionych/ogólnie znajdziek", new Vector2(200, 200), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                         #region  lewy panel
 
                         spriteBatch.DrawString(Font, $"GRACZ FPS:{fps}", new Vector2(xPos, yPos), Color.Green, 0,
