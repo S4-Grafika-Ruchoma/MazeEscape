@@ -110,7 +110,7 @@ namespace MazeEscape.AI
             PositionList.AddRange(list);
             collectableList[collectableList.Count - 1].Reset();
 
-            var Johnny = 3;
+            var Johnny = 4;
 
             for (int i = 0; i < Johnny; i++)
             {
