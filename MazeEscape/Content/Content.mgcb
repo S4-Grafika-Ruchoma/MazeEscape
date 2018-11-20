@@ -26,6 +26,25 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/SpriteFontPL.spritefont
 
+#begin Fonts/TimerFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/TimerFont.spritefont
+
+#begin Main_Menu/autorzy.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Main_Menu/autorzy.png
+
 #begin Main_Menu/Autorzy_buttnon_A.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -50,6 +69,18 @@
 /processorParam:TextureFormat=Color
 /build:Main_Menu/Autorzy_buttnon_B.png
 
+#begin Main_Menu/autorzy_v2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Main_Menu/autorzy_v2.png
+
 #begin Main_Menu/Back_buttnon_A.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -73,6 +104,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Main_Menu/Back_buttnon_B.png
+
+#begin Main_Menu/czulosc_knefle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Main_Menu/czulosc_knefle.png
 
 #begin Main_Menu/Graj_buttnon_A.png
 /importer:TextureImporter
@@ -133,6 +176,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Main_Menu/Opcje_buttnon_B.png
+
+#begin Main_Menu/sound_N.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Main_Menu/sound_N.png
+
+#begin Main_Menu/sound_Y.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Main_Menu/sound_Y.png
 
 #begin Main_Menu/Wyjscie_buttnon_A.png
 /importer:TextureImporter
@@ -238,6 +305,37 @@
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:Models/kula.fbx
+
+#begin Models/kula_textue_v3.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Models/kula_textue_v3.jpg
+
+#begin Models/kula_v3.fbx
+/importer:FbxImporter
+/processor:ModelProcessor
+/processorParam:ColorKeyColor=0,0,0,0
+/processorParam:ColorKeyEnabled=True
+/processorParam:DefaultEffect=BasicEffect
+/processorParam:GenerateMipmaps=True
+/processorParam:GenerateTangentFrames=False
+/processorParam:PremultiplyTextureAlpha=True
+/processorParam:PremultiplyVertexColors=True
+/processorParam:ResizeTexturesToPowerOfTwo=False
+/processorParam:RotationX=0
+/processorParam:RotationY=0
+/processorParam:RotationZ=0
+/processorParam:Scale=1
+/processorParam:SwapWindingOrder=False
+/processorParam:TextureFormat=Compressed
+/build:Models/kula_v3.fbx
 
 #begin Models/Portal_Model_v2.fbx
 /importer:FbxImporter

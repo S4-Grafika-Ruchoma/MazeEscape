@@ -42,6 +42,19 @@ namespace MazeEscape
 
         // Licznik FPS i informacje debugowania
         SpriteFont Font;
+        SpriteFont TimerFont;
+        float time_in_game = 0;
+        float intro_time = 0;
+        int time_secounds = 0;
+        int time_minutes = 0;
+        int time_hours = 0; // For Alan...  (*,*)
+        int level_counter = 1;
+        int box_counter = 0;
+        int box_helper = 0;
+        int finded_box_counter = 0;
+        
+
+
         int totalFrames, fps;
         float elapsedTime;
 
@@ -110,14 +123,16 @@ namespace MazeEscape
             menu = new MainMenu.MainMenu(this, soundManager, graphics);
 
             Font = Content.Load<SpriteFont>("Fonts/SpriteFontPL");
+            TimerFont = Content.Load<SpriteFont>("Fonts/TimerFont");
+
 
             //Wall, Floor, Portal,Axies,Enemy
             Wall = Content.Load<Model>("Models/Wall_v2");
             Floor = Content.Load<Model>("Models/Floor_Model_v2");
             Portal = Content.Load<Model>("Models/Portal_Model_v2");
-            Enemy = Content.Load<Model>("Models/kula");
+            Enemy = Content.Load<Model>("Models/kula_v3");
             // ("Models/stozek");
-            Collectable = Content.Load<Model>("Models/Box_model_v3"); 
+            Collectable = Content.Load<Model>("Models/Box_model_v3");
 
             // Tworzenie przeciwnika
             enemy = new Enemy(new Vector3(0, 15, 0), Enemy, this.Content, this.camera, soundManager)
@@ -181,6 +196,9 @@ namespace MazeEscape
             // Tworzenie mapy i reprezentacji 3D
             GenerateGameMap();
 
+            box_counter = camera.CollectablesObjects.Count;  // Przypisanie ilości znajdziek
+            box_helper = box_counter;
+
             base.Initialize();
         }
 
@@ -199,6 +217,25 @@ namespace MazeEscape
 
             if (!RunGame)
             {
+                time_in_game += (float)gameTime.ElapsedGameTime.TotalSeconds;   // Timer
+                time_secounds = +(int)time_in_game;
+
+                intro_time += (float)gameTime.ElapsedGameTime.TotalSeconds;     //Intro timer
+                if (intro_time > 20) intro_time = 21; 
+
+                if (time_in_game > 60) { time_in_game = 0; }
+
+                if (time_secounds >= 60)
+                {
+                    time_minutes += 1;
+                    time_secounds = 0;
+                }
+                if (time_minutes >= 60)
+                {
+                    time_hours += 1;
+                    time_minutes = 0;
+                }
+
                 if (keyboardState.IsKeyDown(Keys.LeftShift))
                 {
                     camera.cameraSpeed = AppConfig._SPRINT_SPEED;
@@ -345,8 +382,13 @@ namespace MazeEscape
             {
                 menu.Update(gameTime);
             }
-
             prevState = keyboardState;
+
+            if (box_counter != camera.CollectablesObjects.Count)  // Logika podnoszenia znajdziek
+            {
+                finded_box_counter += 1;
+                box_counter = camera.CollectablesObjects.Count;
+            }
         }
 
         private int stepCount = 0;
@@ -393,27 +435,54 @@ namespace MazeEscape
 
                 spriteBatch.Begin();
                 {
+
+                    if (intro_time < 8)
+                    {
+                        spriteBatch.DrawString(Font, $"Twoim celem jest znalezienie {box_helper} skrzynek",    // Wstęp do gry
+                           new Vector2(GraphicsDevice.Viewport.Width / 2 - 250, GraphicsDevice.Viewport.Height / 2 - 180),
+                           Color.White, 0, Vector2.Zero,
+                           new Vector2(0.5f), SpriteEffects.None, 0);
+
+                        spriteBatch.DrawString(Font, $"ale uważaj nie jesteś tu sam...",                   // Wstęp do gry v2
+                           new Vector2(GraphicsDevice.Viewport.Width / 2 - 220, GraphicsDevice.Viewport.Height / 2 - 140),
+                           Color.White, 0, Vector2.Zero,
+                           new Vector2(0.5f), SpriteEffects.None, 0);
+                    }
+
+                    spriteBatch.DrawString(TimerFont, $"{time_hours}:{time_minutes}:{time_secounds}",       // Wyświetlanie czasu gry
+                        new Vector2(GraphicsDevice.Viewport.Width / 2 - 30, 15),
+                        Color.White, 0, Vector2.Zero,
+                        new Vector2(0.5f), SpriteEffects.None, 0);
+
+                    spriteBatch.DrawString(TimerFont, $"Poziom: {level_counter}",                           // Wyświetlanie aktualnego poziomu
+                        new Vector2(20, 60),  // Pozycja
+                        Color.White, 0, Vector2.Zero,
+                        new Vector2(0.4f), SpriteEffects.None, 0);
+
+                    spriteBatch.DrawString(TimerFont, $"Skrzynki: {finded_box_counter} z {box_helper}",    // Wyświetlanie ilości skrzynek
+                        new Vector2(20, 90),  // Pozycja
+                        Color.White, 0, Vector2.Zero,
+                        new Vector2(0.4f), SpriteEffects.None, 0);
+
                     if (camera.CollectablesObjects.Any(a => a.ColliderBox.Intersects(camera.GrabCollider)))
                     {
-                        spriteBatch.DrawString(Font, $"Podnieś znajdźke",
-                            new Vector2(GraphicsDevice.Viewport.Width / 2 - 50,
-                                GraphicsDevice.Viewport.Height / 2 - 50), Color.Green, 0, Vector2.Zero,
-                            new Vector2(0.3f), SpriteEffects.None, 0);
+                        spriteBatch.DrawString(Font, $"Naciśnij E aby podnieść skrzynkę",
+                            new Vector2(GraphicsDevice.Viewport.Width / 2 - 140,
+                                GraphicsDevice.Viewport.Height / 2), Color.White, 0, Vector2.Zero,
+                            new Vector2(0.4f), SpriteEffects.None, 0);
                     }
 
                     if (NotAllCollected || AppConfig._DEBUG_DISABLE_COLLECTABLES_CHECK_)
                     {
-                        spriteBatch.DrawString(Font, $"Żeby przejść dalej muszisz znaleść wszystkie cosie....",
-                            new Vector2(GraphicsDevice.Viewport.Width / 2 - 250,
-                                GraphicsDevice.Viewport.Height / 2 - 20), Color.Red, 0, Vector2.Zero, new Vector2(0.4f),
+                        spriteBatch.DrawString(Font, $"Znajdź wszystkie skrzynki!",
+                            new Vector2(GraphicsDevice.Viewport.Width / 2 - 170, 200), Color.White, 0, Vector2.Zero, new Vector2(0.6f),
                             SpriteEffects.None, 0);
                     }
 
                     if (camera.CantGoBack)
                     {
                         spriteBatch.DrawString(Font, $"Nie mogę się cofać...",
-                            new Vector2(GraphicsDevice.Viewport.Width / 2 - 250,
-                                GraphicsDevice.Viewport.Height / 2 - 20), Color.Red, 0, Vector2.Zero, new Vector2(0.4f),
+                            new Vector2(GraphicsDevice.Viewport.Width / 2 - 180, 150), Color.Red, 0, Vector2.Zero, new Vector2(0.6f),
                             SpriteEffects.None, 0);
                     }
 
