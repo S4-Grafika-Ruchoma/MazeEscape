@@ -127,7 +127,7 @@ namespace MazeEscape
 
 
             //Wall, Floor, Portal,Axies,Enemy
-            Wall = Content.Load<Model>("Models/Wall_v2");
+            Wall = Content.Load<Model>("Models/Wall_v5");
             Floor = Content.Load<Model>("Models/Floor_Model_v2");
             Portal = Content.Load<Model>("Models/Portal_Model_v2");
             Enemy = Content.Load<Model>("Models/kula_v3");
