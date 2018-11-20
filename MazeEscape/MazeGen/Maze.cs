@@ -186,19 +186,19 @@ namespace MazeEscape.MazeGen
                 switch (item)
                 {
                     case Directions.North:
-                        if (_currentPoint.Y == 0 || Visited(_currentPoint.X, _currentPoint.Y - 1))
+                        if (current.Y == 0 || Visited(current.X, current.Y - 1))
                             invalidDirections.Add(Directions.North);
                         break;
                     case Directions.South:
-                        if (_currentPoint.Y == _Height - 1 || Visited(_currentPoint.X, _currentPoint.Y + 1))
+                        if (current.Y == _Height - 1 || Visited(current.X, current.Y + 1))
                             invalidDirections.Add(Directions.South);
                         break;
                     case Directions.East:
-                        if (_currentPoint.X == _Width - 1 || Visited(_currentPoint.X + 1, _currentPoint.Y))
+                        if (current.X == _Width - 1 || Visited(current.X + 1, current.Y))
                             invalidDirections.Add(Directions.East);
                         break;
                     case Directions.West:
-                        if (_currentPoint.X == 0 || Visited(_currentPoint.X - 1, _currentPoint.Y))
+                        if (current.X == 0 || Visited(current.X - 1, current.Y))
                             invalidDirections.Add(Directions.West);
                         break;
                 }
@@ -232,6 +232,67 @@ namespace MazeEscape.MazeGen
                     return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Usuwa losowo slepe uliczki
+        /// </summary>
+        /// <param name="DeadEndPercentage">min 0, max 1</param>
+        public void DeadEndRemover (double DeadEndPercentage)
+        {
+            if (DeadEndPercentage < 0 || DeadEndPercentage > 1)
+                throw new ArgumentOutOfRangeException("Dead End Percentage", "Value must be between 0 - 100");
+            else
+            {
+                List<Directions> validDirections = GetAllDirections();
+
+                
+                foreach (RectCell Cell in _Board)
+                {
+                    if(Cell.IsDeadEnd && _rng.NextDouble() <= DeadEndPercentage)
+                    {
+                        validDirections = GetAllDirections();
+
+                        ValidateWallDestroyer(Cell, validDirections);
+
+                        if(validDirections.Count > 0)
+                        switch (validDirections[_rng.Next(0, validDirections.Count)])
+                        {
+                            case Directions.North:
+                                _Board[Cell.Point.X, Cell.Point.Y].RemoveWall(RectCell.Walls.North);
+                                _Board[Cell.Point.X, Cell.Point.Y - 1].RemoveWall(RectCell.Walls.South);
+
+                                break;
+                            case Directions.South:
+                                _Board[Cell.Point.X, Cell.Point.Y].RemoveWall(RectCell.Walls.South);
+                                _Board[Cell.Point.X, Cell.Point.Y + 1].RemoveWall(RectCell.Walls.North);
+                                break;
+                            case Directions.East:
+                                _Board[Cell.Point.X, Cell.Point.Y].RemoveWall(RectCell.Walls.East);
+                                _Board[Cell.Point.X + 1, Cell.Point.Y].RemoveWall(RectCell.Walls.West);
+                                break;
+                            case Directions.West:
+                                _Board[Cell.Point.X, Cell.Point.Y].RemoveWall(RectCell.Walls.West);                                
+                                _Board[Cell.Point.X - 1, Cell.Point.Y].RemoveWall(RectCell.Walls.East);
+                                break;
+                        }
+
+                        Cell.UnsetDeadEnd();
+                    }
+                }
+            }
+        }
+
+        private void ValidateWallDestroyer(RectCell Cell, List<Directions> Directions)
+        {
+            if (!Cell.NorthWall || Cell.Point.Y == 0)
+                Directions.Remove(Enums.Directions.North);
+            if (!Cell.SouthWall || Cell.Point.Y == _Height - 1)
+                Directions.Remove(Enums.Directions.South);
+            if (!Cell.EastWall || Cell.Point.X == _Width - 1)
+                Directions.Remove(Enums.Directions.East);
+            if (!Cell.WestWall || Cell.Point.X == 0)
+                Directions.Remove(Enums.Directions.West);
         }
 
         public static short[,] GenerateMatrix(Maze maze)
