@@ -49,38 +49,58 @@ namespace MazeEscape.AI
             new Vector3(0, 0, 0.1f),
             new Vector3(0, 0, -0.1f),
         };
+        public int stepCount = 0;
 
-        public void Step(GameTime gameTime)
+        float z = 0, x = 0, rotSpeed = 0.09f;
+
+        public void Step(Pathfinding pathFinder, GameTime gameTime)
         {
-            this.Position += MoveVector;
-            var list = Camera.ColliderObjects.Where(a => a.Type != ColliderType.Enemy && a.ColliderBox.Intersects(ColliderBox)).ToList();
-            if (list.Any())
+            timer += gameTime.ElapsedGameTime.Milliseconds;
+            if (timer > 1000)
             {
-                Random rnd = new Random();
-                this.Position -= MoveVector;
-
-                MoveVector = Directions[rnd.Next(0, 4)];
-            }
-
-            if (timer >= SoundManager.GetDuration("enemy_step"))
-            {
-                float deltaX = Camera.Position.X - Position.X;
-                float deltaY = Camera.Position.Y - Position.Y;
-                float deltaZ = Camera.Position.Z - Position.Z;
-
-                float distance = (float)Math.Sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
-
-                float volume = 0;
-                if (distance < 20.0f)
-                {
-                    volume = 1.0f - (distance / 20.0f);
-                }
-
-                SoundManager.Play("enemy_step", volume); // TODO DO DO DO
                 timer = 0;
             }
 
-            timer += gameTime.ElapsedGameTime.Milliseconds;
+            if (Math.Abs(timer % 2) < 0.5f)
+            {
+                stepCount++;
+            }
+            if (stepCount > pathFinder.PositionList.Count - 1)
+            {
+                stepCount = 0;
+            }
+
+            var rot = pathFinder.PositionList[stepCount + 1] - pathFinder.PositionList[stepCount];
+
+            if (rot.X > 0)
+            {
+                z -= rotSpeed;
+            }
+            else if (rot.X < 0)
+            {
+                z += rotSpeed;
+            }
+            else
+            {
+                z = 0;
+            }
+            if (rot.Y > 0)
+            {
+                x += rotSpeed;
+            }
+            else if (rot.Y < 0)
+            {
+                x -= rotSpeed;
+            }
+            else
+            {
+                x = 0;
+            }
+
+            Rotation = new Vector3(x, 0, z);
+
+            Position = new Vector3(pathFinder.PositionList[stepCount].X * 2, 1, pathFinder.PositionList[stepCount].Y * 2);
+
         }
 
         public void Draw()

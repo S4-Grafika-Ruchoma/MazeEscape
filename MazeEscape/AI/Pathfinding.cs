@@ -109,6 +109,24 @@ namespace MazeEscape.AI
             list.Reverse();
             PositionList.AddRange(list);
             collectableList[collectableList.Count - 1].Reset();
+
+            var Johnny = 4;
+
+            for (int i = 0; i < Johnny; i++)
+            {
+                AddSubSteps();
+            }
+        }
+
+        private void AddSubSteps()
+        {
+            for (var i = PositionList.Count - 2; i > 0; i--)
+            {
+                var current = PositionList[i];
+                var next = PositionList[i + 1];
+
+                PositionList.Insert(i + 1, (next + current) / 2);
+            }
         }
 
         private List<Spot> closedSet;

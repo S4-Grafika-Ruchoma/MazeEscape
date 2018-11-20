@@ -259,13 +259,8 @@ namespace MazeEscape
 
                 if (keyboardState.IsKeyDown(Keys.L) && prevState.IsKeyUp(Keys.L))
                 {
-                    stepCount = 0;
+                    enemy.stepCount = 0;
                     GenerateGameMap();
-                }
-
-                if (keyboardState.IsKeyDown(Keys.H) && prevState.IsKeyUp(Keys.H))
-                {
-                    stepCount++;
                 }
 
                 #endregion
@@ -353,10 +348,6 @@ namespace MazeEscape
                 // Licznik FPS
                 elapsedTime += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
 
-                if (Math.Abs(elapsedTime % 150) < 0.5f)
-                {
-                    stepCount++;
-                }
                 if (elapsedTime >= 1000.0f)
                 {
                     fps = totalFrames;
@@ -364,12 +355,8 @@ namespace MazeEscape
                     elapsedTime = 0;
                 }
 
-                //enemy.Step(gameTime);
-                if (stepCount > pathFinder.PositionList.Count - 1)
-                {
-                    stepCount = 0;
-                }
-                enemy.Position = new Vector3(pathFinder.PositionList[stepCount].X * 2, 1, pathFinder.PositionList[stepCount].Y * 2);
+                enemy.Step(pathFinder, gameTime);
+
                 base.Update(gameTime);
 
                 _ambientEffect.Parameters["CameraPosition"].SetValue(camera.Position);
@@ -391,7 +378,6 @@ namespace MazeEscape
             }
         }
 
-        private int stepCount = 0;
 
         protected override void Draw(GameTime gameTime)
         {
@@ -491,7 +477,6 @@ namespace MazeEscape
 
                     if (camera.NoClip)
                     {
-                        spriteBatch.DrawString(Font, $"TODO Czas gry, numer poziomu, ilość znalezionych/ogólnie znajdziek", new Vector2(200, 200), Color.Green, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
                         #region  lewy panel
 
                         spriteBatch.DrawString(Font, $"GRACZ FPS:{fps}", new Vector2(xPos, yPos), Color.Green, 0,
@@ -648,7 +633,8 @@ namespace MazeEscape
                             Scale = new Vector3(0.01f, 0.01f, 0.1f),
                             Type = ColliderType.LadderExit,
                             lighting = _ambientEffect,
-                            GraphicsDevice = GraphicsDevice
+                            GraphicsDevice = GraphicsDevice,
+                            RotationAnimation = new Vector3(0,0, 0.01f)
                         });
                         pathMap[row][col].Type = ColliderType.LadderExit;
                         lightsPositions[2] = new Vector3(row * 2, 2, col * 2); // RunGame
@@ -664,7 +650,8 @@ namespace MazeEscape
                             Scale = new Vector3(0.01f, 0.01f, 0.1f),
                             Type = ColliderType.LadderEnter,
                             lighting = _ambientEffect,
-                            GraphicsDevice = GraphicsDevice
+                            GraphicsDevice = GraphicsDevice,
+                            RotationAnimation = new Vector3(0, 0, 0.01f)
                         });
                         pathMap[row][col].Type = ColliderType.LadderEnter;
                         lightsPositions[1] = new Vector3(row * 2, 2, col * 2); // START

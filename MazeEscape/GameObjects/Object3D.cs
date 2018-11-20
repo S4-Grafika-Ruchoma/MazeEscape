@@ -26,6 +26,7 @@ namespace MazeEscape.GameObjects
 
         public override BoundingBox ColliderBox => new BoundingBox(Position - new Vector3(1, 1, 1), Position + new Vector3(1, 1, 1));
         public override ColliderType Type { get; set; }
+        public Vector3 RotationAnimation { get; set; }
 
         public Object3D(ContentManager content, Camera camera, Model model)
         {
@@ -56,6 +57,8 @@ namespace MazeEscape.GameObjects
                 {
                     var currentTexture = ((BasicEffect)(mesh.Effects[0])).Texture;
                     lighting.Parameters["DiffuseTexture"].SetValue(currentTexture);
+
+                    Rotation = Rotation + RotationAnimation;
 
                     var worldMatrix = Matrix.CreateScale(Scale) * Matrix.CreateRotationX(Rotation.X) *
                                       Matrix.CreateRotationY(Rotation.Y) * Matrix.CreateRotationZ(Rotation.Z) * transform[mesh.ParentBone.Index] *
