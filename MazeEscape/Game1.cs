@@ -52,7 +52,7 @@ namespace MazeEscape
         int box_counter = 0;
         int box_helper = 0;
         int finded_box_counter = 0;
-        
+
 
 
         int totalFrames, fps;
@@ -210,9 +210,18 @@ namespace MazeEscape
             {
                 RunGame = !RunGame;
                 menu.State = MenuState.MainMenu;
-                soundManager.Pause("game-ambient");
-                soundManager.Stop("talk-1");
-                soundManager.Play("menu-ambient", 0.5f);
+                //soundManager.Stop("talk-1");
+
+                if (RunGame)
+                {
+                    soundManager.Stop("game-ambient");
+                    soundManager.Play("menu-ambient", 0.5f);
+                }
+                else
+                {
+                    soundManager.Play("game-ambient",0.5f);
+                    soundManager.Stop("menu-ambient");
+                }
             }
 
             if (!RunGame)
@@ -221,7 +230,7 @@ namespace MazeEscape
                 time_secounds = +(int)time_in_game;
 
                 intro_time += (float)gameTime.ElapsedGameTime.TotalSeconds;     //Intro timer
-                if (intro_time > 20) intro_time = 21; 
+                if (intro_time > 20) intro_time = 21;
 
                 if (time_in_game > 60) { time_in_game = 0; }
 
@@ -634,7 +643,7 @@ namespace MazeEscape
                             Type = ColliderType.LadderExit,
                             lighting = _ambientEffect,
                             GraphicsDevice = GraphicsDevice,
-                            RotationAnimation = new Vector3(0,0, 0.01f)
+                            RotationAnimation = new Vector3(0, 0, 0.01f)
                         });
                         pathMap[row][col].Type = ColliderType.LadderExit;
                         lightsPositions[2] = new Vector3(row * 2, 2, col * 2); // RunGame
