@@ -92,6 +92,11 @@ namespace MazeEscape.MazeGen
             }
         }
 
+        public void UnsetDeadEnd()
+        {
+            this.isDeadEnd = false;
+        }
+
         public void Visit()
         {
             _nVisited++;

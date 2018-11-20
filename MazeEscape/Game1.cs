@@ -572,6 +572,10 @@ namespace MazeEscape
             // A potem to 
             mazeGenerator.Generate();
 
+            // Usuwacz DeadEnd'ów (spoko wartość 0.1f -> powyżej 0.5f jest pusta chujnia
+            //  1.0f wygląda jak żołądek czarnucha - ogólna pustka i kilka kamieni
+            mazeGenerator.DeadEndRemover(0.1f);
+
             // MapTile opisujący co gdzie jest w Mazie
             short[,] Matrix = Maze.GenerateMatrix(mazeGenerator);
 
