@@ -130,17 +130,24 @@ namespace MazeEscape.MainMenu
                 {
                     State = MenuState.MainMenu;
                 }
-                else if (soundToggle.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed && prevState.LeftButton == ButtonState.Released && !mouseLock)
+                else if (soundToggleOn.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed && prevState.LeftButton == ButtonState.Released && !mouseLock && !AppConfig.PLAY_SOUNDS)
                 {
-                    AppConfig.PLAY_SOUNDS = !AppConfig.PLAY_SOUNDS;
-                    if (AppConfig.PLAY_SOUNDS)
-                    {
-                        soundMgr.Play("menu-ambient", 0.5f, true);
-                    }
-                    else
-                    {
-                        soundMgr.Stop("menu-ambient");
-                    }
+                    AppConfig.PLAY_SOUNDS = true;
+                    soundMgr.Play("menu-ambient", 0.5f, true);
+                }
+                else if (soundToggleOff.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed && prevState.LeftButton == ButtonState.Released && !mouseLock && AppConfig.PLAY_SOUNDS)
+                {
+                    AppConfig.PLAY_SOUNDS = false;
+                    soundMgr.Stop("menu-ambient");
+
+                }
+                else if (sensitivityPlus.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed && prevState.LeftButton == ButtonState.Released && AppConfig._MOUSE_SPEED < 1f)
+                {
+                    AppConfig._MOUSE_SPEED += 0.01f;
+                }
+                else if (sensitivityMinus.Contains(mousePos) && mouseState.LeftButton == ButtonState.Pressed && prevState.LeftButton == ButtonState.Released && AppConfig._MOUSE_SPEED > 0.02f)
+                {
+                    AppConfig._MOUSE_SPEED -= 0.01f;
                 }
             }
 
@@ -152,7 +159,10 @@ namespace MazeEscape.MainMenu
             prevState = mouseState;
         }
 
-        Rectangle soundToggle = new Rectangle(400, 350, 200, 50);
+        Rectangle soundToggleOn = new Rectangle(490, 250, 280, 50);
+        Rectangle soundToggleOff = new Rectangle(770, 250, 280, 50);
+        Rectangle sensitivityMinus = new Rectangle(490, 360, 130, 50);
+        Rectangle sensitivityPlus = new Rectangle(920, 360, 130, 50);
 
         public void Draw(GameTime gameTime)
         {
@@ -168,39 +178,25 @@ namespace MazeEscape.MainMenu
 
             if (State == MenuState.Options)
             {
-               
-
                 spriteBatch.DrawString(Font, $"Włącz dzwięk:", new Vector2(250, 260), Color.White, 0, Vector2.Zero, new Vector2(0.5f), SpriteEffects.None, 0);
                 if (AppConfig.PLAY_SOUNDS)
                 {
                     spriteBatch.Draw(sound_Y, new Vector2(490, 250), Color.White);
-                    //spriteBatch.DrawString(Font, $"TAK", new Vector2(550, 340), Color.Green, 0, Vector2.Zero, new Vector2(0.5f), SpriteEffects.None, 0);
                 }
                 else
                 {
                     spriteBatch.Draw(sound_N, new Vector2(490, 250), Color.White);
-                    //spriteBatch.DrawString(Font, $"Nie", new Vector2(550, 340), Color.Green, 0, Vector2.Zero, new Vector2(0.5f), SpriteEffects.None, 0);
                 }
 
                 spriteBatch.DrawString(Font, $"Czułość myszy:", new Vector2(250, 370), Color.White, 0, Vector2.Zero, new Vector2(0.5f), SpriteEffects.None, 0);
                 spriteBatch.Draw(czulosc_myszy, new Vector2(490, 360), Color.White);
 
-                //spriteBatch.DrawString(Font, $"[-]", new Vector2(600, 490), Color.Green, 0, Vector2.Zero, new Vector2(0.5f), SpriteEffects.None, 0);
-                spriteBatch.DrawString(Font, $"{AppConfig._MOUSE_SPEED*100}", new Vector2(763, 360), Color.White, 0, Vector2.Zero, new Vector2(0.6f), SpriteEffects.None, 0);
-               // spriteBatch.DrawString(Font, $"[+]", new Vector2(750, 490), Color.Green, 0, Vector2.Zero, new Vector2(0.5f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(Font, $"{(int)(AppConfig._MOUSE_SPEED * 100)}", new Vector2(763, 360), Color.White, 0, Vector2.Zero, new Vector2(0.6f), SpriteEffects.None, 0);
 
             }
             else if (State == MenuState.Authors)
             {
                 spriteBatch.Draw(autorzy_panel, new Vector2(450, 150), Color.White);
-                /*spriteBatch.DrawString(Font, $"Autorzy", new Vector2(500, 150), Color.White, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                spriteBatch.DrawString(Font, $"Sekcja 4 2018 MazeEscape", new Vector2(600, 205), Color.White, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                spriteBatch.DrawString(Font, $"Alan Biegun - kolizje, inerakcje, wyświetlanie modeli 3D", new Vector2(500, 300), Color.White, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                spriteBatch.DrawString(Font, $"Albert Francik - generacja lowowych labiryntów", new Vector2(500, 350), Color.White, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                spriteBatch.DrawString(Font, $"Dawid Ryl - przeciwniki i sztuczna inteligencja", new Vector2(500, 400), Color.White, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                spriteBatch.DrawString(Font, $"Jan Snopek - modele, animacje i menu", new Vector2(500, 450), Color.White, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                spriteBatch.DrawString(Font, $"Dominik Żurawski - tworzenie dynamicznego oświetlenia", new Vector2(500, 500), Color.White, 0, Vector2.Zero, new Vector2(0.3f), SpriteEffects.None, 0);
-                */
             }
 
             spriteBatch.End();
