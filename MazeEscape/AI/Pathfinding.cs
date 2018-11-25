@@ -20,11 +20,11 @@ namespace MazeEscape.AI
         public float h { get; set; }
         public Spot previous { get; set; }
 
-        public Spot(Point point, ColliderType wall)
+        public Spot(Point point, ColliderType type)
         {
             Reset();
             this.Position = point;
-            this.Type = wall;
+            this.Type = type;
         }
 
         public List<Spot> GetNeighbors(List<List<Spot>> map)
@@ -75,7 +75,7 @@ namespace MazeEscape.AI
         {
             GameMap = gameMap;
 
-            var enemySpot = new Spot(new Point((int)enemy.Position.X / 2, (int)enemy.Position.Z / 2), ColliderType.Empty)
+            var enemySpot = new Spot(new Point((int)enemy.Position.X / 2, (int)enemy.Position.Z / 2), ColliderType.Enemy)
             {
                 f = 0,
                 g = 0,
@@ -89,9 +89,18 @@ namespace MazeEscape.AI
         public void CreatePath(Spot enemyPos)
         {
             PositionList = new List<Vector2>();
+            var list = new List<Vector2>();
             var collectableList = GameMap.SelectMany(a => a).Where(a => a.Type == ColliderType.Collectable).ToList();
 
-            var list = FindPath(enemyPos, collectableList[0]).Select(a => new Vector2(a.Position.X, a.Position.Y)).ToList();
+            if (LastSeenPlayer != null)
+            {
+                list = FindPath(enemyPos, LastSeenPlayer).Select(a => new Vector2(a.Position.X, a.Position.Y)).ToList();
+                list.Reverse();
+                PositionList.AddRange(list);
+                collectableList[0].Reset();
+            }
+
+            list = FindPath(enemyPos, collectableList[0]).Select(a => new Vector2(a.Position.X, a.Position.Y)).ToList();
             list.Reverse();
             PositionList.AddRange(list);
             collectableList[0].Reset();
@@ -131,6 +140,7 @@ namespace MazeEscape.AI
 
         private List<Spot> closedSet;
         private List<Spot> openSet;
+        public Spot LastSeenPlayer;
 
         private List<Spot> FindPath(Spot start, Spot stop)
         {

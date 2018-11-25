@@ -27,6 +27,10 @@ namespace MazeEscape.AI
         public Vector3 MoveVector { get; set; }
         public SoundManager SoundManager { get; set; }
 
+        public float DetectionDistance => Camera.Falshlight ? 15f : 9f;
+        public BoundingBox FrontCollider => new BoundingBox(Position - new Vector3(DetectionDistance, 0.2f, 0.2f), Position + new Vector3(DetectionDistance, 0.2f, 0.2f));
+        public BoundingBox BackCollider => new BoundingBox(Position - new Vector3(0.2f, 0.2f, DetectionDistance), Position + new Vector3(0.2f, 0.2f, DetectionDistance));
+
         public int timer = 0;
 
         public Enemy(Vector3 Position, Model Model, ContentManager Content, Camera Camera, SoundManager SoundManager)
@@ -42,13 +46,6 @@ namespace MazeEscape.AI
 
         }
 
-        List<Vector3> Directions = new List<Vector3>()
-        {
-            new Vector3(0.1f, 0, 0),
-            new Vector3(-0.1f, 0, 0),
-            new Vector3(0, 0, 0.1f),
-            new Vector3(0, 0, -0.1f),
-        };
         public int stepCount = 0;
 
         float z = 0, x = 0, rotSpeed = 0.09f;
@@ -65,42 +62,59 @@ namespace MazeEscape.AI
             {
                 stepCount++;
             }
-            if (stepCount > pathFinder.PositionList.Count - 1)
+            if (stepCount >= pathFinder.PositionList.Count - 1)
             {
                 stepCount = 0;
             }
 
-            var rot = pathFinder.PositionList[stepCount + 1] - pathFinder.PositionList[stepCount];
+            if (pathFinder.PositionList.Any())
+            {
+                var rot = pathFinder.PositionList[stepCount + 1] - pathFinder.PositionList[stepCount];
 
-            if (rot.X > 0)
-            {
-                z -= rotSpeed;
+                if (rot.X > 0)
+                {
+                    z -= rotSpeed;
+                }
+                else if (rot.X < 0)
+                {
+                    z += rotSpeed;
+                }
+                else
+                {
+                    z = 0;
+                }
+
+                if (rot.Y > 0)
+                {
+                    x += rotSpeed;
+                }
+                else if (rot.Y < 0)
+                {
+                    x -= rotSpeed;
+                }
+                else
+                {
+                    x = 0;
+                }
             }
-            else if (rot.X < 0)
+
+            if (FrontCollider.Intersects(Camera.ColliderBox) || BackCollider.Intersects(Camera.ColliderBox) && timer == 0)
             {
-                z += rotSpeed;
+                pathFinder.LastSeenPlayer =
+                    new Spot(new Point((int)Camera.Position.X / 2, (int)Camera.Position.Z / 2), ColliderType.Enemy);
+
+                //pathFinder.CreatePath(new Spot(new Point((int)Position.X / 2, (int)Position.Z / 2), ColliderType.Enemy));
+                //stepCount = 0;
             }
-            else
-            {
-                z = 0;
-            }
-            if (rot.Y > 0)
-            {
-                x += rotSpeed;
-            }
-            else if (rot.Y < 0)
-            {
-                x -= rotSpeed;
-            }
-            else
-            {
-                x = 0;
-            }
+
 
             Rotation = new Vector3(x, 0, z);
 
-            Position = new Vector3(pathFinder.PositionList[stepCount].X * 2, 1, pathFinder.PositionList[stepCount].Y * 2);
-
+            if (pathFinder.PositionList.Any())
+            {
+                Position = new Vector3(pathFinder.PositionList[stepCount].X * 2, 1,
+                    pathFinder.PositionList[stepCount].Y * 2);
+            }
         }
 
         public void Draw()

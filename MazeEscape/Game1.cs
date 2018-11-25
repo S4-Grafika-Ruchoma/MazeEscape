@@ -75,7 +75,7 @@ namespace MazeEscape
 
         EffectParameter lightEffectPointLightPosition, lightEffectPointLightColor, lightEffectPointLightIntensity, lightEffectPointLightRadius, lightEffectPointLightRendered;
 
-        Vector3 MovableLight = new Vector3(10, 10, 10);
+        Vector3 MovableLight = new Vector3(40, 30, 40);
         const int MaxLights = 5;
         Vector3[] lightsPositions = new Vector3[MaxLights];
         Vector3[] lightsColors = new Vector3[MaxLights];
@@ -171,13 +171,13 @@ namespace MazeEscape
             lightIntensities[0] = 2f;
             lightIntensities[1] = 2f;
             lightIntensities[2] = 2f;
-            lightIntensities[3] = 3f;
+            lightIntensities[3] = 8f;
             lightIntensities[4] = 2f;
 
             lightRedii[0] = 15;
             lightRedii[1] = 10;
             lightRedii[2] = 10;
-            lightRedii[3] = 50;
+            lightRedii[3] = 120;
             lightRedii[4] = 15;
 
             if (AppConfig._DEBUG_SUN_)
@@ -404,10 +404,10 @@ namespace MazeEscape
                 foreach (var object3D in gameMap)
                 {
                     object3D.Draw();
-                    if (camera.ShowColliders && object3D is Collider objectCollider)
-                    {
-                        objectCollider.DrawCollider(basicEffect, GraphicsDevice);
-                    }
+                    //if (camera.ShowColliders && object3D is Collider objectCollider)
+                    //{
+                    //    objectCollider.DrawCollider(basicEffect, GraphicsDevice);
+                    //}
                 }
 
                 foreach (var object3D in collectables.Where(a =>
@@ -426,6 +426,10 @@ namespace MazeEscape
                 {
                     camera.DrawCollider(basicEffect, GraphicsDevice);
                     enemy.DrawCollider(basicEffect, GraphicsDevice);
+                    DrawCollider(basicEffect,GraphicsDevice,enemy.BackCollider);
+                    DrawCollider(basicEffect,GraphicsDevice,enemy.FrontCollider);
+                   // DrawCollider(basicEffect,GraphicsDevice,enemy.LeftCollider);
+                   //DrawCollider(basicEffect,GraphicsDevice,enemy.RightCollider);
                 }
 
                 spriteBatch.Begin();
@@ -739,5 +743,36 @@ namespace MazeEscape
         }
 
         private Pathfinding pathFinder;
+
+        public void DrawCollider(BasicEffect basicEffect, GraphicsDevice GraphicsDevice, BoundingBox ColliderBox)
+        {
+            using (var line = new Line())
+            {
+                var n = ColliderBox.Min;
+                var x = ColliderBox.Max;
+
+                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(n.X, n.Y, x.Z), Color.Red); // N -> N+X.z 1-2
+                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(n.X, x.Y, n.Z), Color.Red); // N -> N+X.y 1-3
+                line.DrawLine(basicEffect, GraphicsDevice, n, new Vector3(x.X, n.Y, n.Z), Color.Red); // N -> N+X.z 1-4
+
+                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(n.X, x.Y, x.Z), Color.Blue); // X -> X+N.x 5-6
+                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(x.X, n.Y, x.Z), Color.Blue); // X -> X+N.y 5-7
+                line.DrawLine(basicEffect, GraphicsDevice, x, new Vector3(x.X, x.Y, n.Z), Color.Blue); // X -> X+N.z 5-8
+
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, n.Y, n.Z), new Vector3(x.X, n.Y, x.Z),
+                    Color.Salmon); // 4-7
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, n.Y, x.Z), new Vector3(n.X, n.Y, x.Z),
+                    Color.Salmon); // 7-2
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, n.Y, x.Z), new Vector3(n.X, x.Y, x.Z),
+                    Color.Salmon); // 2-6
+
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, x.Y, x.Z), new Vector3(n.X, x.Y, n.Z),
+                    Color.Cyan); // 6-3
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(n.X, x.Y, n.Z), new Vector3(x.X, x.Y, n.Z),
+                    Color.Cyan); // 3-8
+                line.DrawLine(basicEffect, GraphicsDevice, new Vector3(x.X, x.Y, n.Z), new Vector3(x.X, n.Y, n.Z),
+                    Color.Cyan); // 8-4
+            }
+        }
     }
 }
