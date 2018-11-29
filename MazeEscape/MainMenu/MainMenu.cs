@@ -44,7 +44,7 @@ namespace MazeEscape.MainMenu
             Font = Game.Content.Load<SpriteFont>("Fonts/SpriteFontPL");
             spriteBatch = new SpriteBatch(Game.GraphicsDevice);
             menuBackground = Game.Content.Load<Texture2D>("Main_Menu/Menu_background");
-            autorzy_panel = Game.Content.Load<Texture2D>("Main_Menu /autorzy_v2");
+            autorzy_panel = Game.Content.Load<Texture2D>("Main_Menu /autorzy");
             czulosc_myszy = Game.Content.Load<Texture2D>("Main_Menu/czulosc_knefle");
             sound_Y = Game.Content.Load<Texture2D>("Main_Menu/sound_Y");
             sound_N = Game.Content.Load<Texture2D>("Main_Menu/sound_N");
