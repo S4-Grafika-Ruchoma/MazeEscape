@@ -177,10 +177,10 @@ namespace MazeEscape
             lightRedii[0] = 15;
             lightRedii[1] = 10;
             lightRedii[2] = 10;
-            lightRedii[3] = 120;
+            lightRedii[3] = 0;
             lightRedii[4] = 15;
 
-            if (AppConfig._DEBUG_SUN_)
+            if (AppConfig._DEBUG_SUN_ && AppConfig._DEBUG_MODE_ENABLED)
             {
                 lightsPositions[3] = new Vector3(50, 10, 50);
                 lightIntensities[3] = 18;
@@ -226,6 +226,13 @@ namespace MazeEscape
 
             if (!RunGame)
             {
+                if (!AppConfig._DEBUG_MODE_ENABLED)
+                {
+                    lightsPositions[3] = new Vector3(0, 10, 0);
+                    lightIntensities[3] = 0;
+                    lightRedii[3] = 0;
+                }
+
                 time_in_game += (float)gameTime.ElapsedGameTime.TotalSeconds;   // Timer
                 time_secounds = +(int)time_in_game;
 
@@ -339,7 +346,7 @@ namespace MazeEscape
 
                 if (camera.IsEndLevelCollision())
                 {
-                    if (camera.CollectablesObjects.Any() && !AppConfig._DEBUG_DISABLE_COLLECTABLES_CHECK_)
+                    if (camera.CollectablesObjects.Any())
                     {
                         NotAllCollected = true;
                     }
@@ -404,17 +411,17 @@ namespace MazeEscape
                 foreach (var object3D in gameMap)
                 {
                     object3D.Draw();
-                    //if (camera.ShowColliders && object3D is Collider objectCollider)
-                    //{
-                    //    objectCollider.DrawCollider(basicEffect, GraphicsDevice);
-                    //}
+                    if ((camera.ShowColliders && AppConfig._DEBUG_MODE_ENABLED) && object3D is Collider objectCollider)
+                    {
+                        objectCollider.DrawCollider(basicEffect, GraphicsDevice);
+                    }
                 }
 
                 foreach (var object3D in collectables.Where(a =>
                     camera.CollectablesObjects.Any(b => a.ColliderBox == b.ColliderBox)))
                 {
                     object3D.Draw();
-                    if (camera.ShowColliders && object3D is Collider objectCollider)
+                    if ((camera.ShowColliders && AppConfig._DEBUG_MODE_ENABLED) && object3D is Collider objectCollider)
                     {
                         objectCollider.DrawCollider(basicEffect, GraphicsDevice);
                     }
@@ -422,14 +429,12 @@ namespace MazeEscape
 
                 enemy.Draw();
 
-                if (camera.ShowColliders)
+                if (camera.ShowColliders && AppConfig._DEBUG_MODE_ENABLED)
                 {
                     camera.DrawCollider(basicEffect, GraphicsDevice);
                     enemy.DrawCollider(basicEffect, GraphicsDevice);
                     DrawCollider(basicEffect,GraphicsDevice,enemy.BackCollider);
                     DrawCollider(basicEffect,GraphicsDevice,enemy.FrontCollider);
-                   // DrawCollider(basicEffect,GraphicsDevice,enemy.LeftCollider);
-                   //DrawCollider(basicEffect,GraphicsDevice,enemy.RightCollider);
                 }
 
                 spriteBatch.Begin();
@@ -471,7 +476,7 @@ namespace MazeEscape
                             new Vector2(0.4f), SpriteEffects.None, 0);
                     }
 
-                    if (NotAllCollected || AppConfig._DEBUG_DISABLE_COLLECTABLES_CHECK_)
+                    if (NotAllCollected)
                     {
                         spriteBatch.DrawString(Font, $"Znajdź wszystkie skrzynki!",
                             new Vector2(GraphicsDevice.Viewport.Width / 2 - 170, 200), Color.White, 0, Vector2.Zero, new Vector2(0.6f),
@@ -669,7 +674,7 @@ namespace MazeEscape
                         pathMap[row][col].Type = ColliderType.LadderEnter;
                         lightsPositions[1] = new Vector3(row * 2, 2, col * 2); // START
 
-                        if (!AppConfig._DEBUG_DISABLE_START_SPAWN_)
+                        if (!AppConfig._DEBUG_DISABLE_START_SPAWN_ || AppConfig._DEBUG_MODE_ENABLED)
                             camera.Position = new Vector3(row * 2, 1, col * 2);
                     }
 

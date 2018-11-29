@@ -30,7 +30,13 @@ namespace MazeEscape.CustomClasses
 
         public Matrix World { get; set; }
 
-        public bool NoClip { get; set; }
+        public bool _NoClip { get; set; }
+
+        public bool NoClip
+        {
+            get => _NoClip && AppConfig._DEBUG_MODE_ENABLED;
+            set => _NoClip = value;
+        }
 
         public Vector3 Position
         {
@@ -184,7 +190,12 @@ namespace MazeEscape.CustomClasses
                     moveVector.X = -1;
                 }
 
-                walkTimer += gameTime.ElapsedGameTime.Milliseconds + (keyboardState.IsKeyDown(Keys.LeftShift)?5:0);
+                walkTimer += gameTime.ElapsedGameTime.Milliseconds + (keyboardState.IsKeyDown(Keys.LeftShift) ? 5 : 0);
+
+                if (keyboardState.IsKeyDown(Keys.P) && prevState.IsKeyUp(Keys.P))
+                {
+                    AppConfig._DEBUG_MODE_ENABLED = !AppConfig._DEBUG_MODE_ENABLED;
+                }
 
                 if (NoClip)
                 {
@@ -194,7 +205,7 @@ namespace MazeEscape.CustomClasses
                         moveVector.Y = -1;
                 }
 
-                if (keyboardState.IsKeyDown(Keys.K) && prevState.IsKeyUp(Keys.K))
+                if (keyboardState.IsKeyDown(Keys.K) && prevState.IsKeyUp(Keys.K) && AppConfig._DEBUG_MODE_ENABLED)
                 {
                     CollectablesObjects.RemoveAt(0);
                     Collected++;
