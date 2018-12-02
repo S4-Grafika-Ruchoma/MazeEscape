@@ -70,8 +70,9 @@ namespace MazeEscape.AI
     {
         private List<List<Spot>> GameMap;
         public List<Vector2> PositionList;
+		public int StepsToPlayer { get; set; }
 
-        public Pathfinding(List<List<Spot>> gameMap, Enemy enemy)
+		public Pathfinding(List<List<Spot>> gameMap, Enemy enemy)
         {
             GameMap = gameMap;
 
@@ -97,13 +98,23 @@ namespace MazeEscape.AI
                 list = FindPath(enemyPos, LastSeenPlayer).Select(a => new Vector2(a.Position.X, a.Position.Y)).ToList();
                 list.Reverse();
                 PositionList.AddRange(list);
-                collectableList[0].Reset();
-            }
 
-            list = FindPath(enemyPos, collectableList[0]).Select(a => new Vector2(a.Position.X, a.Position.Y)).ToList();
-            list.Reverse();
-            PositionList.AddRange(list);
-            collectableList[0].Reset();
+				StepsToPlayer = list.Count * 4;
+
+				list = FindPath(LastSeenPlayer, collectableList[0]).Select(a => new Vector2(a.Position.X, a.Position.Y)).ToList();
+				list.Reverse();
+				PositionList.AddRange(list);
+				collectableList[0].Reset();
+			}
+				else
+			{
+				StepsToPlayer = 0;
+				list = FindPath(enemyPos, collectableList[0]).Select(a => new Vector2(a.Position.X, a.Position.Y)).ToList();
+				list.Reverse();
+				PositionList.AddRange(list);
+				collectableList[0].Reset();
+			}
+
 
             for (int i = 1; i < collectableList.Count; i++)
             {
@@ -145,14 +156,11 @@ namespace MazeEscape.AI
         private List<Spot> FindPath(Spot start, Spot stop)
         {
             var moves = new List<Spot>();
-
             closedSet = new List<Spot>();
             openSet = new List<Spot>()
             {
                 start
             };
-
-
             while (openSet.Any())
             {
                 var winner = 0;
@@ -163,7 +171,6 @@ namespace MazeEscape.AI
                         winner = i;
                     }
                 }
-
                 var current = openSet[winner];
 
                 if (current.Position == stop.Position)
@@ -176,15 +183,11 @@ namespace MazeEscape.AI
                         moves.Add(tmpCurrent.previous);
                         tmpCurrent = tmpCurrent.previous;
                     }
-
                     break;
                 }
-
                 openSet.Remove(current);
                 closedSet.Add(current);
-
                 var neighbors = current.GetNeighbors(GameMap);
-
                 for (int i = 0; i < neighbors.Count; i++)
                 {
                     var neighbor = neighbors[i];
@@ -205,15 +208,12 @@ namespace MazeEscape.AI
                             neighbor.g = tempG;
                             openSet.Add(neighbor);
                         }
-
                         neighbor.h = Heuristic(neighbor, stop);
                         neighbor.f = neighbor.g + neighbor.h;
                         neighbor.previous = current;
                     }
                 }
             }
-
-
             return moves;
         }
 

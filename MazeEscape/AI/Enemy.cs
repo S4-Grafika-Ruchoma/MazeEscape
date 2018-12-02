@@ -26,7 +26,7 @@ namespace MazeEscape.AI
         public override ColliderType Type { get; set; }
         public Vector3 MoveVector { get; set; }
         public SoundManager SoundManager { get; set; }
-
+		  public bool IsOnPlayerPath { get; set; }
         public float DetectionDistance => Camera.Falshlight ? 15f : 9f;
         public BoundingBox FrontCollider => new BoundingBox(Position - new Vector3(DetectionDistance, 0.2f, 0.2f), Position + new Vector3(DetectionDistance, 0.2f, 0.2f));
         public BoundingBox BackCollider => new BoundingBox(Position - new Vector3(0.2f, 0.2f, DetectionDistance), Position + new Vector3(0.2f, 0.2f, DetectionDistance));
@@ -43,7 +43,7 @@ namespace MazeEscape.AI
             EnemyPlayerLine = new Line(this.Position, Camera.Position);
             MoveVector = new Vector3(0.1f, 0, 0);
             this.SoundManager = SoundManager;
-
+			IsOnPlayerPath = false;
         }
 
         public int stepCount = 0;
@@ -98,14 +98,32 @@ namespace MazeEscape.AI
                 }
             }
 
-            if (FrontCollider.Intersects(Camera.ColliderBox) || BackCollider.Intersects(Camera.ColliderBox) && timer == 0)
+            if (FrontCollider.Intersects(Camera.ColliderBox) || BackCollider.Intersects(Camera.ColliderBox))
             {
-                pathFinder.LastSeenPlayer =
-                    new Spot(new Point((int)Camera.Position.X / 2, (int)Camera.Position.Z / 2), ColliderType.Enemy);
+                //pathFinder.LastSeenPlayer =
+                //    new Spot(new Point((int)Camera.Position.X / 2, (int)Camera.Position.Z / 2), ColliderType.Enemy);
 
-                //pathFinder.CreatePath(new Spot(new Point((int)Position.X / 2, (int)Position.Z / 2), ColliderType.Enemy));
-                //stepCount = 0;
-            }
+				if (!IsOnPlayerPath)
+				{
+					//pathFinder.CreatePath(new Spot(new Point((int)Position.X / 2, (int)Position.Z / 2), ColliderType.Enemy));
+					//stepCount = 0;			
+				if (stepCount > pathFinder.StepsToPlayer)
+				{
+					pathFinder.LastSeenPlayer =
+						  new Spot(new Point((int)Camera.Position.X / 2, (int)Camera.Position.Z / 2), ColliderType.Enemy);
+
+					pathFinder.CreatePath(new Spot(new Point((int)Position.X / 2, (int)Position.Z / 2), ColliderType.Enemy));
+					stepCount = 0;
+				}
+				}
+				//	IsOnPlayerPath = true;
+				//	if (IsOnPlayerPath && stepCount == pathFinder.PositionList.Count - 1)
+				//			IsOnPlayerPath = false;
+			}
+			else
+			{
+				pathFinder.LastSeenPlayer = null;
+			}
 
 
             Rotation = new Vector3(x, 0, z);
